@@ -13,6 +13,7 @@ class ConvoCards extends React.Component {
         super(props);
 
         this.position = new Animated.ValueXY()
+        //prob need a position 2 if u want to do that. i think just leave it for later
         this.rotate = this.position.x.interpolate({
             inputRange:[-Constants.SCREEN_WIDTH/2, 0, Constants.SCREEN_WIDTH/2],
             outputRange: ['-10deg', '0deg', '10deg'],

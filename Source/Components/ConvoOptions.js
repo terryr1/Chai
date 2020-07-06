@@ -6,6 +6,7 @@ import { ListItem } from 'react-native-elements';
 import { homeStyle } from '../index';
 import PendingConvoController from '../Controllers/PendingConvoController';
 import GestureRecognizer from 'react-native-swipe-gestures'
+import ConvoController from '../Controllers/ConvoController';
 
 //also have swipe left that goes back to a convo
 class ConvoOptions extends React.Component {
@@ -18,11 +19,11 @@ class ConvoOptions extends React.Component {
         inputVal: ''
     }
 
-    onChangeText = (val) => {
-        this.setState({inputVal: val})
+    async onClick() {
+        console.log("RESOLVE CLICKED")
+        await ConvoController.deleteConvo(this.props.route.params.user.id, this.props.route.params.id);
+        this.props.navigation.navigate('MessageList')
     }
-
-    onClick = () => {}
 
     async onSwipeLeft() {
         await PendingConvoController.switchPendingState(this.props.route.params.user.id, this.props.route.params.id);
@@ -47,7 +48,7 @@ class ConvoOptions extends React.Component {
                     <StatusBar backgroundColor="black" barStyle='light-content' />
                     <View style={{backgroundColor: 'black'}} >
                         <Text style = {{color: 'white'}}> Star Rating Goes Here </Text>
-                        <Button onPress={this.onClick} title='resolve'/>
+                        <Button onPress={this.onClick.bind(this)} title='resolve'/>
                         <Button onPress={this.onClick} title='new opinion'/>
                     </View>
                 </SafeAreaView>

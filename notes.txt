@@ -31,6 +31,9 @@ notes:
     user id and phone number?
 
 NEXT STEP:
+
+REMOVE alot of the listeners, just make requests and if they come back null, pop up - only have listeners for cards and messages
+
 ONLY HAve read write access to convos in you convo list and pending convos
 authenticate with phone number - only 2 users allowed to be authenticated for normal convo - these users can never be changed
 can see what phone number wrote what? - no because we'll use the id from firestore authentication - so all ids are anonymous

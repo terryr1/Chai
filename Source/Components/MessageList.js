@@ -31,16 +31,15 @@ class MessageList extends React.Component {
     keyExtractor = (item, index) => index.toString()
 
     onPress = (item) => {
-
-        return () => this.props.navigation.navigate('Convo', {id: item.convo_id, pending: item.pending, user: this.props.route.params.user})
-        
+        console.log(item)
+        this.props.navigation.navigate('Convo', {id: item.convo_id, pending: item.pending, user: this.props.route.params.user})
     }
 
     renderItem = ({ item }) => (
         <ListItem
             title={item.name}
             leftAvatar={{source: {uri: null}}}
-            onPress={this.onPress(item)}
+            onPress={() => this.onPress(item)}
             bottomDivider
             chevron
         />

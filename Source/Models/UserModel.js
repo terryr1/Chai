@@ -25,7 +25,8 @@ class UserModel {
     }
 
     async removeConvo (uid, pending_id) {
-
+        console.log(uid)
+        console.log(pending_id)
         //shouldnt add should be a ref to the pending convo
         this.user_ref.doc(uid)
                     .set({

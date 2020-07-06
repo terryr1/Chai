@@ -108,7 +108,6 @@ class PendingConvoModel {
         documentSnapshots.forEach(doc => {//do something
             //check if timestamp greater
             if(doc.data().uid != uid) {
-                hasDocs = true;
                 const convo = {
                     id: doc.id,
                     question: doc.data().question
@@ -126,6 +125,7 @@ class PendingConvoModel {
         return doc.data();
     }
 
+    //THIS COULD BE AN EXPENSIVE PROCESS!
     async delete(convo_id) {
         this.ref.doc(convo_id).delete();
     }

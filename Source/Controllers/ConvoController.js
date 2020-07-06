@@ -26,6 +26,13 @@ async function get(id) {
     return convo;
 }
 
+async function deleteConvo(uid, id) {
+    const convo_id = '1' + id;
+    await UserModel.shared.removeConvo(uid, convo_id);
+    await ConvoModel.shared.delete(id);
+    console.log("DONE DELETE")
+}
+
 async function switchPendingState(uid, id) {
 
     const pending_convo_id = '0' + id;
@@ -39,4 +46,4 @@ async function switchPendingState(uid, id) {
     UserModel.shared.addConvo(convo.question, convo.uid, convo_id);
 }
 
-export default {start, stop, send, switchPendingState, get}
+export default {start, stop, send, switchPendingState, get, deleteConvo}

@@ -27,6 +27,7 @@ class ConvoModel {
         return sorted_array;
     }
 
+    //say this convo has been deleted here
     send = (messages, id) => {
         console.log("sending message");
         for (let i = 0; i < messages.length; i++) {
@@ -51,6 +52,7 @@ class ConvoModel {
     on = (callback, convo_id) => {
         console.log("normal start")
         this.ref.doc(convo_id).collection("messages").onSnapshot(querySnapshot => {
+            //if collection deleted popup saying this convo has been resolved/ended
             callback(this.parse(querySnapshot.docChanges()))
         });
     } 
