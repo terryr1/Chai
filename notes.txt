@@ -1,0 +1,64 @@
+<View> like <div>
+<Text> like <p>
+<Image> like <img>
+<ScrollView> like <div> but scrolls
+<TextInput> like <input type ="text">
+
+in order to login, enter your phone number which then sends you a text. no actual account
+
+start a twitter chaitheapp
+
+firebase database messaging - store messages 
+    asker and answerer
+    asker - question is stored in database
+    
+
+FIRESTORE SETUP:
+    questions -
+        message - points to document in messages with current thread on this question (should only show up in explore section if message tab is empty)
+        user - user that made this question
+    user -
+        phone number associated with user
+        rating number associated with user
+        uid
+    messages -
+        key is uids of the two users in convo (maybe seperated by something idk?) - asker id first or something
+        actual messages stored here
+
+notes:
+    setup a new messages document when an answerer sends a message to the asker
+    this document is deleted when the asker is done talking to the answerer
+    user id and phone number?
+
+NEXT STEP:
+ONLY HAve read write access to convos in you convo list and pending convos
+authenticate with phone number - only 2 users allowed to be authenticated for normal convo - these users can never be changed
+can see what phone number wrote what? - no because we'll use the id from firestore authentication - so all ids are anonymous
+can see which conversations were written by the same person - fine then we can encrypt all the text stored in the database
+only create/delete access for conversations
+only update access for rating 
+only authenticated users can change ratings/convo lists
+check if the user has the conversation in their list of convos before rating, users dont know convo ids - convo ids are linked to people
+FirebaseAuth.getInstance().getCurrentUser().getUid();
+pending convos give read access but write access only to og_user
+users dont have access to write to their own rating, only read
+other users can write and read to ratings?
+only the users themselves can delete conversations, if they dont have access/the convo no longer exists the user should delete
+
+SO other users can add convos to other users, and -for now- write to the rating of other users
+
+perma ban anyone who tries to change rating/convo lists
+
+only write to 
+
+og_user gives new_user permission to read/write - they own the document
+
+
+    **MAKE EVERYTHING FASTER WITH ASYNC CALSS
+    in normal convos messages in the pending convo are marked as special so that if the user decides to send it back to pending then it keeps those messages
+    Pending Convos have a field which represents the user it's notified
+
+    MAKE ALL FIREBASE CALLS ASYNCHRONOUS
+    eventually - users have ratings, when selecting a user from user collection sort by rating and users have notified section false
+
+    MAKE RH
