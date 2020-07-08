@@ -1,7 +1,7 @@
-import UserModel from "../Models/UserModel"
+import UserModel from "../Models/UserModel";
 
 function createUser(uid) {
-    UserModel.shared.createUser(uid);
+  UserModel.shared.createUser(uid);
 }
 
-export default {createUser}
+export default { createUser };

@@ -11,7 +11,7 @@ export const homeStyle = StyleSheet.create({
         backgroundColor: "black",
     },
     mainText: {
-        paddingTop: 250,
+        paddingTop: 50,
         color: 'white',
         fontSize: 30
     },
