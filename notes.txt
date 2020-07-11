@@ -30,7 +30,9 @@ notes:
     this document is deleted when the asker is done talking to the answerer
     user id and phone number?
 
-NEXT STEP:
+NEXT STEP: notifications -> authentication
+
+cloud function for notifications - convo on create, convo on message update, convo on pending create - notify a random user
 
 REMOVE alot of the listeners, just make requests and if they come back null, pop up - only have listeners for cards and messages
 

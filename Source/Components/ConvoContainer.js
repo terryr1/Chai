@@ -79,9 +79,13 @@ class ConvoContainer extends React.Component {
     return (
       <Drawer.Navigator
         initialRouteName="Convo"
+        drawerPosition='right'
+        drawerType='slide'
+        edgeWidth={1000}
         screenOptions={{
           headerShown: false,
         }}
+        drawerStyle = {{width: '100%'}}
         drawerContent={(props) => (
           <DrawerContent
             {...props}

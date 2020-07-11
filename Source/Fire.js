@@ -5,27 +5,10 @@ class Fire {
   constructor() {
     console.log("initializing");
     this.init();
-    this.observeAuth();
   }
-
-  observeAuth = () => firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
-
-  onAuthStateChanged = (user) => {
-    if (!user) {
-      try {
-        firebase.auth().signInAnonymously();
-      } catch ({ message }) {
-        alert(message);
-      }
-    }
-  };
 
   get ref() {
     return firebase.firestore();
-  }
-
-  get uid() {
-    return (firebase.auth().currentUser || {}).uid;
   }
 
 

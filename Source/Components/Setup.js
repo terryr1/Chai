@@ -3,39 +3,69 @@ import { SafeAreaView, TextInput, Button, StatusBar } from "react-native";
 import { ScreenContainer } from "react-native-screens";
 import { ListItem } from "react-native-elements";
 import { homeStyle } from "../index";
-import SetupController from "../Controllers/SetupController";
+import AuthController from "../Controllers/AuthController";
 
 class Setup extends React.Component {
   constructor(props) {
     super(props);
   }
 
+  componentDidUpdate() {
+    if (this.state.user) {
+      //get correct uid/ figure out how to store uids
+      console.log("found user " + this.state.user.uid)
+      this.props.navigation.replace("Main", { uid: this.state.user.uid });
+    }
+  }
+
+  componentDidMount() {
+    AuthController.shared.checkForAuthentication(user => this.setState({user: user}))
+    console.log("done mounting")
+  }
+
   state = {
-    inputVal: "",
+    phoneNumber: "",
+    code: "",
+    user: null
   };
 
-  onChangeText = (val) => {
-    this.setState({ inputVal: val });
+  onChangePhoneNumber = (val) => {
+    this.setState({ phoneNumber: val });
   };
 
-  createUser = () => {
-    SetupController.createUser(this.state.inputVal);
-    this.props.navigation.replace("Main", { uid: this.state.inputVal });
+  onChangeCode = (val) => {
+    this.setState({ code: val });
   };
 
-  login = () => {
-    this.props.navigation.replace("Main", { uid: this.state.inputVal });
+  sendVerification = async () => {
+    console.log("hii");
+    await AuthController.shared.sendVerification(this.state.phoneNumber);
+  };
+
+  confirmCode = async () => {
+    const result = await AuthController.shared.confirmCode(this.state.code);
+    if (result) {
+      //get correct uid/ figure out how to store uids
+      this.props.navigation.replace("Main", { uid: this.state.user.uid });
+    } else {
+      console.log("FAILED");
+    }
   };
 
   render() {
     return (
-      <SafeAreaView style={homeStyle.container}>
+      <SafeAreaView>
         <StatusBar backgroundColor="black" barStyle="light-content" />
-        <ScreenContainer style={{ backgroundColor: "black" }}>
-          <TextInput multiline style={homeStyle.input} onChangeText={this.onChangeText} value={this.state.inputVal} />
-          <Button onPress={this.createUser} title="create" />
-          <Button onPress={this.login} title="login" />
-        </ScreenContainer>
+        {AuthController.shared.getCaptcha()}
+        <TextInput
+          keyboardType="phone-pad"
+          style={{ color: "white" }}
+          onChangeText={this.onChangePhoneNumber}
+          value={this.state.phoneNumber}
+        />
+        <Button onPress={this.sendVerification} title="send text" />
+        <TextInput style={{ color: "white" }} keyboardType="number-pad" onChangeText={this.onChangeCode} value={this.state.code} />
+        <Button onPress={this.confirmCode} title="enter code" />
       </SafeAreaView>
     );
   }

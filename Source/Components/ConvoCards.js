@@ -73,7 +73,7 @@ class ConvoCards extends React.Component {
             this.setState({ data: new_data }, () => {
               this.position.setValue({ x: 0, y: 0 });
             });
-            this.props.navigation.replace("ConvoContainer", {
+            this.props.navigation.navigate("ConvoContainer", {
               id: go_to.id,
               pending: true,
               user: { ...this.props.route.params.user, primary: false },

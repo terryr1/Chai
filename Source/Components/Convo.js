@@ -14,13 +14,10 @@ class Convo extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    console.log("state " + this.state.pending)
     if (this.state.pending != prevState.pending || !this._isMounted) {
       if (this.state.pending) {
-        console.log("setting pending")
         this.controller = PendingConvoController;
       } else {
-        console.log("setting normal")
         this.controller = ConvoController;
       }
       this.props.route.params.updateContainer(this.state.pending, this.controller);
@@ -28,7 +25,6 @@ class Convo extends React.Component {
   }
 
   componentDidMount() {
-    console.log(this.props.route.params.pending)
     this.setState({ pending: this.props.route.params.pending }, () => {
       this._isMounted = true;
       this.startController();
@@ -41,9 +37,12 @@ class Convo extends React.Component {
   }
 
   startController() {
+    console.log(this.state.messages);
     let params = {
       update: (messages) => {
         if (this._isMounted) {
+          console.log('received')
+          console.log(messages)
           const new_messages = unionWith(this.state.messages, messages, (a, b) => a._id == b._id);
           const sorted_msgs = new_messages.sort((a, b) => {
             return b._id - a._id;
@@ -68,9 +67,8 @@ class Convo extends React.Component {
   }
 
   async switchPendingState() {
-    console.log("switching oh no")
     await this.controller.stop("" + this.props.route.params.id);
-    this.setState({ pending: !this.state.pending }, () => {
+    this.setState({ pending: !this.state.pending, messages: [] }, () => {
       this.controller.switchPendingStateToThis(this.props.route.params.user.id, this.props.route.params.id);
       this.startController();
     });
