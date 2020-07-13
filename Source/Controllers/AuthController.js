@@ -19,18 +19,15 @@ class AuthController {
         return (<FirebaseRecaptchaVerifierModal ref={ref => this.recaptchaVerifier = ref} firebaseConfig={firebase.app().options} />)
     }
     
-    sendVerification = async (phoneNumber) => {
+    sendVerification = async (email) => {
         console.log(this.recaptchaVerifier)
         console.log('verifying')
-        this.verificationId = await AuthModel.shared.sendVerification(this.recaptchaVerifier, phoneNumber)
+        await AuthModel.shared.sendVerification(() => {}, email)
     }
     
-    confirmCode = async (code) => {
-        if(this.verificationId) {
-            const result = await AuthModel.shared.confirmCode(this.verificationId, code)
-            return result
-        } else {
-            error("invalid id")
+    confirmLink = async (email, link) => {
+        if(AuthModel.shared.checkIfValidLink(link)) {
+            AuthModel.shared.signIn(email, link);
         }
     }
 

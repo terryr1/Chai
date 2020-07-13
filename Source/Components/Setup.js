@@ -1,13 +1,25 @@
 import React from "react";
-import { SafeAreaView, TextInput, Button, StatusBar } from "react-native";
+import { SafeAreaView, TextInput, Button, StatusBar, Linking, Text } from "react-native";
 import { ScreenContainer } from "react-native-screens";
 import { ListItem } from "react-native-elements";
 import { homeStyle } from "../index";
 import AuthController from "../Controllers/AuthController";
 
+
+
+function StepThree()
+
+function StepTwo()
+
+function StepOne({}) {
+
+}
+
 class Setup extends React.Component {
   constructor(props) {
     super(props);
+    this.getUrl()
+    this.enteredEmail = ''
   }
 
   componentDidUpdate() {
@@ -20,17 +32,19 @@ class Setup extends React.Component {
 
   componentDidMount() {
     AuthController.shared.checkForAuthentication(user => this.setState({user: user}))
+    Linking.addEventListener('url', (event) => {AuthController.shared.confirmLink(this.enteredEmail, event.url)})
     console.log("done mounting")
   }
 
   state = {
-    phoneNumber: "",
+    email: "",
     code: "",
-    user: null
+    user: null,
+    initialUrl: ""
   };
 
-  onChangePhoneNumber = (val) => {
-    this.setState({ phoneNumber: val });
+  onChangeEmail = (val) => {
+    this.setState({ email: val });
   };
 
   onChangeCode = (val) => {
@@ -38,8 +52,8 @@ class Setup extends React.Component {
   };
 
   sendVerification = async () => {
-    console.log("hii");
-    await AuthController.shared.sendVerification(this.state.phoneNumber);
+    this.enteredEmail = this.state.email
+    const isVerified = await AuthController.shared.sendVerification(this.state.email);
   };
 
   confirmCode = async () => {
@@ -52,20 +66,25 @@ class Setup extends React.Component {
     }
   };
 
+  getUrl = async () => {
+    const url = await Linking.getInitialURL()
+    this.setState({initialUrl: url})
+  }
+
+  //make this two pages -> first enter email -> page that says click the verification link
   render() {
     return (
       <SafeAreaView>
         <StatusBar backgroundColor="black" barStyle="light-content" />
         {AuthController.shared.getCaptcha()}
         <TextInput
-          keyboardType="phone-pad"
+          keyboardType='email-address'
           style={{ color: "white" }}
-          onChangeText={this.onChangePhoneNumber}
-          value={this.state.phoneNumber}
+          onChangeText={this.onChangeEmail}
+          value={this.state.email}
         />
         <Button onPress={this.sendVerification} title="send text" />
-        <TextInput style={{ color: "white" }} keyboardType="number-pad" onChangeText={this.onChangeCode} value={this.state.code} />
-        <Button onPress={this.confirmCode} title="enter code" />
+        <Text style={{color: 'white'}}>{this.state.initialUrl}</Text>
       </SafeAreaView>
     );
   }

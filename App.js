@@ -34,11 +34,21 @@ class App extends React.Component {
         border: "rgb(0, 0, 0)",
       },
     };
+    this.linking = {
+      prefixes: ['chai://'],
+      config: {
+        screens: {
+          Setup: {
+            path: 'verify',
+          },
+        },
+      }
+    }
   }
 
   render() {
     return (
-      <NavigationContainer theme={this.MyTheme}>
+      <NavigationContainer linking = {this.linking} theme={this.MyTheme}>
         <Stack.Navigator
           initialRouteName="Setup"
           screenOptions={{
