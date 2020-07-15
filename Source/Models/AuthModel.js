@@ -1,7 +1,6 @@
 import React, { useRef } from 'react'
 import firebase from "firebase";
 import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
-import { Linking } from 'expo';
 import { Alert } from 'react-native';
 
 class AuthModel {
@@ -10,9 +9,13 @@ class AuthModel {
     firebase.auth().onAuthStateChanged(callback)
   }
 
-  sendVerification = async (callback, email) => {
+  stopCheckForAuthentication = () => {
+    firebase.auth().onAuthStateChanged(()=>{})
+  }
+
+  sendVerification = async (email) => {
     const actionCodeSettings = {
-      url: 'https://chaitheapp.page.link/verify',
+      url: 'https://chaiapp.page.link/verify',
       handleCodeInApp: true,
       iOS: {
         bundleId: 'com.chai'
@@ -21,12 +24,8 @@ class AuthModel {
         packageName: 'com.chai'
       }
     }
-    console.log(actionCodeSettings.url)
-    console.log(email)
-    Linking.addEventListener('verify', callback)
-    firebase.auth().sendSignInLinkToEmail(email, actionCodeSettings)
-    // const phoneProvider = new firebase.auth.PhoneAuthProvider();
-    // const verificationId = await phoneProvider.verifyPhoneNumber(phoneNumber, recaptchaVerifier);
+
+    return firebase.auth().sendSignInLinkToEmail(email, actionCodeSettings)
   };
 
   checkIfValidLink = (link) => {

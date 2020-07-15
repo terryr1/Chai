@@ -39,25 +39,26 @@ class UserModel {
       .catch((error) => console.log("fail"));
   }
 
-  createUser = (uid) => {
-    this.user_ref
-      .doc(uid)
-      .set({
-        conversations: [],
-        rating: 0,
-      })
-      .then((data) => console.log("request done"))
-      .catch((error) => console.log("fail"));
+  createUser = async (uid) => {
+    const docSnapshot = await this.user_ref.doc(uid).get()
+    if (!docSnapshot.exists) {
+      this.user_ref
+        .doc(uid)
+        .set({
+          conversations: [],
+          rating: 0,
+        })
+        .then((data) => console.log("request done"))
+        .catch((error) => console.log("fail"));
+    }
   };
 
   parse = (conversations) => {
     const ids = Object.keys(conversations);
     return ids.map((id) => {
-      console.log(id)
       const pending = id[0] == 0;
       const primary = pending ? true : id[1] == 0;
       const convo_id = pending ? id.substr(1) : id.substr(2);
-      console.log(convo_id)
 
       return {
         name: conversations[id],

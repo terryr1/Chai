@@ -1,93 +1,184 @@
 import React from "react";
-import { SafeAreaView, TextInput, Button, StatusBar, Linking, Text } from "react-native";
+import {
+  View,
+  SafeAreaView,
+  TextInput,
+  Button,
+  StatusBar,
+  Linking,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Alert,
+} from "react-native";
 import { ScreenContainer } from "react-native-screens";
 import { ListItem } from "react-native-elements";
 import { homeStyle } from "../index";
 import AuthController from "../Controllers/AuthController";
 
-
-
-function StepThree()
-
-function StepTwo()
-
-function StepOne({}) {
-
-}
-
 class Setup extends React.Component {
   constructor(props) {
     super(props);
-    this.getUrl()
-    this.enteredEmail = ''
+    this.enteredEmail = "";
+    this.state = {
+      email: "",
+      user: null,
+      url: "",
+      currentStep: this.stepOne,
+    };
   }
 
-  componentDidUpdate() {
+  async componentDidUpdate() {
     if (this.state.user) {
-      //get correct uid/ figure out how to store uids
-      console.log("found user " + this.state.user.uid)
+      await AuthController.shared.createUser(this.state.user.uid);
       this.props.navigation.replace("Main", { uid: this.state.user.uid });
     }
   }
 
   componentDidMount() {
-    AuthController.shared.checkForAuthentication(user => this.setState({user: user}))
-    Linking.addEventListener('url', (event) => {AuthController.shared.confirmLink(this.enteredEmail, event.url)})
-    console.log("done mounting")
+    this._unsubscribeFocus = this.props.navigation.addListener("focus", () => {
+      AuthController.shared.checkForAuthentication((user) => this.setState({ user: user }));
+      Linking.addEventListener("url", (event) => {
+        AuthController.shared.confirmLink(this.enteredEmail, event.url);
+      });
+    });
+
+    this._unsubscribeBlur = this.props.navigation.addListener("blur", () => {
+      AuthController.shared.stopCheckForAuthentication();
+    });
   }
 
-  state = {
-    email: "",
-    code: "",
-    user: null,
-    initialUrl: ""
-  };
+  componentWillUnmount() {
+    this._unsubscribeFocus();
+    this._unsubscribeBlur();
+  }
 
   onChangeEmail = (val) => {
     this.setState({ email: val });
   };
 
-  onChangeCode = (val) => {
-    this.setState({ code: val });
+  onChangeUrl = (val) => {
+    this.setState({ url: val });
   };
 
   sendVerification = async () => {
-    this.enteredEmail = this.state.email
-    const isVerified = await AuthController.shared.sendVerification(this.state.email);
+    this.enteredEmail = this.state.email;
+    AuthController.shared.sendVerification(this.enteredEmail).then(() => this.setState({ currentStep: this.stepTwo })).catch(err => Alert.alert(err.message));
+    console.log(this.enteredEmail)
   };
 
-  confirmCode = async () => {
-    const result = await AuthController.shared.confirmCode(this.state.code);
-    if (result) {
-      //get correct uid/ figure out how to store uids
-      this.props.navigation.replace("Main", { uid: this.state.user.uid });
-    } else {
-      console.log("FAILED");
-    }
+  stepThree = () => {
+    return (
+      <>
+        <Text style={style.mainText}>Copy the link sent to your email and enter it here:</Text>
+        <View style={style.inputView}>
+          <TextInput style={{...style.inputText}} onChangeText={this.onChangeUrl} value={this.state.url} placeholder="Link"/>
+        </View>
+        <TouchableOpacity
+          style={{ ...style.button }}
+          onPress={() => AuthController.shared.confirmLink(this.enteredEmail, this.state.url)}
+        >
+          <Text style={style.buttonText}>VERIFY</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{ ...style.button, backgroundColor: "#454545" }}
+          onPress={() => this.setState({ currentStep: this.stepTwo })}
+        >
+          <Text style={style.buttonText}>GO BACK</Text>
+        </TouchableOpacity>
+      </>
+    );
   };
 
-  getUrl = async () => {
-    const url = await Linking.getInitialURL()
-    this.setState({initialUrl: url})
-  }
+  stepTwo = () => {
+    return (
+      <>
+        <Text style={style.mainText}>Click the link we sent to your email to continue</Text>
+        <TouchableOpacity
+          style={{ ...style.button }}
+          onPress={() => this.setState({ currentStep: this.stepThree })}
+        >
+          <Text style={style.buttonText}>ENTER LINK MANUALLY</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{ ...style.button, backgroundColor: "#454545"}}
+          onPress={() => this.setState({ currentStep: this.stepOne })}
+        >
+          <Text style={style.buttonText}>GO BACK</Text>
+        </TouchableOpacity>
+      </>
+    );
+  };
+
+  stepOne = () => {
+    return (
+      <>
+        <Text style={style.mainText}>Enter your email to login or sign up:</Text>
+        <View style={style.inputView}>
+          <TextInput
+            keyboardType="email-address"
+            style={style.inputText}
+            onChangeText={this.onChangeEmail}
+            value={this.state.email}
+            placeholder="Email"
+          />
+        </View>
+        <TouchableOpacity style={style.button} onPress={this.sendVerification}>
+          <Text style={style.buttonText}>CONTINUE</Text>
+        </TouchableOpacity>
+      </>
+    );
+  };
 
   //make this two pages -> first enter email -> page that says click the verification link
   render() {
     return (
-      <SafeAreaView>
+      <SafeAreaView style={style.container}>
         <StatusBar backgroundColor="black" barStyle="light-content" />
-        {AuthController.shared.getCaptcha()}
-        <TextInput
-          keyboardType='email-address'
-          style={{ color: "white" }}
-          onChangeText={this.onChangeEmail}
-          value={this.state.email}
-        />
-        <Button onPress={this.sendVerification} title="send text" />
-        <Text style={{color: 'white'}}>{this.state.initialUrl}</Text>
+        {this.state.currentStep()}
       </SafeAreaView>
     );
   }
 }
 
 export default Setup;
+
+const style = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "black",
+  },
+  mainText: {
+    padding: 40,
+    color: "white",
+    fontSize: 30,
+  },
+  inputView: {
+    margin: 40,
+    paddingHorizontal: 20,
+    width: "80%",
+    backgroundColor: "white",
+    borderRadius: 25,
+    height: 50,
+    justifyContent: "center",
+  },
+  inputText: {
+    height: 50,
+  },
+  buttonText: {
+    color: "white",
+    lineHeight: 50
+  },
+  button: {
+    margin: 40,
+    width: "80%",
+    backgroundColor: "#4285F4",
+    borderRadius: 25,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});

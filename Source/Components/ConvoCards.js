@@ -100,16 +100,23 @@ class ConvoCards extends React.Component {
   }
 
   async componentDidMount() {
-    this._isMounted = true;
-    this.getConvos.call(this);
-    ConvoCardsController.listen(this.props.route.params.user.id, (numDocs) => {
-      if (this._isMounted) this.setState({ numDocs: this.state.numDocs + numDocs });
+    this._unsubscribeFocus = this.props.navigation.addListener('focus', () => {
+      this._isMounted = true;
+      this.getConvos.call(this);
+      ConvoCardsController.listen(this.props.route.params.user.id, (numDocs) => {
+        if (this._isMounted) this.setState({ numDocs: this.state.numDocs + numDocs });
+      });
+    })
+
+    this._unsubscribeBlur = this.props.navigation.addListener('blur', () => {
+      this._isMounted = false;
+      ConvoCardsController.stopListen();
     });
   }
 
   componentWillUnmount() {
-    this._isMounted = false;
-    ConvoCardsController.stopListen();
+    this._unsubscribeFocus();
+    this._unsubscribeBlur();
   }
 
   async getConvos() {
@@ -122,7 +129,7 @@ class ConvoCards extends React.Component {
   renderCards = () => {
     const style = {
       backgroundColor: "gray",
-      height: Constants.SCREEN_HEIGHT - 120,
+      height:"100%",
       width: Constants.SCREEN_WIDTH - 40,
       marginLeft: 20,
       position: "absolute",
@@ -160,9 +167,9 @@ class ConvoCards extends React.Component {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: "black" }}>
         <StatusBar backgroundColor="black" barStyle="light-content" />
-        <View style={{ height: 40 }}></View>
-        <View style={{ flex: 1 }}>{this.renderCards()}</View>
-        <View style={{ height: 40 }}></View>
+        <View style={{ height: "5%" }}></View>
+        <View style={{ flex: 1, justifyContent: "center", alignContent: "center" }}>{this.renderCards()}</View>
+        <View style={{ height: "5%" }}></View>
       </SafeAreaView>
     );
   }

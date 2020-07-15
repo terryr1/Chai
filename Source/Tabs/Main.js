@@ -4,8 +4,7 @@ import Messages from "./Messages";
 import Explore from "./Explore";
 import { NavigationContainer, DefaultTheme, StackActions } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { View, StatusBar } from "react-native";
-import { decode, encode } from "base-64";
+import AuthController from '../Controllers/AuthController'
 
 //think of a way to pass in the user from App.js to the three tabs
 //do something like run the start screen and create the user, then get the user from the db?
@@ -32,6 +31,7 @@ class Main extends React.Component {
           style: {
             backgroundColor: "black",
           },
+          keyboardHidesTabBar: true
         }}
       >
         <Tabs.Screen

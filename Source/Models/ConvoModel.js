@@ -53,7 +53,6 @@ class ConvoModel {
   };
 
   on = (callback, convo_id) => {
-    console.log('convo_id' + convo_id);
     this.ref
       .doc(convo_id)
       .collection("messages")

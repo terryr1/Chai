@@ -3,7 +3,6 @@ import PendingConvoModel from "../Models/PendingConvoModel";
 import UserModel from "../Models/UserModel";
 
 async function start(callback, id, switchState) {
-  console.log(id)
   PendingConvoModel.shared.on(callback, id, switchState);
 }
 
@@ -26,7 +25,6 @@ async function switchPendingStateToThis(uid, id) {
   const convo_id = "10" + id;
 
   const convo = await ConvoModel.shared.get(id);
-  console.log(convo)
   UserModel.shared.removeConvo(uid, convo_id);
   ConvoModel.shared.delete(id);
   PendingConvoModel.shared.createFromOld(convo, id);

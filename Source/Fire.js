@@ -3,7 +3,6 @@ import "firebase/firestore";
 
 class Fire {
   constructor() {
-    console.log("initializing");
     this.init();
   }
 

@@ -12,17 +12,26 @@ class MessageList extends React.Component {
   }
 
   componentDidMount() {
-    this._isMounted = true;
-    MessageListController.start((data) => {
-      if (this._isMounted) {
-        this.setState({ data });
-      }
-    }, "" + this.props.route.params.user.id);
+
+    this._unsubscribeFocus = this.props.navigation.addListener('focus', () => {
+      this._isMounted = true;
+      MessageListController.start((data) => {
+        if (this._isMounted) {
+          this.setState({ data });
+        }
+      }, "" + this.props.route.params.user.id);
+    })
+    
+
+    this._unsubscribeBlur = this.props.navigation.addListener('blur', () => {
+      this._isMounted = false;
+      MessageListController.stop(this.props.route.params.user.id);
+    });
   }
 
   componentWillUnmount() {
-    this._isMounted = false;
-    MessageListController.stop(this.props.route.params.user.id);
+    this._unsubscribeFocus();
+    this._unsubscribeBlur();
   }
 
   state = {
@@ -43,9 +52,21 @@ class MessageList extends React.Component {
   renderItem = ({ item }) => (
     <ListItem
       title={item.name}
-      leftAvatar={{ source: { uri: null } }}
+      titleStyle={{ color: 'white', fontWeight: 'bold' }}
+      leftIcon={{ name:"face", type:"material", color: "white", size: 40}}
       onPress={() => this.onPress(item)}
-      bottomDivider
+      backgroundColor="black"
+      containerStyle = {{ marginLeft: 5,
+        marginRight: 5, 
+        marginTop: 5, 
+        borderWidth: 0,
+        backgroundColor: '#fff' }}
+      linearGradientProps={{
+        colors: ['black', 'black'],
+        start: [1, 0],
+        end: [0.2, 0],
+      }}
+      style={{borderBottomWidth: 0}}
       chevron
     />
   );

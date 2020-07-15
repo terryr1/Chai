@@ -6,7 +6,6 @@ import ConvoController from "./../Controllers/ConvoController";
 import PendingConvoController from "./../Controllers/PendingConvoController";
 import GestureRecognizer from "react-native-swipe-gestures";
 
-//IMPORTANT: ON Blur change the stuff on mount/dismount to onblur/focus
 //TODO: notifications
 class Convo extends React.Component {
   constructor(props) {
@@ -25,24 +24,33 @@ class Convo extends React.Component {
   }
 
   componentDidMount() {
-    this.setState({ pending: this.props.route.params.pending }, () => {
-      this._isMounted = true;
-      this.startController();
+    this._unsubscribeFocus = this.props.navigation.addListener('focus', () => {
+      this.setState({ pending: this.props.route.params.pending }, () => {
+        this._isMounted = true;
+        this.startController();
+      });
+    })
+
+    this._unsubscribeBlur = this.props.navigation.addListener('blur', () => {
+      console.log('BLURRING')
+      this._isMounted = false;
+      this.stopController();
     });
   }
 
-  componentWillUnmount() {
-    this._isMounted = false;
+  stopController() {
     this.controller.stop("" + this.props.route.params.id);
   }
 
+  componentWillUnmount() {
+    this._unsubscribeFocus();
+    this._unsubscribeBlur();
+  }
+
   startController() {
-    console.log(this.state.messages);
     let params = {
       update: (messages) => {
         if (this._isMounted) {
-          console.log('received')
-          console.log(messages)
           const new_messages = unionWith(this.state.messages, messages, (a, b) => a._id == b._id);
           const sorted_msgs = new_messages.sort((a, b) => {
             return b._id - a._id;

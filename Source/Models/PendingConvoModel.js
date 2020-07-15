@@ -57,7 +57,6 @@ class PendingConvoModel {
       if (snapshot.exists) {
         callback(this.parse(snapshot.data().messages, snapshot.data().uid));
       } else {
-        console.log("clled switch state")
         switchState();
       }
     });
@@ -135,9 +134,6 @@ class PendingConvoModel {
 
   //use push so that it returns the id
   async createFromOld({ og_id, question, pending_messages }, id) {
-    console.log("create from old");
-    console.log(og_id);
-    console.log(id);
     return this.ref
       .doc(id)
       .set({ question, messages: pending_messages, timestamp: firebase.firestore.Timestamp.now(), uid: og_id });

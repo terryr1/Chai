@@ -1,11 +1,3 @@
-<View> like <div>
-<Text> like <p>
-<Image> like <img>
-<ScrollView> like <div> but scrolls
-<TextInput> like <input type ="text">
-
-in order to login, enter your phone number which then sends you a text. no actual account
-
 start a twitter chaitheapp
 
 firebase database messaging - store messages 
@@ -30,16 +22,27 @@ notes:
     this document is deleted when the asker is done talking to the answerer
     user id and phone number?
 
-NEXT STEP: notifications -> authentication
+NEXT STEP: notifications -> authentication rules -> encryption | asthetics, add in alert messages to errors
+
+in notifications: store user id and token id
+
+https://github.com/zo0r/react-native-push-notification
+
+use lottie for the chai animation
+limit titles/questions to 200 characters
+check for authentication in app.js - no need to open the setup screen for no reason
 
 cloud function for notifications - convo on create, convo on message update, convo on pending create - notify a random user
 
 REMOVE alot of the listeners, just make requests and if they come back null, pop up - only have listeners for cards and messages
 
 ONLY HAve read write access to convos in you convo list and pending convos
-authenticate with phone number - only 2 users allowed to be authenticated for normal convo - these users can never be changed
+only 2 users allowed to be authenticated for normal convo - these users can never be changed
 can see what phone number wrote what? - no because we'll use the id from firestore authentication - so all ids are anonymous
 can see which conversations were written by the same person - fine then we can encrypt all the text stored in the database
+
+https://www.npmjs.com/package/hybrid-crypto-js#documentation
+
 only create/delete access for conversations
 only update access for rating 
 only authenticated users can change ratings/convo lists
@@ -52,7 +55,6 @@ only the users themselves can delete conversations, if they dont have access/the
 
 SO other users can add convos to other users, and -for now- write to the rating of other users
 
-perma ban anyone who tries to change rating/convo lists
 
 only write to 
 
@@ -60,7 +62,6 @@ og_user gives new_user permission to read/write - they own the document
 
 
     **MAKE EVERYTHING FASTER WITH ASYNC CALSS
-    in normal convos messages in the pending convo are marked as special so that if the user decides to send it back to pending then it keeps those messages
     Pending Convos have a field which represents the user it's notified
 
     MAKE ALL FIREBASE CALLS ASYNCHRONOUS

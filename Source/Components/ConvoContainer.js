@@ -5,43 +5,53 @@ import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerI
 import { useFocusEffect } from "@react-navigation/native";
 import { isArguments } from "lodash";
 import PendingConvoController from "../Controllers/PendingConvoController";
-import { View } from "react-native";
+import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
 
 const Drawer = createDrawerNavigator();
 
 function DrawerContent(props) {
-  console.log("drawer" + props.primary);
   return (
-    <View style={{ flex: 1 }}>
-      <DrawerContentScrollView {...props}>
-        <DrawerItem
-          label="Resolve"
-          onPress={() => {
-            props.resolve();
-          }}
-        />
-        {props.primary ? (
-          <DrawerItem
-            label="New Opinion"
-            onPress={() => {
-              props.getNewOpinion();
-            }}
-          />
-        ) : null}
-      </DrawerContentScrollView>
+    <View style={style.container}>
+        <TouchableOpacity style={style.button} onPress={() => props.resolve()}>
+          <Text style={style.buttonText}>RESOLVE</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={style.button} onPress={() => props.getNewOpinion()}>
+          <Text style={style.buttonText}>GET NEW OPINION</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={style.button} onPress={() => props.getNewOpinion()}>
+          <Text style={style.buttonText}>REPORT</Text>
+        </TouchableOpacity>
     </View>
   );
 }
+
+const style = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "black",
+  },
+  buttonText: {
+    color: "white",
+    lineHeight: 50
+  },
+  button: {
+    margin: 40,
+    width: "80%",
+    backgroundColor: "#4285F4",
+    borderRadius: 25,
+    height: 50,
+    alignItems: "center"
+  },
+});
+
 
 //pretty easy, just
 class ConvoContainer extends React.Component {
   state = {
     pending: this.props.route.params.pending,
-    controller: {
-      deleteConvo: () => {
-        console.log("AHHHH");
-      },
-    },
+    controller: null
   };
 
   updateContainer = (pending, controller) => {
@@ -64,7 +74,6 @@ class ConvoContainer extends React.Component {
 
   //needs to only remove the convo from the user if not primary
   resolve = () => {
-    console.log("resolving");
     this.state.controller.deleteConvo(
       this.props.route.params.user.id,
       this.props.route.params.id,
