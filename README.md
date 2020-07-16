@@ -1,2 +1,2 @@
 # Chai
-Improve your mental health through conversations
+Improve your mental health through conversation
