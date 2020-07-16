@@ -17,7 +17,15 @@ function ResetScreenOnBlur({ navigation }) {
 }
 
 class Explore extends React.Component {
+
   render() {
+
+    // if(this.props.route.state && this.props.route.state.index > 0) {
+    //   this.props.navigation.setOptions({tabBarVisible: false})
+    // } else {
+    //   this.props.navigation.setOptions({tabBarVisible: true})
+    // }
+
     return (
       <>
         <ResetScreenOnBlur navigation={this.props.navigation} />
@@ -25,6 +33,7 @@ class Explore extends React.Component {
           initialRouteName="ConvoCards"
           screenOptions={{
             headerShown: false,
+            animationEnabled: false
           }}
         >
           <Stack.Screen name="ConvoContainer" component={ConvoContainer} />

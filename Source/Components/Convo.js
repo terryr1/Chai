@@ -1,6 +1,6 @@
 import React from "react";
 import { View } from "react-native";
-import { GiftedChat } from "react-native-gifted-chat";
+import { GiftedChat, Bubble } from "react-native-gifted-chat";
 import { unionWith } from "lodash";
 import ConvoController from "./../Controllers/ConvoController";
 import PendingConvoController from "./../Controllers/PendingConvoController";
@@ -19,7 +19,7 @@ class Convo extends React.Component {
       } else {
         this.controller = ConvoController;
       }
-      this.props.route.params.updateContainer(this.state.pending, this.controller);
+      //this.props.route.params.updateContainer(this.state.pending, this.controller);
     }
   }
 
@@ -91,9 +91,23 @@ class Convo extends React.Component {
     pending: false,
   };
 
+  renderBubble (props) {
+    return (
+      <Bubble
+        {...props}
+        wrapperStyle={{
+          right: {
+            backgroundColor: "#6a8fcc"
+          }
+        }}
+      />
+    )
+  }
+
   render() {
     return (
       <GiftedChat
+        renderBubble={this.renderBubble}
         messages={this.state.messages}
         onSend={this.send.bind(this)}
         user={{ _id: this.props.route.params.user.id, name: "Anonymous" }}

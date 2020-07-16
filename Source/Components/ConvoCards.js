@@ -128,13 +128,16 @@ class ConvoCards extends React.Component {
 
   renderCards = () => {
     const style = {
-      backgroundColor: "gray",
+      backgroundColor: "white",
       height:"100%",
       width: Constants.SCREEN_WIDTH - 40,
       marginLeft: 20,
       position: "absolute",
       borderRadius: 20,
       alignItems: "center",
+      justifyContent: "center",
+      borderWidth: 3,
+      borderColor: "white"
     };
 
     const first_card =
@@ -144,7 +147,7 @@ class ConvoCards extends React.Component {
           {...this.PanResponder.panHandlers}
           style={{ transform: this.rotateAndTranslate, ...style }}
         >
-          <Text style={{ ...homeStyle.mainText, color: "black", padding: 20 }}>{this.state.data[0].question}</Text>
+          <Text style={{ fontSize: 25, fontWeight: "bold", color: "black", paddingHorizontal: 40 }}>{this.state.data[0].question}</Text>
         </Animated.View>
       ) : null;
 
@@ -154,7 +157,7 @@ class ConvoCards extends React.Component {
           key={1}
           style={{ ...style, opacity: this.nextCardOpacity, transform: [{ scale: this.nextCardScale }] }}
         >
-          <Text style={{ ...homeStyle.mainText, color: "black", padding: 20 }}>{this.state.data[1].question}</Text>
+          <Text style={{ fontSize: 25, fontWeight: "bold",color: "black", paddingHorizontal: 40 }}>{this.state.data[1].question}</Text>
         </Animated.View>
       ) : null;
 

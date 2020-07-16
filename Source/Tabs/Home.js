@@ -21,6 +21,13 @@ function ResetScreenOnBlur({ navigation }) {
 
 class Home extends React.Component {
   render() {
+
+    if(this.props.route.state && this.props.route.state.index > 0) {
+      this.props.navigation.setOptions({tabBarVisible: false})
+    } else {
+      this.props.navigation.setOptions({tabBarVisible: true})
+    }
+
     return (
       <>
         <ResetScreenOnBlur navigation={this.props.navigation} />
