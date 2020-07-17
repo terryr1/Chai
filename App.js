@@ -5,6 +5,8 @@ import { NavigationContainer, DefaultTheme, StackActions } from "@react-navigati
 import { createStackNavigator } from "@react-navigation/stack";
 import { View } from "react-native";
 import { decode, encode } from "base-64";
+import AuthController from './Source/Controllers/AuthController'
+import AuthModel from "./Source/Models/AuthModel";
 
 //fixed a random error------
 if (!global.btoa) {
@@ -46,16 +48,35 @@ class App extends React.Component {
     }
   }
 
+  state = {
+    user: false
+  }
+
+  async componentDidMount() {
+    AuthController.shared.checkForAuthentication((user) => {
+      if(user) {
+        this.setState({user})
+      } else {
+        this.setState({user: "noUser"})
+      }
+    })
+  }
+
   render() {
+    if(!this.state.user) {
+      //make this a loading screen
+      return <></>
+    }
+
     return (
       <NavigationContainer linking = {this.linking} theme={this.MyTheme}>
         <Stack.Navigator
-          initialRouteName="Setup"
+          initialRouteName= {this.state.user == "noUser" ? "Setup" : "Main"}
           screenOptions={{
             headerShown: false,
           }}
         >
-          <Stack.Screen name="Main" component={Main} />
+          <Stack.Screen name="Main" component={Main} initialParams={{ uid: this.state.user == "noUser" ? null : this.state.user.uid}}/>
           <Stack.Screen name="Setup" component={Setup} />
         </Stack.Navigator>
       </NavigationContainer>

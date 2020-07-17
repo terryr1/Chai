@@ -43,6 +43,7 @@ class PendingConvoModel {
   };
 
   append = (message, id) => {
+    console.log("sending pending convo message")
     this.ref
       .doc(id)
       .update({
@@ -53,7 +54,9 @@ class PendingConvoModel {
   };
 
   on = (callback, id, switchState) => {
+    console.log("adding listener for pendinf convo messages")
     this.ref.doc(id).onSnapshot((snapshot) => {
+      console.log("callback for pending convo message listener called")
       if (snapshot.exists) {
         callback(this.parse(snapshot.data().messages, snapshot.data().uid));
       } else {
@@ -63,12 +66,15 @@ class PendingConvoModel {
   };
 
   async off(id) {
+    console.log("stop pending convo message listner")
     this.ref.doc(id).onSnapshot(() => {});
   }
 
   listenToNumConvos = (uid, update) => {
+    console.log("start listen to num convo listener")
     this.ref.onSnapshot((querySnapshot) => {
       let numDocs = 0;
+      console.log("listen to num convo listener callback called")
       querySnapshot.docChanges().forEach((change) => {
         if (change.type === "added" && change.doc.data().uid != uid) {
           numDocs += 1;
@@ -81,17 +87,19 @@ class PendingConvoModel {
   };
 
   stopListenToNumConvos = () => {
+    console.log("stop listen to pending convo num listener")
     this.ref.onSnapshot(() => {});
   };
 
   async getConvos(uid, prevDoc) {
+    console.log("getting pending convos (first 20)")
     const convos = [];
     let documentSnapshots;
 
     if (prevDoc) {
-      documentSnapshots = await this.ref.startAfter(prevDoc).limit(20).get();
+      documentSnapshots = await this.ref.startAfter(prevDoc).limit(100).get();
     } else {
-      documentSnapshots = await this.ref.limit(20).get();
+      documentSnapshots = await this.ref.limit(100).get();
     }
 
     prevDoc = null;
@@ -113,17 +121,20 @@ class PendingConvoModel {
   }
 
   async get(convo_id) {
+    console.log("getting specific pending convo")
     const doc = await this.ref.doc(convo_id).get();
     return doc.data();
   }
 
   //THIS COULD BE AN EXPENSIVE PROCESS!
   async delete(convo_id) {
+    console.log('deleting pending convo')
     this.ref.doc(convo_id).delete();
   }
 
   //use push so that it returns the id
   async create(question, uid) {
+    console.log("create pending convo")
     const message = {
       text: question,
       timestamp: firebase.firestore.Timestamp.now(),
@@ -134,6 +145,7 @@ class PendingConvoModel {
 
   //use push so that it returns the id
   async createFromOld({ og_id, question, pending_messages }, id) {
+    console.log("create pending convo that was a normal convo")
     return this.ref
       .doc(id)
       .set({ question, messages: pending_messages, timestamp: firebase.firestore.Timestamp.now(), uid: og_id });

@@ -20,6 +20,10 @@ class AuthController {
     sendVerification = async (email) => {
         return AuthModel.shared.sendVerification(email)
     }
+
+    getUser = async () => {
+        return AuthModel.shared.getUser();
+    }
     
     confirmLink = async (email, link) => {
         if(AuthModel.shared.checkIfValidLink(link)) {

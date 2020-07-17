@@ -44,6 +44,7 @@ class ConvoModel {
   };
 
   append = (message, convo_id) => {
+    console.log("send message call")
     this.ref
       .doc(convo_id)
       .collection("messages")
@@ -53,16 +54,19 @@ class ConvoModel {
   };
 
   on = (callback, convo_id) => {
+    console.log("turn on convo message listener")
     this.ref
       .doc(convo_id)
       .collection("messages")
       .onSnapshot((querySnapshot) => {
+        console.log("getting normal convo messages callback")
         //if collection deleted popup saying this convo has been resolved/ended
         callback(this.parse(querySnapshot.docChanges()));
       });
   };
 
   off(convo_id) {
+    console.log("turn off convo message listener")
     this.ref
       .doc(convo_id)
       .collection("messages")
@@ -70,15 +74,18 @@ class ConvoModel {
   }
 
   async get(convo_id) {
+    console.log("getting convo")
     const doc = await this.ref.doc(convo_id).get();
     return doc.data();
   }
 
   async delete(convo_id) {
+    console.log("deleting convo")
     this.ref.doc(convo_id).delete();
   }
 
   async create(new_uid, id, { question, messages, uid }) {
+    console.log("creating convo")
     this.ref.doc(id).set({ question, pending_messages: messages, new_uid, og_id: uid });
     messages.forEach((message) => {
       this.ref

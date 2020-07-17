@@ -32,7 +32,6 @@ class Convo extends React.Component {
     })
 
     this._unsubscribeBlur = this.props.navigation.addListener('blur', () => {
-      console.log('BLURRING')
       this._isMounted = false;
       this.stopController();
     });

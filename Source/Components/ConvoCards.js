@@ -8,7 +8,6 @@ import Constants from "./../Constants";
 import { unionWith } from "lodash";
 
 class ConvoCards extends React.Component {
-
   constructor(props) {
     super(props);
 
@@ -28,6 +27,7 @@ class ConvoCards extends React.Component {
     this.state = {
       currentIndex: 0,
       data: [],
+      removedData: [],
       numDocs: 0,
     };
 
@@ -43,9 +43,11 @@ class ConvoCards extends React.Component {
     });
 
     this.PanResponder = PanResponder.create({
-      onStartShouldSetPanResponder: (evt, gestureState) => true,
-      onPanResponderMove: (evt, gestureState) => {
-        this.position.setValue({ x: gestureState.dx, y: gestureState.dy });
+      onStartShouldSetPanResponder: () => true,
+      onPanResponderMove: (e, gs) => {
+        Animated.event([null, { dx: this.position.x, dy: this.position.y }], {
+          useNativeDriver: false,
+        })(e, gs);
       },
       onPanResponderRelease: (evt, gestureState) => {
         if (gestureState.dx < -60) {
@@ -56,7 +58,7 @@ class ConvoCards extends React.Component {
             useNativeDriver: true,
           }).start(() => {
             const new_data = this.state.data;
-            new_data.shift();
+            this.state.removedData.push(new_data.shift());
             this.setState({ data: new_data }, () => {
               this.position.setValue({ x: 0, y: 0 });
             });
@@ -70,10 +72,11 @@ class ConvoCards extends React.Component {
           }).start(() => {
             const new_data = this.state.data;
             const go_to = new_data.shift();
+            this.state.removedData.push(go_to);
             this.setState({ data: new_data }, () => {
               this.position.setValue({ x: 0, y: 0 });
             });
-            this.props.navigation.navigate("ConvoContainer", {
+            this.props.navigation.navigate("Convo", {
               id: go_to.id,
               pending: true,
               user: { ...this.props.route.params.user, primary: false },
@@ -91,26 +94,31 @@ class ConvoCards extends React.Component {
   }
 
   async componentDidUpdate() {
-    if (
-      (this.state.data.length <= 3 && this.state.numDocs > 3) ||
-      (this.state.data.length == 0 && this.state.numDocs > 0)
+    if (this.state.data.length == 0 && this.state.numDocs < 100 && this.state.removedData.length > 0) {
+      this.setState({ data: this.state.removedData }, this.setState({ removedData: [] }));
+    } else if (
+      (this.state.data.length == 0 && this.state.numDocs > 0 && !this.startedConvoGet)
     ) {
+      this.startedConvoGet = true;
       this.getConvos.call(this);
     }
   }
 
   async componentDidMount() {
-    this._unsubscribeFocus = this.props.navigation.addListener('focus', () => {
+    console.log("getting convos")
+    this.getConvos.call(this);
+    this._unsubscribeFocus = this.props.navigation.addListener("focus", () => {
       this._isMounted = true;
-      this.getConvos.call(this);
       ConvoCardsController.listen(this.props.route.params.user.id, (numDocs) => {
         if (this._isMounted) this.setState({ numDocs: this.state.numDocs + numDocs });
       });
-    })
+    });
 
-    this._unsubscribeBlur = this.props.navigation.addListener('blur', () => {
-      this._isMounted = false;
-      ConvoCardsController.stopListen();
+    this._unsubscribeBlur = this.props.navigation.addListener("blur", () => {
+      this.setState({ currentIndex: 0, numDocs: 0 }, () => {
+        ConvoCardsController.stopListen();
+        this._isMounted = false;
+      });
     });
   }
 
@@ -123,13 +131,15 @@ class ConvoCards extends React.Component {
     const request = await ConvoCardsController.getPendingConvos(this.props.route.params.user.id, this.prevDoc);
     this.prevDoc = request.prevDoc;
     const unioned_data = unionWith(this.state.data, request.convos, (a, b) => a.id == b.id);
-    this.setState({ data: unioned_data });
+    this.setState({ data: unioned_data }, () => {
+      this.startedConvoGet = false;
+    });
   }
 
   renderCards = () => {
     const style = {
       backgroundColor: "white",
-      height:"100%",
+      height: "100%",
       width: Constants.SCREEN_WIDTH - 40,
       marginLeft: 20,
       position: "absolute",
@@ -137,7 +147,7 @@ class ConvoCards extends React.Component {
       alignItems: "center",
       justifyContent: "center",
       borderWidth: 3,
-      borderColor: "white"
+      borderColor: "white",
     };
 
     const first_card =
@@ -147,7 +157,9 @@ class ConvoCards extends React.Component {
           {...this.PanResponder.panHandlers}
           style={{ transform: this.rotateAndTranslate, ...style }}
         >
-          <Text style={{ fontSize: 25, fontWeight: "bold", color: "black", paddingHorizontal: 40 }}>{this.state.data[0].question}</Text>
+          <Text style={{ fontSize: 25, fontWeight: "bold", color: "black", paddingHorizontal: 40 }}>
+            {this.state.data[0].question}
+          </Text>
         </Animated.View>
       ) : null;
 
@@ -157,7 +169,9 @@ class ConvoCards extends React.Component {
           key={1}
           style={{ ...style, opacity: this.nextCardOpacity, transform: [{ scale: this.nextCardScale }] }}
         >
-          <Text style={{ fontSize: 25, fontWeight: "bold",color: "black", paddingHorizontal: 40 }}>{this.state.data[1].question}</Text>
+          <Text style={{ fontSize: 25, fontWeight: "bold", color: "black", paddingHorizontal: 40 }}>
+            {this.state.data[1].question}
+          </Text>
         </Animated.View>
       ) : null;
 

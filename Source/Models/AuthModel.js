@@ -6,14 +6,17 @@ import { Alert } from 'react-native';
 class AuthModel {
 
   checkForAuthentication = (callback) => {
-    firebase.auth().onAuthStateChanged(callback)
+    console.log("start check for authentication")
+    firebase.auth().onAuthStateChanged((user) => { console.log("check for authentication listener called");callback(user)})
   }
 
   stopCheckForAuthentication = () => {
+    console.log("stop check for authentiocation")
     firebase.auth().onAuthStateChanged(()=>{})
   }
 
   sendVerification = async (email) => {
+    console.log("sending verification")
     const actionCodeSettings = {
       url: 'https://chaiapp.page.link/verify',
       handleCodeInApp: true,
@@ -29,10 +32,17 @@ class AuthModel {
   };
 
   checkIfValidLink = (link) => {
+    console.log("check if valid link called")
     return firebase.auth().isSignInWithEmailLink(link)
   }
 
+  getUser = async () => {
+    console.log("get user called")
+    return firebase.auth().currentUser
+  }
+
   signIn = async (email, link) => {
+    console.log("signing in with email link")
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
     firebase.auth().signInWithEmailLink(email, link)
   };

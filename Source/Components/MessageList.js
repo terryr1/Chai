@@ -50,10 +50,11 @@ class MessageList extends React.Component {
   };
 
   renderItem = ({ item }) => (
+    //add in support agent
     <ListItem
       title={item.name}
       titleStyle={{ color: 'white', fontWeight: 'bold' }}
-      leftIcon={{ name:"face", type:"material", color: "white", size: 40}}
+      leftIcon={{ name: "face", type:"material", color: "white", size: 40}}
       onPress={() => this.onPress(item)}
       backgroundColor="black"
       containerStyle = {{ marginLeft: 5,

@@ -10,6 +10,7 @@ class UserModel {
   }
 
   async addConvo(question, uid, pending_id) {
+    console.log("add convo to user")
     //shouldnt add should be a ref to the pending convo
     //use set to update the array completeley (so get the array change the value from pending to not, and then set that)
     //if the convo id starts with a 1 its pending, if it starts with a 2 its not pending
@@ -26,6 +27,7 @@ class UserModel {
   }
 
   async removeConvo(uid, pending_id) {
+    console.log("remove convo from user")
     //shouldnt add should be a ref to the pending convo
     this.user_ref
       .doc(uid)
@@ -40,6 +42,7 @@ class UserModel {
   }
 
   createUser = async (uid) => {
+    console.log("create new user called")
     const docSnapshot = await this.user_ref.doc(uid).get()
     if (!docSnapshot.exists) {
       this.user_ref
@@ -71,13 +74,16 @@ class UserModel {
   };
 
   on = (callback, uid) => {
+    console.log("start user convo listener called")
     this.user_ref.doc(uid).onSnapshot((snapshot) => {
+      console.log("user convo listener callback called")
       const data = this.parse(snapshot.data().conversations);
       callback(data);
     });
   };
 
   off(uid) {
+    console.log("stop user convo listener")
     this.user_ref.doc(uid).onSnapshot(() => {});
   }
 }

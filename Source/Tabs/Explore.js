@@ -3,6 +3,7 @@ import ConvoCards from "./../Components/ConvoCards";
 import ConvoContainer from "./../Components/ConvoContainer";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useFocusEffect } from "@react-navigation/native";
+import Convo from './../Components/Convo'
 
 const Stack = createStackNavigator();
 
@@ -37,6 +38,7 @@ class Explore extends React.Component {
           }}
         >
           <Stack.Screen name="ConvoContainer" component={ConvoContainer} />
+          <Stack.Screen name="Convo" component={Convo} />
           <Stack.Screen
             name="ConvoCards"
             component={ConvoCards}
