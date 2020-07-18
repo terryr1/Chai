@@ -65,7 +65,6 @@ class Setup extends React.Component {
   sendVerification = async () => {
     this.enteredEmail = this.state.email;
     AuthController.shared.sendVerification(this.enteredEmail).then(() => this.setState({ currentStep: this.stepTwo })).catch(err => Alert.alert(err.message));
-    console.log(this.enteredEmail)
   };
 
   stepThree = () => {

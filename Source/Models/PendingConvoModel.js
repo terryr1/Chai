@@ -75,14 +75,16 @@ class PendingConvoModel {
     this.ref.onSnapshot((querySnapshot) => {
       let numDocs = 0;
       console.log("listen to num convo listener callback called")
+      const addedDocs = []
       querySnapshot.docChanges().forEach((change) => {
         if (change.type === "added" && change.doc.data().uid != uid) {
+          addedDocs.push(change.doc.data());
           numDocs += 1;
         } else if (change.type === "removed" && change.doc.data().uid != uid) {
           numDocs -= 1;
         }
       });
-      update(numDocs);
+      update(numDocs, addedDocs);
     });
   };
 

@@ -76,6 +76,7 @@ class ConvoCards extends React.Component {
             this.setState({ data: new_data }, () => {
               this.position.setValue({ x: 0, y: 0 });
             });
+            console.log(go_to.id)
             this.props.navigation.navigate("Convo", {
               id: go_to.id,
               pending: true,
@@ -93,24 +94,26 @@ class ConvoCards extends React.Component {
     });
   }
 
-  async componentDidUpdate() {
+  async componentDidUpdate(prevProps, prevState) {
     if (this.state.data.length == 0 && this.state.numDocs < 100 && this.state.removedData.length > 0) {
       this.setState({ data: this.state.removedData }, this.setState({ removedData: [] }));
-    } else if (
-      (this.state.data.length == 0 && this.state.numDocs > 0 && !this.startedConvoGet)
-    ) {
+    } else if (this.state.data.length == 0 && this.state.numDocs > 0 && !this.startedConvoGet) {
       this.startedConvoGet = true;
       this.getConvos.call(this);
     }
   }
 
   async componentDidMount() {
-    console.log("getting convos")
+    console.log("getting convos");
     this.getConvos.call(this);
     this._unsubscribeFocus = this.props.navigation.addListener("focus", () => {
       this._isMounted = true;
-      ConvoCardsController.listen(this.props.route.params.user.id, (numDocs) => {
-        if (this._isMounted) this.setState({ numDocs: this.state.numDocs + numDocs });
+      ConvoCardsController.listen(this.props.route.params.user.id, (numDocs, addedDocs) => {
+        if (this._isMounted) {
+          this.setState({ numDocs: this.state.numDocs + numDocs });
+          if(this.state.numDocs < 100)
+            addedDocs.forEach((doc) => this.state.data.push(doc));
+        }
       });
     });
 
@@ -146,8 +149,6 @@ class ConvoCards extends React.Component {
       borderRadius: 20,
       alignItems: "center",
       justifyContent: "center",
-      borderWidth: 3,
-      borderColor: "white",
     };
 
     const first_card =
