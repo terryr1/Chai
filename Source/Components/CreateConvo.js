@@ -1,7 +1,5 @@
 import React from "react";
 import { SafeAreaView, TextInput, Text, StatusBar, Button, StyleSheet, View } from "react-native";
-import { ScreenContainer } from "react-native-screens";
-import { homeStyle } from "../index";
 import CreateConvoController from "../Controllers/CreateConvoController";
 
 class CreateConvo extends React.Component {
@@ -28,8 +26,17 @@ class CreateConvo extends React.Component {
       <SafeAreaView style={style.container}>
         <StatusBar backgroundColor="black" barStyle="light-content" />
         <Text style={style.mainText}>So what's on your mind?</Text>
-        <View style={{flexDirection:'row', margin: 40, width: window.width, alignItems:'center', justifyContent:'center', ...style.inputView}}>
-          <View style={{flex: 4}}>
+        <View
+          style={{
+            flexDirection: "row",
+            margin: 40,
+            width: window.width,
+            alignItems: "center",
+            justifyContent: "center",
+            ...style.inputView,
+          }}
+        >
+          <View style={{ flex: 4 }}>
             <TextInput
               style={style.inputText}
               onChangeText={this.onChangeText}
@@ -37,7 +44,7 @@ class CreateConvo extends React.Component {
               placeholder="Something on your mind"
             />
           </View>
-          <View style={{flex: 1}}>
+          <View style={{ flex: 1 }}>
             <Button onPress={this.sendMessage.bind(this)} color="black" col title="send" />
           </View>
         </View>
@@ -72,7 +79,7 @@ const style = StyleSheet.create({
   },
   buttonText: {
     color: "white",
-    lineHeight: 50
+    lineHeight: 50,
   },
   button: {
     margin: 40,
@@ -84,6 +91,5 @@ const style = StyleSheet.create({
     justifyContent: "center",
   },
 });
-
 
 export default CreateConvo;

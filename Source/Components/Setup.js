@@ -3,18 +3,13 @@ import {
   View,
   SafeAreaView,
   TextInput,
-  Button,
   StatusBar,
   Linking,
   Text,
   StyleSheet,
   TouchableOpacity,
-  KeyboardAvoidingView,
   Alert,
 } from "react-native";
-import { ScreenContainer } from "react-native-screens";
-import { ListItem } from "react-native-elements";
-import { homeStyle } from "../index";
 import AuthController from "../Controllers/AuthController";
 
 class Setup extends React.Component {
@@ -64,7 +59,10 @@ class Setup extends React.Component {
 
   sendVerification = async () => {
     this.enteredEmail = this.state.email;
-    AuthController.shared.sendVerification(this.enteredEmail).then(() => this.setState({ currentStep: this.stepTwo })).catch(err => Alert.alert(err.message));
+    AuthController.shared
+      .sendVerification(this.enteredEmail)
+      .then(() => this.setState({ currentStep: this.stepTwo }))
+      .catch((err) => Alert.alert(err.message));
   };
 
   stepThree = () => {
@@ -72,7 +70,12 @@ class Setup extends React.Component {
       <>
         <Text style={style.mainText}>Copy the link sent to your email and enter it here:</Text>
         <View style={style.inputView}>
-          <TextInput style={{...style.inputText}} onChangeText={this.onChangeUrl} value={this.state.url} placeholder="Link"/>
+          <TextInput
+            style={{ ...style.inputText }}
+            onChangeText={this.onChangeUrl}
+            value={this.state.url}
+            placeholder="Link"
+          />
         </View>
         <TouchableOpacity
           style={{ ...style.button }}
@@ -94,14 +97,11 @@ class Setup extends React.Component {
     return (
       <>
         <Text style={style.mainText}>Click the link we sent to your email to continue</Text>
-        <TouchableOpacity
-          style={{ ...style.button }}
-          onPress={() => this.setState({ currentStep: this.stepThree })}
-        >
+        <TouchableOpacity style={{ ...style.button }} onPress={() => this.setState({ currentStep: this.stepThree })}>
           <Text style={style.buttonText}>ENTER LINK MANUALLY</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={{ ...style.button, backgroundColor: "#454545"}}
+          style={{ ...style.button, backgroundColor: "#454545" }}
           onPress={() => this.setState({ currentStep: this.stepOne })}
         >
           <Text style={style.buttonText}>GO BACK</Text>
@@ -169,7 +169,7 @@ const style = StyleSheet.create({
   },
   buttonText: {
     color: "white",
-    lineHeight: 50
+    lineHeight: 50,
   },
   button: {
     margin: 40,

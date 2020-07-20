@@ -8,4 +8,9 @@ function stop(id) {
   UserModel.shared.off(id);
 }
 
-export default { start, stop };
+async function removeConvo(uid, id) {
+  //to delete 11 only remove from user model
+  await UserModel.shared.removeConvo(uid, "1" + id);
+}
+
+export default { start, stop, removeConvo };

@@ -1,27 +1,33 @@
 import React from "react";
-import CreateConvo from "../Components/CreateConvo";
 import Convo from "../Components/Convo";
-import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from "@react-navigation/drawer";
-import { useFocusEffect } from "@react-navigation/native";
-import { isArguments } from "lodash";
-import PendingConvoController from "../Controllers/PendingConvoController";
-import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
-
-const Drawer = createDrawerNavigator();
+import ConvoController from "../Controllers/ConvoController";
+import { Animated, View, StyleSheet, TouchableOpacity, Text, ScrollView } from "react-native";
+import SideMenu from "react-native-side-menu";
+import Constants from "../Constants";
+import MessageListController from "../Controllers/MessageListController";
 
 function DrawerContent(props) {
   return (
-    <View style={style.container}>
-        <TouchableOpacity style={style.button} onPress={() => props.resolve()}>
-          <Text style={style.buttonText}>RESOLVE</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={style.button} onPress={() => props.getNewOpinion()}>
-          <Text style={style.buttonText}>GET NEW OPINION</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={style.button} onPress={() => props.getNewOpinion()}>
+    <ScrollView
+      scrollsToTop={false}
+      style={{ flex: 1, width: window.width, height: window.height, backgroundColor: "#1c1c1c", padding: 20 }}
+    >
+      <View style={style.container}>
+        {props.pending && !props.primary ? null : (
+          <TouchableOpacity style={style.button} onPress={() => props.resolve()}>
+            <Text style={style.buttonText}>RESOLVE</Text>
+          </TouchableOpacity>
+        )}
+        {props.primary ? (
+          <TouchableOpacity style={style.button} onPress={() => props.getNewOpinion()}>
+            <Text style={style.buttonText}>GET NEW OPINION</Text>
+          </TouchableOpacity>
+        ) : null}
+        <TouchableOpacity style={style.button} onPress={() => {}}>
           <Text style={style.buttonText}>REPORT</Text>
         </TouchableOpacity>
-    </View>
+      </View>
+    </ScrollView>
   );
 }
 
@@ -30,37 +36,46 @@ const style = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "black",
+    backgroundColor: "#1c1c1c",
   },
   buttonText: {
     color: "white",
-    lineHeight: 50
+    lineHeight: 50,
   },
   button: {
     margin: 40,
     width: "80%",
-    backgroundColor: "#4285F4",
+    backgroundColor: "#6a8fcc",
     borderRadius: 25,
     height: 50,
-    alignItems: "center"
+    alignItems: "center",
   },
 });
-
 
 //pretty easy, just
 class ConvoContainer extends React.Component {
   state = {
-    pending: this.props.route.params.pending,
-    controller: null
+    pending: "not set",
+    isOpen: false,
   };
 
-  updateContainer = (pending, controller) => {
-    this.setState({ pending, controller });
+  componentDidMount = async () => {
+    if (this.props.route.params.pending == null) {
+      const pending = await ConvoController.isPending(this.props.route.params.id);
+      this.setState({ pending });
+    } else {
+      this.setState({ pending: this.props.route.params.pending });
+    }
+  };
+
+  updateContainer = (pending) => {
+    this.setState({ pending });
   };
 
   getNewOpinion = async () => {
     if (!this.state.pending) {
-      PendingConvoController.switchPendingStateToThis(this.props.route.params.user.id, this.props.route.params.id);
+      console.log("RESETTING");
+      await ConvoController.resetConvo(this.props.route.params.id);
     } else {
       //notify new user
     }
@@ -72,49 +87,60 @@ class ConvoContainer extends React.Component {
     });
   };
 
+  updateMenuState(isOpen) {
+    this.setState({ isOpen });
+  }
+
   //needs to only remove the convo from the user if not primary
-  resolve = () => {
-    this.state.controller.deleteConvo(
-      this.props.route.params.user.id,
-      this.props.route.params.id,
-      this.props.route.params.user.primary
-    );
+  resolve = async () => {
+    this.props.route.params.user.primary
+      ? await ConvoController.deleteConvo(
+          this.props.route.params.user.id,
+          this.props.route.params.id,
+          this.state.pending
+        )
+      : await MessageListController.removeConvo(this.props.route.params.user.id, this.props.route.params.id);
     this.props.navigation.goBack(); //go back twice
   };
 
   // only show new opinion if primary user
   render() {
     //drawerContent={(props) => <CustomDrawerContent {...props} />}
+    const menu = (
+      <DrawerContent
+        primary={this.props.route.params.user.primary}
+        pending={this.state.pending}
+        resolve={this.resolve.bind(this)}
+        getNewOpinion={this.getNewOpinion.bind(this)}
+      />
+    );
+
+    console.log("reNdering CONTAINER");
+
     return (
-      <Drawer.Navigator
-        initialRouteName="Convo"
-        drawerPosition='right'
-        drawerType='slide'
-        edgeWidth={1000}
-        screenOptions={{
-          headerShown: false,
-        }}
-        drawerStyle = {{width: '100%'}}
-        drawerContent={(props) => (
-          <DrawerContent
-            {...props}
-            primary={this.props.route.params.user.primary}
-            resolve={this.resolve.bind(this)}
-            getNewOpinion={this.getNewOpinion.bind(this)}
-          />
-        )}
+      <SideMenu
+        animationFunction={(prop, value) =>
+          Animated.spring(prop, {
+            toValue: value,
+            friction: 8,
+            useNativeDriver: true,
+          })
+        }
+        menu={menu}
+        menuPosition="right"
+        openMenuOffset={Constants.SCREEN_WIDTH - 50}
+        edgeHitWidth={Constants.SCREEN_WIDTH}
+        isOpen={this.state.isOpen}
+        onChange={(isOpen) => this.updateMenuState(isOpen)}
       >
-        <Drawer.Screen
-          name="Convo"
-          component={Convo}
-          initialParams={{
-            ...this.props.route.params,
-            updateContainer: this.updateContainer.bind(this),
-          }}
-        />
-      </Drawer.Navigator>
+        <View style={{ flex: 1, backgroundColor: "black" }}>
+          <Convo
+            {...{ ...this.props, pending: this.state.pending, updateContainer: this.updateContainer.bind(this) }}
+          />
+        </View>
+      </SideMenu>
     );
   }
 }
-
+//<Convo style={{backgroundColor:'black'}} {...{ ...this.props, updateContainer: this.updateContainer.bind(this) }} />
 export default ConvoContainer;

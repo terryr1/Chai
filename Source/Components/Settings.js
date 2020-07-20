@@ -1,1 +1,0 @@
-//option to logout which navigates back to setup

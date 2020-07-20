@@ -1,9 +1,6 @@
 import React from "react";
-import Convo from "./Convo";
 import { Text, View, Animated, PanResponder, SafeAreaView, StatusBar } from "react-native";
-import { ScreenContainer } from "react-native-screens";
-import { homeStyle } from "../index";
-import ConvoCardsController from "../Controllers/ConvoCardsController";
+import ConvoController from "../Controllers/ConvoController";
 import Constants from "./../Constants";
 import { unionWith } from "lodash";
 
@@ -58,6 +55,7 @@ class ConvoCards extends React.Component {
             useNativeDriver: true,
           }).start(() => {
             const new_data = this.state.data;
+            console.log(new_data);
             this.state.removedData.push(new_data.shift());
             this.setState({ data: new_data }, () => {
               this.position.setValue({ x: 0, y: 0 });
@@ -76,8 +74,8 @@ class ConvoCards extends React.Component {
             this.setState({ data: new_data }, () => {
               this.position.setValue({ x: 0, y: 0 });
             });
-            console.log(go_to.id)
-            this.props.navigation.navigate("Convo", {
+            console.log(go_to.id);
+            this.props.navigation.navigate("ConvoContainer", {
               id: go_to.id,
               pending: true,
               user: { ...this.props.route.params.user, primary: false },
@@ -103,25 +101,22 @@ class ConvoCards extends React.Component {
     }
   }
 
+  //make a doc to store the number of convos? maybe not sure if this is smart :(
   async componentDidMount() {
-    console.log("getting convos");
     this.getConvos.call(this);
+    // ConvoCardsControllerConvoCardsController.listen(this.props.route.params.user.id, (numDocs) => {
+    //   if (this._isMounted) {
+    //     this.setState({ numDocs: this.state.numDocs + numDocs });
+    //   }
+    // });
+
     this._unsubscribeFocus = this.props.navigation.addListener("focus", () => {
       this._isMounted = true;
-      ConvoCardsController.listen(this.props.route.params.user.id, (numDocs, addedDocs) => {
-        if (this._isMounted) {
-          this.setState({ numDocs: this.state.numDocs + numDocs });
-          if(this.state.numDocs < 100)
-            addedDocs.forEach((doc) => this.state.data.push(doc));
-        }
-      });
     });
 
     this._unsubscribeBlur = this.props.navigation.addListener("blur", () => {
-      this.setState({ currentIndex: 0, numDocs: 0 }, () => {
-        ConvoCardsController.stopListen();
-        this._isMounted = false;
-      });
+      // ConvoCardsController.stopListen();
+      this._isMounted = false;
     });
   }
 
@@ -131,7 +126,7 @@ class ConvoCards extends React.Component {
   }
 
   async getConvos() {
-    const request = await ConvoCardsController.getPendingConvos(this.props.route.params.user.id, this.prevDoc);
+    const request = await ConvoController.getPendingConvos(this.props.route.params.user.id, this.prevDoc);
     this.prevDoc = request.prevDoc;
     const unioned_data = unionWith(this.state.data, request.convos, (a, b) => a.id == b.id);
     this.setState({ data: unioned_data }, () => {

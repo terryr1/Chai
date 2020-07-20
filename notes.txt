@@ -3,7 +3,12 @@ start a twitter chaitheapp
 firebase database messaging - store messages 
     asker and answerer
     asker - question is stored in database
-    
+
+PENDING REFACTOR:
+needs to switch state while open
+good option: change permissions - add user/subcollection when switch to not pending, delete when otherwie
+make an index on a boolean field called pending - then get where pending = true
+DEFINIRELY DO THIS - switch states no longer so complex, also only one controller necessary (also reduces complexity a lot!)
 
 FIRESTORE SETUP:
     questions -

@@ -1,9 +1,8 @@
 import React from "react";
-import { View } from "react-native";
+import { View, Alert } from "react-native";
 import { GiftedChat, Bubble } from "react-native-gifted-chat";
-import { unionWith } from "lodash";
+import { unionWith, update } from "lodash";
 import ConvoController from "./../Controllers/ConvoController";
-import PendingConvoController from "./../Controllers/PendingConvoController";
 import GestureRecognizer from "react-native-swipe-gestures";
 
 //TODO: notifications
@@ -12,73 +11,73 @@ class Convo extends React.Component {
     super(props);
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (this.state.pending != prevState.pending || !this._isMounted) {
-      if (this.state.pending) {
-        this.controller = PendingConvoController;
-      } else {
-        this.controller = ConvoController;
-      }
-      //this.props.route.params.updateContainer(this.state.pending, this.controller);
+  async componentDidUpdate(prevProps, prevState) {
+    if (prevState.pending != this.state.pending) {
+      await this.stopController();
+      await this.startController();
+      this.props.updateContainer(this.state.pending);
     }
   }
 
   componentDidMount() {
-    this._unsubscribeFocus = this.props.navigation.addListener('focus', () => {
-      this.setState({ pending: this.props.route.params.pending }, () => {
+    this._unsubscribeFocus = this.props.navigation.addListener("focus", () => {
+      this.setState({ pending: this.props.pending }, () => {
         this._isMounted = true;
         this.startController();
       });
-    })
+    });
 
-    this._unsubscribeBlur = this.props.navigation.addListener('blur', () => {
+    this._unsubscribeBlur = this.props.navigation.addListener("blur", () => {
       this._isMounted = false;
       this.stopController();
     });
   }
 
-  stopController() {
-    this.controller.stop("" + this.props.route.params.id);
+  async stopController() {
+    if (this._isMounted) {
+      return ConvoController.stop("" + this.props.route.params.id);
+    }
   }
 
   componentWillUnmount() {
+    this._isMounted = false;
+    this.stopController();
     this._unsubscribeFocus();
     this._unsubscribeBlur();
   }
 
-  startController() {
-    let params = {
-      update: (messages) => {
-        if (this._isMounted) {
-          const new_messages = unionWith(this.state.messages, messages, (a, b) => a._id == b._id);
-          const sorted_msgs = new_messages.sort((a, b) => {
-            return b._id - a._id;
-          });
-          this.setState({ messages: sorted_msgs });
-        }
-      },
-      id: "" + this.props.route.params.id,
+  async startController() {
+    let update = (messages, pending) => {
+      if (this._isMounted) {
+        const new_messages = unionWith(this.state.messages, messages, (a, b) => a._id == b._id);
+        const sorted_msgs = new_messages.sort((a, b) => {
+          return b._id - a._id;
+        });
+        this.setState({ messages: sorted_msgs, pending });
+      }
     };
 
-    this.controller.start(params.update.bind(this), params.id, () => {
-      this.setState({ pending: !this.state.pending });
-      this.startController();
-    });
+    let alert = () => {
+      Alert.alert("This conversation has been deleted by the author");
+      this.props.navigation.goBack();
+    };
+
+    return ConvoController.start(
+      update.bind(this),
+      "" + this.props.route.params.id,
+      alert.bind(this),
+      this.state.pending
+    );
   }
 
   async send(messages) {
     if (this.state.pending && !this.props.route.params.user.primary) {
-      await this.switchPendingState();
+      //add new user using the controller
+      console.log("ADDING NEW USER")
+      await ConvoController.addUserToConvo(this.state.messages[0].text, this.props.route.params.user.id, this.props.route.params.id);
+      this.setState({pending: false})
     }
-    this.controller.send(messages, "" + this.props.route.params.id);
-  }
-
-  async switchPendingState() {
-    await this.controller.stop("" + this.props.route.params.id);
-    this.setState({ pending: !this.state.pending, messages: [] }, () => {
-      this.controller.switchPendingStateToThis(this.props.route.params.user.id, this.props.route.params.id);
-      this.startController();
-    });
+    ConvoController.send(messages, "" + this.props.route.params.id, this.state.pending);
   }
 
   static navigationOptions = ({ navigation }) => ({
@@ -90,17 +89,17 @@ class Convo extends React.Component {
     pending: false,
   };
 
-  renderBubble (props) {
+  renderBubble(props) {
     return (
       <Bubble
         {...props}
         wrapperStyle={{
           right: {
-            backgroundColor: "#6a8fcc"
-          }
+            backgroundColor: "#6a8fcc",
+          },
         }}
       />
-    )
+    );
   }
 
   render() {

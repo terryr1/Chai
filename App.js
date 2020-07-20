@@ -1,12 +1,10 @@
 import React from "react";
 import Main from "./Source/Tabs/Main";
 import Setup from "./Source/Components/Setup";
-import { NavigationContainer, DefaultTheme, StackActions } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import { View } from "react-native";
 import { decode, encode } from "base-64";
-import AuthController from './Source/Controllers/AuthController'
-import AuthModel from "./Source/Models/AuthModel";
+import AuthController from "./Source/Controllers/AuthController";
 
 //fixed a random error------
 if (!global.btoa) {
@@ -36,47 +34,42 @@ class App extends React.Component {
         border: "rgb(0, 0, 0)",
       },
     };
-    this.linking = {
-      prefixes: ['chai://'],
-      config: {
-        screens: {
-          Setup: {
-            path: 'verify',
-          },
-        },
-      }
-    }
   }
 
   state = {
-    user: false
-  }
+    user: false,
+  };
 
   async componentDidMount() {
     AuthController.shared.checkForAuthentication((user) => {
-      if(user) {
-        this.setState({user})
+      if (user) {
+        this.setState({ user });
       } else {
-        this.setState({user: "noUser"})
+        this.setState({ user: "noUser" });
       }
-    })
+    });
   }
 
   render() {
-    if(!this.state.user) {
+    if (!this.state.user) {
       //make this a loading screen
-      return <></>
+      return <></>;
     }
 
     return (
-      <NavigationContainer linking = {this.linking} theme={this.MyTheme}>
+      <NavigationContainer theme={this.MyTheme}>
         <Stack.Navigator
-          initialRouteName= {this.state.user == "noUser" ? "Setup" : "Main"}
+          initialRouteName={this.state.user == "noUser" ? "Setup" : "Main"}
           screenOptions={{
             headerShown: false,
+            animationEnabled: false,
           }}
         >
-          <Stack.Screen name="Main" component={Main} initialParams={{ uid: this.state.user == "noUser" ? null : this.state.user.uid}}/>
+          <Stack.Screen
+            name="Main"
+            component={Main}
+            initialParams={{ uid: this.state.user == "noUser" ? null : this.state.user.uid }}
+          />
           <Stack.Screen name="Setup" component={Setup} />
         </Stack.Navigator>
       </NavigationContainer>

@@ -4,7 +4,7 @@ import Messages from "./Messages";
 import Explore from "./Explore";
 import { NavigationContainer, DefaultTheme, StackActions } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import AuthController from '../Controllers/AuthController'
+import AuthController from "../Controllers/AuthController";
 
 //think of a way to pass in the user from App.js to the three tabs
 //do something like run the start screen and create the user, then get the user from the db?
@@ -21,6 +21,7 @@ class Main extends React.Component {
       <Tabs.Navigator
         screenOptions={{
           headerShown: false,
+          animationEnabled: false,
         }}
         tabBarOptions={{
           activeTintColor: "white",
@@ -31,7 +32,7 @@ class Main extends React.Component {
           style: {
             backgroundColor: "black",
           },
-          keyboardHidesTabBar: true
+          keyboardHidesTabBar: false,
         }}
       >
         <Tabs.Screen
