@@ -68,20 +68,17 @@ class ConvoModel {
 
   listenForMessages = (callback, convo_id, alert) => {
     console.log("turn on convo message listener");
-    console.log(convo_id)
     this.ref
       .doc(convo_id)
       .collection("messages")
       .onSnapshot((querySnapshot) => {
         console.log("getting normal convo messages callback");
         //if collection deleted popup saying this convo has been resolved/ended
-        if (!querySnapshot.empty) {
-          console.log("NOT EMPTY")
+        //if (!querySnapshot.empty) {
           callback(this.parseMessages(querySnapshot.docChanges()));
-        } else {
-          console.log("EMPTY")
-          //alert();
-        }
+        // } else {
+        //   //alert();
+        // }
       });
   };
 

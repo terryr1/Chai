@@ -18,7 +18,7 @@ class Messages extends React.Component {
         initialRouteName="MessageList"
         screenOptions={{
           headerShown: false,
-          animationEnabled: true,
+          animationEnabled: false,
         }}
       >
         <Stack.Screen name="ConvoContainer" component={ConvoContainer} />

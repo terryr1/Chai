@@ -32,7 +32,7 @@ class Explore extends React.Component {
           initialRouteName="ConvoCards"
           screenOptions={{
             headerShown: false,
-            animationEnabled: true,
+            animationEnabled: false,
           }}
         >
           <Stack.Screen name="ConvoContainer" component={ConvoContainer} />

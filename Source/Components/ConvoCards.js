@@ -1,8 +1,10 @@
 import React from "react";
-import { Text, View, Animated, PanResponder, SafeAreaView, StatusBar } from "react-native";
+import { Text, View, Animated, PanResponder, SafeAreaView, StatusBar, TouchableOpacity } from "react-native";
 import ConvoController from "../Controllers/ConvoController";
 import Constants from "./../Constants";
 import { unionWith } from "lodash";
+import { Button, Icon } from "react-native-elements";
+import LottieView from "lottie-react-native";
 
 class ConvoCards extends React.Component {
   constructor(props) {
@@ -24,7 +26,6 @@ class ConvoCards extends React.Component {
     this.state = {
       currentIndex: 0,
       data: [],
-      removedData: [],
       numDocs: 0,
     };
 
@@ -55,8 +56,7 @@ class ConvoCards extends React.Component {
             useNativeDriver: true,
           }).start(() => {
             const new_data = this.state.data;
-            console.log(new_data);
-            this.state.removedData.push(new_data.shift());
+            new_data.shift();
             this.setState({ data: new_data }, () => {
               this.position.setValue({ x: 0, y: 0 });
             });
@@ -70,7 +70,6 @@ class ConvoCards extends React.Component {
           }).start(() => {
             const new_data = this.state.data;
             const go_to = new_data.shift();
-            this.state.removedData.push(go_to);
             this.setState({ data: new_data }, () => {
               this.position.setValue({ x: 0, y: 0 });
             });
@@ -93,29 +92,27 @@ class ConvoCards extends React.Component {
   }
 
   async componentDidUpdate(prevProps, prevState) {
-    if (this.state.data.length == 0 && this.state.numDocs < 100 && this.state.removedData.length > 0) {
-      this.setState({ data: this.state.removedData }, this.setState({ removedData: [] }));
-    } else if (this.state.data.length == 0 && this.state.numDocs > 0 && !this.startedConvoGet) {
+    if (this.state.data.length == 0 && this.state.numDocs > 0 && !this.startedConvoGet) {
       this.startedConvoGet = true;
       this.getConvos.call(this);
+    }
+    if (this.animation && this.state.numDocs == 0) {
+      this.animation.play(120, 120);
     }
   }
 
   //make a doc to store the number of convos? maybe not sure if this is smart :(
   async componentDidMount() {
     this.getConvos.call(this);
-    // ConvoCardsControllerConvoCardsController.listen(this.props.route.params.user.id, (numDocs) => {
-    //   if (this._isMounted) {
-    //     this.setState({ numDocs: this.state.numDocs + numDocs });
-    //   }
-    // });
+    if (this.animation) {
+      this.animation.play(120, 120);
+    }
 
     this._unsubscribeFocus = this.props.navigation.addListener("focus", () => {
       this._isMounted = true;
     });
 
     this._unsubscribeBlur = this.props.navigation.addListener("blur", () => {
-      // ConvoCardsController.stopListen();
       this._isMounted = false;
     });
   }
@@ -129,7 +126,7 @@ class ConvoCards extends React.Component {
     const request = await ConvoController.getPendingConvos(this.props.route.params.user.id, this.prevDoc);
     this.prevDoc = request.prevDoc;
     const unioned_data = unionWith(this.state.data, request.convos, (a, b) => a.id == b.id);
-    this.setState({ data: unioned_data }, () => {
+    this.setState({ data: unioned_data, numDocs: request.convos.length }, () => {
       this.startedConvoGet = false;
     });
   }
@@ -181,7 +178,29 @@ class ConvoCards extends React.Component {
       <SafeAreaView style={{ flex: 1, backgroundColor: "black" }}>
         <StatusBar backgroundColor="black" barStyle="light-content" />
         <View style={{ height: "5%" }}></View>
-        <View style={{ flex: 1, justifyContent: "center", alignContent: "center" }}>{this.renderCards()}</View>
+        {this.state.numDocs > 0 ? (
+          <View style={{ flex: 1, justifyContent: "center", alignContent: "center" }}>{this.renderCards()}</View>
+        ) : (
+          <View style={{ flex: 1, backgroundColor: "black", justifyContent: "center", alignContent: "center" }}>
+            <LottieView
+              ref={(animation) => {
+                this.animation = animation;
+              }}
+              source={require("./../../resources/refresh.json")}
+              style={{
+                margin: 70,
+              }}
+              loop={false}
+            ></LottieView>
+            <TouchableOpacity
+              style={{ height: 1000, marginTop: 10 }}
+              onPress={() => {
+                this.animation.play(0, 190);
+                this.getConvos();
+              }}
+            />
+          </View>
+        )}
         <View style={{ height: "5%" }}></View>
       </SafeAreaView>
     );

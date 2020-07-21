@@ -59,7 +59,6 @@ class UserModel {
     return ids.map((id) => {
       const primary = id[0] == 0;
       const convo_id = id.substr(1);
-      console.log(convo_id)
 
       return {
         name: conversations[id],

@@ -74,7 +74,6 @@ class ConvoContainer extends React.Component {
 
   getNewOpinion = async () => {
     if (!this.state.pending) {
-      console.log("RESETTING");
       await ConvoController.resetConvo(this.props.route.params.id);
     } else {
       //notify new user
@@ -114,8 +113,6 @@ class ConvoContainer extends React.Component {
         getNewOpinion={this.getNewOpinion.bind(this)}
       />
     );
-
-    console.log("reNdering CONTAINER");
 
     return (
       <SideMenu
