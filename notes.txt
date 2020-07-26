@@ -5,6 +5,8 @@ deal with the case where i open a convo and the other person opens convo
 other person sets convo to new opinion
 i can still see the convo because its pending true now and when i respond it resets the convo
 
+make sure you cant click the create button a second time until create is done (make it a loading symbol maybe?)
+
 NEXT STEP: notifications -> authentication rules -> encryption | asthetics, add in alert messages to errors
 
 in notifications: store user id and token id ?

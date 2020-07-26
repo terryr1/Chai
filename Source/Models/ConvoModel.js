@@ -78,11 +78,11 @@ class ConvoModel {
       .onSnapshot((querySnapshot) => {
         // console.log("getting normal convo messages callback");
         //if collection deleted popup saying this convo has been resolved/ended
-        //if (!querySnapshot.empty) {
-        callback(this.parseMessages(querySnapshot.docChanges()));
-        // } else {
-        //   //alert();
-        // }
+        if (!querySnapshot.empty) {
+          callback(this.parseMessages(querySnapshot.docChanges()));
+        } else {
+          alert();
+        }
       });
   };
 
@@ -99,10 +99,10 @@ class ConvoModel {
       const { text } = messages[i];
 
       if (pending) {
-        console.log("sending pending msg")
+        console.log("sending pending msg");
         this.appendPendingMessage(text, convo_id);
       } else {
-        console.log("sending non pending msg")
+        console.log("sending non pending msg");
         this.appendMessage(text, convo_id);
       }
     }
@@ -137,13 +137,13 @@ class ConvoModel {
 
     // console.log(convo_id)
     const token = await firebase.auth().currentUser.getIdToken(true);
-    const addUserToConvo = firebase.functions().httpsCallable("addUserToConvo")
+    const addUserToConvo = firebase.functions().httpsCallable("addUserToConvo");
     return addUserToConvo({ convo_id, token });
   };
 
   removeUserFromConvo = async (convo_id) => {
     const token = await firebase.auth().currentUser.getIdToken(true);
-    const removeUserFromConvo = firebase.functions().httpsCallable("removeUserFromConvo")
+    const removeUserFromConvo = firebase.functions().httpsCallable("removeUserFromConvo");
     return removeUserFromConvo({ convo_id, token });
   };
 
@@ -154,7 +154,7 @@ class ConvoModel {
     const token = await firebase.auth().currentUser.getIdToken(true);
     const data = { question, token };
 
-    const createConvo = firebase.functions().httpsCallable("createConvo")
+    const createConvo = firebase.functions().httpsCallable("createConvo");
     const result = await createConvo(data);
     return result.data._path.segments[1];
   };
@@ -173,7 +173,7 @@ class ConvoModel {
     prevDoc = null;
 
     documentSnapshots.forEach((doc) => {
-      if (doc.data().uid != uid) {
+      if (doc.data().uid != uid && !doc.data().old_uids.includes(uid)) {
         const convo = {
           id: doc.id,
           question: doc.data().question,

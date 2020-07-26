@@ -15,7 +15,15 @@ class Convo extends React.Component {
     if (prevState.pending != this.state.pending && this._isMounted == true) {
       if (!this.props.route.params.user.primary && this.state.pending) {
         //add a callback here to open up some kinda alert
-        this.props.navigation.goBack();
+        Alert.alert(
+          "This message has been resolved by the original user. Thanks for your help!",
+          "",
+          [
+            { text: "OK", onPress: () => this.props.navigation.goBack() }
+          ],
+          { cancelable: false }
+        );
+        
         return;
       }
       await this.stopController();
@@ -74,8 +82,16 @@ class Convo extends React.Component {
     };
 
     let alert = () => {
-      Alert.alert("This conversation has been deleted by the author");
-      this.props.navigation.goBack();
+      if(!this.props.route.params.user.primary) {
+        Alert.alert(
+          "This message has been resolved by the original user. Thanks for your help!",
+          "",
+          [
+            { text: "OK", onPress: () => this.props.navigation.goBack() }
+          ],
+          { cancelable: false }
+        );
+      }
     };
 
     return ConvoController.start(
