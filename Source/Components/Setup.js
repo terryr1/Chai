@@ -26,7 +26,6 @@ class Setup extends React.Component {
 
   async componentDidUpdate() {
     if (this.state.user) {
-      await AuthController.shared.createUser(this.state.user.uid);
       this.props.navigation.replace("Main", { uid: this.state.user.uid });
     }
   }

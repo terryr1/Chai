@@ -1,35 +1,13 @@
-start a twitter chaitheapp
-
-firebase database messaging - store messages 
-    asker and answerer
-    asker - question is stored in database
-
 PENDING REFACTOR:
-needs to switch state while open
-good option: change permissions - add user/subcollection when switch to not pending, delete when otherwie
 make an index on a boolean field called pending - then get where pending = true
-DEFINIRELY DO THIS - switch states no longer so complex, also only one controller necessary (also reduces complexity a lot!)
 
-FIRESTORE SETUP:
-    questions -
-        message - points to document in messages with current thread on this question (should only show up in explore section if message tab is empty)
-        user - user that made this question
-    user -
-        phone number associated with user
-        rating number associated with user
-        uid
-    messages -
-        key is uids of the two users in convo (maybe seperated by something idk?) - asker id first or something
-        actual messages stored here
-
-notes:
-    setup a new messages document when an answerer sends a message to the asker
-    this document is deleted when the asker is done talking to the answerer
-    user id and phone number?
+deal with the case where i open a convo and the other person opens convo
+other person sets convo to new opinion
+i can still see the convo because its pending true now and when i respond it resets the convo
 
 NEXT STEP: notifications -> authentication rules -> encryption | asthetics, add in alert messages to errors
 
-in notifications: store user id and token id
+in notifications: store user id and token id ?
 
 https://github.com/zo0r/react-native-push-notification
 
@@ -38,8 +16,6 @@ limit titles/questions to 200 characters
 check for authentication in app.js - no need to open the setup screen for no reason
 
 cloud function for notifications - convo on create, convo on message update, convo on pending create - notify a random user
-
-REMOVE alot of the listeners, just make requests and if they come back null, pop up - only have listeners for cards and messages
 
 ONLY HAve read write access to convos in you convo list and pending convos
 only 2 users allowed to be authenticated for normal convo - these users can never be changed

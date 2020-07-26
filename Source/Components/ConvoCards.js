@@ -73,7 +73,6 @@ class ConvoCards extends React.Component {
             this.setState({ data: new_data }, () => {
               this.position.setValue({ x: 0, y: 0 });
             });
-            console.log(go_to.id);
             this.props.navigation.navigate("ConvoContainer", {
               id: go_to.id,
               pending: true,
@@ -181,21 +180,18 @@ class ConvoCards extends React.Component {
         {this.state.numDocs > 0 ? (
           <View style={{ flex: 1, justifyContent: "center", alignContent: "center" }}>{this.renderCards()}</View>
         ) : (
-          <View style={{ flex: 1, backgroundColor: "black", justifyContent: "center", alignContent: "center" }}>
+          <View style={{ flex: 1, backgroundColor: "black", justifyContent: "center", alignContent: "center",  margin: Constants.SCREEN_WIDTH/4 }}>
             <LottieView
               ref={(animation) => {
                 this.animation = animation;
               }}
               source={require("./../../resources/refresh.json")}
-              style={{
-                margin: 70,
-              }}
               loop={false}
             ></LottieView>
             <TouchableOpacity
-              style={{ height: 1000, marginTop: 10 }}
+              style={{ height: Constants.SCREEN_HEIGHT, width: Constants.SCREEN_WIDTH}}
               onPress={() => {
-                this.animation.play(0, 190);
+                this.animation.play(0, 100);
                 this.getConvos();
               }}
             />

@@ -12,19 +12,34 @@ class Convo extends React.Component {
   }
 
   async componentDidUpdate(prevProps, prevState) {
-    if (prevState.pending != this.state.pending) {
+    if (prevState.pending != this.state.pending && this._isMounted == true) {
+      if (!this.props.route.params.user.primary && this.state.pending) {
+        //add a callback here to open up some kinda alert
+        this.props.navigation.goBack();
+        return;
+      }
       await this.stopController();
       await this.startController();
       this.props.updateContainer(this.state.pending);
     }
   }
 
-  componentDidMount() {
-    this._unsubscribeFocus = this.props.navigation.addListener("focus", () => {
-      this.setState({ pending: this.props.pending }, () => {
-        this._isMounted = true;
-        this.startController();
-      });
+  async componentDidMount() {
+    this._unsubscribeFocus = this.props.navigation.addListener("focus", async () => {
+      if (this.props.route.params.pending == null) {
+        console.log("null")
+        const pending = await ConvoController.isPending(this.props.route.params.id);
+        this.setState({ pending }, () => {
+          this._isMounted = true;
+          this.startController();
+        });
+      } else {
+        console.log('we good')
+        this.setState({ pending: this.props.route.params.pending }, () => {
+          this._isMounted = true;
+          this.startController();
+        });
+      }
     });
 
     this._unsubscribeBlur = this.props.navigation.addListener("blur", () => {
@@ -53,6 +68,7 @@ class Convo extends React.Component {
         const sorted_msgs = new_messages.sort((a, b) => {
           return b._id - a._id;
         });
+        console.log("updating");
         this.setState({ messages: sorted_msgs, pending });
       }
     };
@@ -72,10 +88,14 @@ class Convo extends React.Component {
 
   async send(messages) {
     if (this.state.pending && !this.props.route.params.user.primary) {
-      //add new user using the controller
-      console.log("ADDING NEW USER")
-      await ConvoController.addUserToConvo(this.state.messages[0].text, this.props.route.params.user.id, this.props.route.params.id);
-      this.setState({pending: false})
+      console.log("start adding user");
+      await ConvoController.addUserToConvo(
+        this.state.messages[0].text,
+        this.props.route.params.user.id,
+        this.props.route.params.id
+      );
+      console.log("done adding user");
+      this.setState({ pending: false });
     }
     ConvoController.send(messages, "" + this.props.route.params.id, this.state.pending);
   }

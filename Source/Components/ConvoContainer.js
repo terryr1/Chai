@@ -60,12 +60,7 @@ class ConvoContainer extends React.Component {
   };
 
   componentDidMount = async () => {
-    if (this.props.route.params.pending == null) {
-      const pending = await ConvoController.isPending(this.props.route.params.id);
-      this.setState({ pending });
-    } else {
-      this.setState({ pending: this.props.route.params.pending });
-    }
+    
   };
 
   updateContainer = (pending) => {
@@ -79,6 +74,7 @@ class ConvoContainer extends React.Component {
       //notify new user
     }
 
+    console.log("replacing")
     this.props.navigation.replace("ConvoContainer", {
       id: this.props.route.params.id,
       user: this.props.route.params.user,
@@ -98,7 +94,7 @@ class ConvoContainer extends React.Component {
           this.props.route.params.id,
           this.state.pending
         )
-      : await MessageListController.removeConvo(this.props.route.params.user.id, this.props.route.params.id);
+      : await MessageListController.removeConvo(this.props.route.params.id);
     this.props.navigation.goBack(); //go back twice
   };
 
@@ -132,7 +128,7 @@ class ConvoContainer extends React.Component {
       >
         <View style={{ flex: 1, backgroundColor: "black" }}>
           <Convo
-            {...{ ...this.props, pending: this.state.pending, updateContainer: this.updateContainer.bind(this) }}
+            {...{ ...this.props, updateContainer: this.updateContainer.bind(this) }}
           />
         </View>
       </SideMenu>

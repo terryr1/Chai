@@ -4,9 +4,6 @@ import firebase from "firebase";
 import UserModel from "../Models/UserModel";
 
 class AuthController {
-  async createUser(uid) {
-    await UserModel.shared.createUser(uid);
-  }
 
   checkForAuthentication = (callback) => {
     AuthModel.shared.checkForAuthentication(callback);

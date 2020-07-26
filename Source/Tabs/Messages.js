@@ -17,7 +17,7 @@ class Messages extends React.Component {
       <Stack.Navigator
         initialRouteName="MessageList"
         screenOptions={{
-          headerShown: false,
+          headerShown: true,
           animationEnabled: false,
         }}
       >

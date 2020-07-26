@@ -31,7 +31,7 @@ class Explore extends React.Component {
         <Stack.Navigator
           initialRouteName="ConvoCards"
           screenOptions={{
-            headerShown: false,
+            headerShown: true,
             animationEnabled: false,
           }}
         >

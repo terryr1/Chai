@@ -9,51 +9,6 @@ class UserModel {
     return Fire.shared.ref.collection("users");
   }
 
-  async addConvo(question, uid, convo_id) {
-    console.log("add convo to user");
-    
-    this.user_ref
-      .doc(uid)
-      .set(
-        {
-          conversations: { [convo_id]: question },
-        },
-        { merge: true }
-      )
-      .then((data) => console.log("request done"))
-      .catch((error) => console.log("fail"));
-  }
-
-  async removeConvo(uid, convo_id) {
-    console.log("remove convo from user");
-    //shouldnt add should be a ref to the pending convo
-    this.user_ref
-      .doc(uid)
-      .set(
-        {
-          conversations: { [convo_id]: firebase.firestore.FieldValue.delete() },
-        },
-        { merge: true }
-      )
-      .then((data) => console.log("request done"))
-      .catch((error) => console.log("fail"));
-  }
-
-  createUser = async (uid) => {
-    console.log("create new user called");
-    const docSnapshot = await this.user_ref.doc(uid).get();
-    if (!docSnapshot.exists) {
-      this.user_ref
-        .doc(uid)
-        .set({
-          conversations: [],
-          rating: 0,
-        })
-        .then((data) => console.log("request done"))
-        .catch((error) => console.log("fail"));
-    }
-  };
-
   parse = (conversations) => {
     const ids = Object.keys(conversations);
     return ids.map((id) => {
@@ -81,6 +36,15 @@ class UserModel {
   off(uid) {
     console.log("stop user convo listener");
     this.user_ref.doc(uid).onSnapshot(() => {});
+  }
+
+  async removeConvo(convo_id) {
+    const token = await firebase.auth().currentUser.getIdToken(true);
+    const data = { convo_id, token };
+
+    const removeConvo = firebase.functions().httpsCallable("removeConvo");
+
+    return removeConvo(data);
   }
 }
 
