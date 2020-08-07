@@ -1,23 +1,19 @@
 import ConvoModel from "../Models/ConvoModel";
-import UserModel from "../Models/UserModel";
+import ReportModel from "../Models/ReportModel";
 
 async function start(callback, id, alert, pending) {
   //start both listeners
   if (pending) {
     console.log('listening for pending messages')
-    ConvoModel.shared.listenForPendingMessages(callback, id);
+    return ConvoModel.shared.listenForPendingMessages(callback, id);
   } else {
-    ConvoModel.shared.listenForMessages(callback, id, alert);
+    console.log('listening for normal messages')
+    return ConvoModel.shared.listenForMessages(callback, id, alert);
   }
 }
 
 async function send(messages, id, pending) {
   return ConvoModel.shared.send(messages, id, pending);
-}
-
-async function stop(id) {
-  await ConvoModel.shared.stopListenForMessages(id);
-  return ConvoModel.shared.stopListenForPendingMessages(id);
 }
 
 async function deleteConvo(uid, id) {
@@ -46,4 +42,8 @@ async function isPending(id) {
   return ConvoModel.shared.isPending(id);
 }
 
-export default { start, stop, send, deleteConvo, getPendingConvos, getNumConvos, addUserToConvo, resetConvo, isPending };
+async function report(id) {
+  return ReportModel.shared.report(id);
+}
+
+export default { start, send, deleteConvo, getPendingConvos, getNumConvos, addUserToConvo, resetConvo, isPending, report };

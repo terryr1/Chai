@@ -62,7 +62,7 @@ class App extends React.Component {
           initialRouteName={this.state.user == "noUser" ? "Setup" : "Main"}
           screenOptions={{
             headerShown: false,
-            animationEnabled: false,
+            animationEnabled: true,
           }}
         >
           <Stack.Screen

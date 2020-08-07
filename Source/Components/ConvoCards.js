@@ -1,10 +1,11 @@
 import React from "react";
-import { Text, View, Animated, PanResponder, SafeAreaView, StatusBar, TouchableOpacity } from "react-native";
+import { Text, View, Animated, PanResponder, StatusBar, TouchableOpacity } from "react-native";
 import ConvoController from "../Controllers/ConvoController";
 import Constants from "./../Constants";
 import { unionWith } from "lodash";
 import { Button, Icon } from "react-native-elements";
 import LottieView from "lottie-react-native";
+import { SafeAreaView } from "react-navigation";
 
 class ConvoCards extends React.Component {
   constructor(props) {

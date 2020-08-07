@@ -23,7 +23,12 @@ function DrawerContent(props) {
             <Text style={style.buttonText}>GET NEW OPINION</Text>
           </TouchableOpacity>
         ) : null}
-        <TouchableOpacity style={style.button} onPress={() => {}}>
+        <TouchableOpacity
+          style={style.button}
+          onPress={() => {
+            props.report();
+          }}
+        >
           <Text style={style.buttonText}>REPORT</Text>
         </TouchableOpacity>
       </View>
@@ -59,9 +64,7 @@ class ConvoContainer extends React.Component {
     isOpen: false,
   };
 
-  componentDidMount = async () => {
-    
-  };
+  componentDidMount = async () => {};
 
   updateContainer = (pending) => {
     this.setState({ pending });
@@ -74,7 +77,7 @@ class ConvoContainer extends React.Component {
       //notify new user
     }
 
-    console.log("replacing")
+    console.log("replacing");
     this.props.navigation.replace("ConvoContainer", {
       id: this.props.route.params.id,
       user: this.props.route.params.user,
@@ -98,6 +101,17 @@ class ConvoContainer extends React.Component {
     this.props.navigation.goBack(); //go back twice
   };
 
+  report = async () => {
+    await ConvoController.report(this.props.route.params.id);
+    if (!this.state.pending) {
+      console.log("resetting");
+      this.props.route.params.user.primary
+        ? await ConvoController.resetConvo(this.props.route.params.id)
+        : await MessageListController.removeConvo(this.props.route.params.id);
+    }
+    this.props.navigation.goBack();
+  };
+
   // only show new opinion if primary user
   render() {
     //drawerContent={(props) => <CustomDrawerContent {...props} />}
@@ -107,6 +121,7 @@ class ConvoContainer extends React.Component {
         pending={this.state.pending}
         resolve={this.resolve.bind(this)}
         getNewOpinion={this.getNewOpinion.bind(this)}
+        report={this.report.bind(this)}
       />
     );
 
@@ -127,9 +142,7 @@ class ConvoContainer extends React.Component {
         onChange={(isOpen) => this.updateMenuState(isOpen)}
       >
         <View style={{ flex: 1, backgroundColor: "black" }}>
-          <Convo
-            {...{ ...this.props, updateContainer: this.updateContainer.bind(this) }}
-          />
+          <Convo {...{ ...this.props, updateContainer: this.updateContainer.bind(this) }} />
         </View>
       </SideMenu>
     );

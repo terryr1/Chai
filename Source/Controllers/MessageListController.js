@@ -9,7 +9,7 @@ function stop(id) {
 }
 
 function removeConvo(id) {
-  UserModel.shared.removeConvo('1' + id);
+  return UserModel.shared.removeConvo('1' + id);
 }
 
 

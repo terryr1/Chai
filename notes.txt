@@ -1,13 +1,25 @@
 PENDING REFACTOR:
+
+NEXT TITLE: IMPROVE YOUR MENTAL HEALTH THROUGH conversation __IMPORTANT__
+
 make an index on a boolean field called pending - then get where pending = true
 
-deal with the case where i open a convo and the other person opens convo
-other person sets convo to new opinion
-i can still see the convo because its pending true now and when i respond it resets the convo
+NEXT STEP: notifications ->  encryption | asthetics, add in alert messages to errors
 
-make sure you cant click the create button a second time until create is done (make it a loading symbol maybe?)
+https://virgilsecurity.com/blog/e3kit-for-firebase
 
-NEXT STEP: notifications -> authentication rules -> encryption | asthetics, add in alert messages to errors
+SET LIMITS FOR NUMBER OF CONVERSATIONS YOU CANN HAVE ASSIGNED TO YOU, LIMIT CONVERSATIONS TO 500 messages, limit convos to 20, 
+make sure to limit gets as much as possible look through the code
+minimize errors in firestore functions - this will probably slow stuff down if there are errors
+
+speed everything up by rendering messages before the request gets sent out
+
+BATCH READ convo messages - only read like 20 at a time unlesss they scroll up or something
+
+CHANGE NAME OF USERS AND COLLECTIONS IN PRODUCTION TO 77447_chaitheapp_users and 77447_chaitheapp_conversations
+that way people don't know how to query, also keep all your code private
+
+ADD TRANSACTIONS TO CLOUD FUNCTIONS
 
 in notifications: store user id and token id ?
 
@@ -15,39 +27,18 @@ https://github.com/zo0r/react-native-push-notification
 
 use lottie for the chai animation
 limit titles/questions to 200 characters
-check for authentication in app.js - no need to open the setup screen for no reason
 
 cloud function for notifications - convo on create, convo on message update, convo on pending create - notify a random user
 
-ONLY HAve read write access to convos in you convo list and pending convos
-only 2 users allowed to be authenticated for normal convo - these users can never be changed
-can see what phone number wrote what? - no because we'll use the id from firestore authentication - so all ids are anonymous
 can see which conversations were written by the same person - fine then we can encrypt all the text stored in the database
 
 https://www.npmjs.com/package/hybrid-crypto-js#documentation
 
-only create/delete access for conversations
-only update access for rating 
-only authenticated users can change ratings/convo lists
-check if the user has the conversation in their list of convos before rating, users dont know convo ids - convo ids are linked to people
-FirebaseAuth.getInstance().getCurrentUser().getUid();
-pending convos give read access but write access only to og_user
-users dont have access to write to their own rating, only read
-other users can write and read to ratings?
-only the users themselves can delete conversations, if they dont have access/the convo no longer exists the user should delete
-
-SO other users can add convos to other users, and -for now- write to the rating of other users
-
-
-only write to 
-
-og_user gives new_user permission to read/write - they own the document
-
-
     **MAKE EVERYTHING FASTER WITH ASYNC CALSS
-    Pending Convos have a field which represents the user it's notified
 
     MAKE ALL FIREBASE CALLS ASYNCHRONOUS
     eventually - users have ratings, when selecting a user from user collection sort by rating and users have notified section false
+    if deciding against this, delete the rarting field?
 
-    MAKE RH
+Messages should be created with timestamp - then send them - this way it can be loaded faster as well and timestamp is accurate
+remove npm modules we don't use anymore (there's a few)

@@ -3,7 +3,6 @@ import { View, Alert } from "react-native";
 import { GiftedChat, Bubble } from "react-native-gifted-chat";
 import { unionWith, update } from "lodash";
 import ConvoController from "./../Controllers/ConvoController";
-import GestureRecognizer from "react-native-swipe-gestures";
 
 //TODO: notifications
 class Convo extends React.Component {
@@ -13,21 +12,8 @@ class Convo extends React.Component {
 
   async componentDidUpdate(prevProps, prevState) {
     if (prevState.pending != this.state.pending && this._isMounted == true) {
-      if (!this.props.route.params.user.primary && this.state.pending) {
-        //add a callback here to open up some kinda alert
-        Alert.alert(
-          "This message has been resolved by the original user. Thanks for your help!",
-          "",
-          [
-            { text: "OK", onPress: () => this.props.navigation.goBack() }
-          ],
-          { cancelable: false }
-        );
-        
-        return;
-      }
-      await this.stopController();
-      await this.startController();
+      this.stopController();
+      this.stopController = await this.startController();
       this.props.updateContainer(this.state.pending);
     }
   }
@@ -35,17 +21,17 @@ class Convo extends React.Component {
   async componentDidMount() {
     this._unsubscribeFocus = this.props.navigation.addListener("focus", async () => {
       if (this.props.route.params.pending == null) {
-        console.log("null")
+        console.log("null");
         const pending = await ConvoController.isPending(this.props.route.params.id);
-        this.setState({ pending }, () => {
+        this.setState({ pending }, async () => {
           this._isMounted = true;
-          this.startController();
+          this.stopController = await this.startController();
         });
       } else {
-        console.log('we good')
-        this.setState({ pending: this.props.route.params.pending }, () => {
+        console.log("we good");
+        this.setState({ pending: this.props.route.params.pending }, async () => {
           this._isMounted = true;
-          this.startController();
+          this.stopController = await this.startController();
         });
       }
     });
@@ -54,12 +40,6 @@ class Convo extends React.Component {
       this._isMounted = false;
       this.stopController();
     });
-  }
-
-  async stopController() {
-    if (this._isMounted) {
-      return ConvoController.stop("" + this.props.route.params.id);
-    }
   }
 
   componentWillUnmount() {
@@ -82,13 +62,12 @@ class Convo extends React.Component {
     };
 
     let alert = () => {
-      if(!this.props.route.params.user.primary) {
+      if (!this.props.route.params.user.primary && this._isMounted) {
+        this.stopController();
         Alert.alert(
           "This message has been resolved by the original user. Thanks for your help!",
           "",
-          [
-            { text: "OK", onPress: () => this.props.navigation.goBack() }
-          ],
+          [{ text: "OK", onPress: () => this.props.navigation.goBack() }],
           { cancelable: false }
         );
       }
@@ -102,6 +81,8 @@ class Convo extends React.Component {
     );
   }
 
+  //make this look like its happending fast by updating the chat before the call gets put out, then check if there's another message with the same text and user made within the last 10 seconds
+  //or send the timestamp, not a big deal and makes code less complex
   async send(messages) {
     if (this.state.pending && !this.props.route.params.user.primary) {
       console.log("start adding user");

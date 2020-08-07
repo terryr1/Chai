@@ -4,6 +4,7 @@ import Messages from "./Messages";
 import Explore from "./Explore";
 import { NavigationContainer, DefaultTheme, StackActions } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import {Icon} from 'react-native-elements'
 import AuthController from "../Controllers/AuthController";
 
 //think of a way to pass in the user from App.js to the three tabs
@@ -21,14 +22,14 @@ class Main extends React.Component {
       <Tabs.Navigator
         screenOptions={{
           headerShown: false,
-          animationEnabled: false,
+          animationEnabled: true,
         }}
         tabBarOptions={{
           activeTintColor: "white",
           activeBackgroundColor: "black",
           inactiveBackgroundColor: "black",
           inactiveTintColor: "dimgray",
-          showLabel: true,
+          showLabel: false,
           style: {
             backgroundColor: "black",
           },
@@ -42,18 +43,25 @@ class Main extends React.Component {
           initialParams={{
             uid: this.props.route.params.uid,
           }}
-          // options={{
-          //   tabBarLabel: s'Home',
-          //   tabBarIcon: ({ color, size }) => (
-          //     <MaterialCommunityIcons name="home" color={color} size={size} />
-          //   ),
-          // }}
+          
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Icon name="home" type="material" color={color} size={30} />
+            ),
+          }}
         />
         <Tabs.Screen
           name="Messages"
           component={Messages}
+          unmountOnBlur={true}
           initialParams={{
             uid: this.props.route.params.uid,
+          }}
+
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Icon name="forum" type="material" color={color} size={30} />
+            ),
           }}
         />
         <Tabs.Screen
@@ -62,6 +70,11 @@ class Main extends React.Component {
           unmountOnBlur={true}
           initialParams={{
             uid: this.props.route.params.uid,
+          }}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Icon name="search" type="material" color={color} size={30} />
+            ),
           }}
         />
       </Tabs.Navigator>

@@ -25,7 +25,7 @@ class Home extends React.Component {
           initialRouteName="CreateConvo"
           screenOptions={{
             headerShown: false,
-            animationEnabled: false,
+            animationEnabled: true,
           }}
         >
           <Stack.Screen name="ConvoContainer" component={ConvoContainer} />

@@ -1,15 +1,6 @@
 import React from "react";
-import {
-  View,
-  SafeAreaView,
-  TextInput,
-  StatusBar,
-  Linking,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
+import { View, TextInput, StatusBar, Linking, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import { SafeAreaView } from "react-navigation";
 import AuthController from "../Controllers/AuthController";
 
 class Setup extends React.Component {

@@ -2,6 +2,7 @@ import firebase from "firebase";
 import "firebase/firestore";
 import Fire from "../Fire";
 import "firebase/functions";
+import { Alert } from "react-native";
 
 class ConvoModel {
   get ref() {
@@ -53,45 +54,41 @@ class ConvoModel {
   };
 
   listenForPendingMessages = (callback, convo_id) => {
-    // console.log("adding listener for pendinf convo messages");
-    this.ref.doc(convo_id).onSnapshot((snapshot) => {
-      // console.log("callback for pending convo message listener called");
-      if (snapshot.exists) {
-        callback(
-          this.parsePendingMessages(snapshot.data().pending_messages, snapshot.data().uid),
-          snapshot.data().pending
-        );
+    //console.log("adding listener for pendinf convo messages");
+    return this.ref.doc(convo_id).onSnapshot(
+      (snapshot) => {
+        console.log("callback for pending convo message listener called");
+        if (snapshot.exists) {
+          callback(
+            this.parsePendingMessages(snapshot.data().pending_messages, snapshot.data().uid),
+            snapshot.data().pending
+          );
+        }
+      },
+      (error) => {
+        console.log("got some error: ", error);
       }
-    });
-  };
-
-  stopListenForPendingMessages = async (convo_id) => {
-    // console.log("stop pending convo message listner");
-    return this.ref.doc(convo_id).onSnapshot(() => {});
+    );
   };
 
   listenForMessages = (callback, convo_id, alert) => {
-    // console.log("turn on convo message listener");
-    this.ref
-      .doc(convo_id)
-      .collection("messages")
-      .onSnapshot((querySnapshot) => {
-        // console.log("getting normal convo messages callback");
-        //if collection deleted popup saying this convo has been resolved/ended
-        if (!querySnapshot.empty) {
-          callback(this.parseMessages(querySnapshot.docChanges()));
-        } else {
-          alert();
-        }
-      });
-  };
-
-  stopListenForMessages = async (convo_id) => {
-    // console.log("turn off convo message listener");
+    //console.log("turn on convo message listener");
     return this.ref
       .doc(convo_id)
       .collection("messages")
-      .onSnapshot(() => {});
+      .onSnapshot(
+        (querySnapshot) => {
+          console.log("listening to messages");
+          // console.log("getting normal convo messages callback");
+          //if collection deleted popup saying this convo has been resolved/ended
+          if (!querySnapshot.empty) {
+            callback(this.parseMessages(querySnapshot.docChanges()));
+          }
+        },
+        (error) => {
+          alert();
+        }
+      );
   };
 
   send = (messages, convo_id, pending) => {

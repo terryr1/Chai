@@ -1,11 +1,12 @@
 import React from "react";
 import Convo from "./Convo";
-import { TextInput, View, FlatList, StatusBar, SafeAreaView } from "react-native";
+import { TextInput, View, FlatList, StatusBar } from "react-native";
 import { ListItem } from "react-native-elements";
 import MessageListController from "../Controllers/MessageListController";
 import { Icon } from "react-native-elements";
 import { SvgXml } from "react-native-svg";
 import Constants from "./../Constants";
+import { SafeAreaView } from "react-navigation";
 
 class MessageList extends React.Component {
   constructor(props) {
@@ -50,12 +51,12 @@ class MessageList extends React.Component {
   renderItem = ({ item }) => (
     <ListItem
       title={item.name}
-      titleStyle={{ color: "white", fontWeight: "bold" }}
+      titleStyle={{ color: "white", fontWeight: "bold", fontSize: 16 }}
       leftIcon={
         item.primary ? (
-          <Icon name="face" type="material" color="white" size={40} />
+          <Icon name="face" type="material" color="white" size={47} />
         ) : (
-          <SvgXml xml={Constants.agent} width={40} height={40} fill="white" color="white" />
+          <SvgXml xml={Constants.agent} width={47} height={47} fill="white" color="white" />
         )
       }
       onPress={() => this.onPress(item)}
