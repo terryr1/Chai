@@ -2,13 +2,8 @@ import React from "react";
 import Home from "./Home";
 import Messages from "./Messages";
 import Explore from "./Explore";
-import { NavigationContainer, DefaultTheme, StackActions } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import {Icon} from 'react-native-elements'
-import AuthController from "../Controllers/AuthController";
-
-//think of a way to pass in the user from App.js to the three tabs
-//do something like run the start screen and create the user, then get the user from the db?
+import { Icon } from "react-native-elements";
 
 const Tabs = createBottomTabNavigator();
 
@@ -32,8 +27,8 @@ class Main extends React.Component {
           showLabel: false,
           style: {
             backgroundColor: "black",
+            height: 70,
           },
-          keyboardHidesTabBar: false,
         }}
       >
         <Tabs.Screen
@@ -43,11 +38,8 @@ class Main extends React.Component {
           initialParams={{
             uid: this.props.route.params.uid,
           }}
-          
           options={{
-            tabBarIcon: ({ color, size }) => (
-              <Icon name="home" type="material" color={color} size={30} />
-            ),
+            tabBarIcon: ({ color, size }) => <Icon name="home" type="material" color={color} size={30} />,
           }}
         />
         <Tabs.Screen
@@ -57,11 +49,8 @@ class Main extends React.Component {
           initialParams={{
             uid: this.props.route.params.uid,
           }}
-
           options={{
-            tabBarIcon: ({ color, size }) => (
-              <Icon name="forum" type="material" color={color} size={30} />
-            ),
+            tabBarIcon: ({ color, size }) => <Icon name="forum" type="material" color={color} size={30} />,
           }}
         />
         <Tabs.Screen
@@ -72,9 +61,7 @@ class Main extends React.Component {
             uid: this.props.route.params.uid,
           }}
           options={{
-            tabBarIcon: ({ color, size }) => (
-              <Icon name="search" type="material" color={color} size={30} />
-            ),
+            tabBarIcon: ({ color, size }) => <Icon name="search" type="material" color={color} size={30} />,
           }}
         />
       </Tabs.Navigator>

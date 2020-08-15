@@ -1,5 +1,3 @@
-//figure out how to id convos
-//create the conversation in pending conversations
 import firebase from "firebase";
 import "firebase/firestore";
 import Fire from "../Fire";
@@ -24,6 +22,15 @@ class UserModel {
     });
   };
 
+  addNotificationToken = async (notificationToken) => {
+    const token = await firebase.auth().currentUser.getIdToken(true);
+    const data = { notificationToken, token };
+
+    const addNotificationToken = firebase.functions().httpsCallable("addNotificationToken");
+
+    return addNotificationToken(data);
+  };
+
   on = (callback, uid) => {
     console.log("start user convo listener called");
     this.user_ref.doc(uid).onSnapshot((snapshot) => {
@@ -38,14 +45,14 @@ class UserModel {
     this.user_ref.doc(uid).onSnapshot(() => {});
   }
 
-  async removeConvo(convo_id) {
+  removeConvo = async (convo_id) => {
     const token = await firebase.auth().currentUser.getIdToken(true);
     const data = { convo_id, token };
 
     const removeConvo = firebase.functions().httpsCallable("removeConvo");
 
     return removeConvo(data);
-  }
+  };
 }
 
 UserModel.shared = new UserModel();

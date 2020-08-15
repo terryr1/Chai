@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "chai",
-    "slug": "chai",
+    "name": "Chai",
+    "slug": "Chai",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/chai_icon.png",
@@ -14,32 +14,43 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.chai",
       "buildNumber": "1.0.0"
     },
+    "androidStatusBar": {
+      "barStyle": "light-content",
+      "backgroundColor": "#000000",
+      "translucent": false
+    },
     "android": {
+      "googleServicesFile": "./google-services.json",
       "intentFilters": [
         {
           "action": "VIEW",
-          "data": [{
-            "scheme": "chai"
-          }],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "data": [
+            {
+              "scheme": "chai"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
         }
       ],
       "package": "com.chai",
-      "versionCode": 1
+      "versionCode": 1,
+      "softwareKeyboardLayoutMode": "pan",
+      "useNextNotificationsApi": true
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "notification": {
+      "color": "#946FA6",
+      "androidMode": "collapse",
+      "androidCollapsedTitle": "#{unread_notifications} new messages",
+      "icon": "./assets/chai_notification.png"
     }
   }
 }

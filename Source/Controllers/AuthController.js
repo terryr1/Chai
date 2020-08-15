@@ -1,10 +1,7 @@
 import AuthModel from "./../Models/AuthModel";
-import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
-import firebase from "firebase";
 import UserModel from "../Models/UserModel";
 
 class AuthController {
-
   checkForAuthentication = (callback) => {
     AuthModel.shared.checkForAuthentication(callback);
   };
@@ -22,9 +19,15 @@ class AuthController {
   };
 
   confirmLink = async (email, link) => {
+    console.log(email)
+    console.log(link)
     if (AuthModel.shared.checkIfValidLink(link)) {
       AuthModel.shared.signIn(email, link);
     }
+  };
+
+  addNotificationToken = (token) => {
+    UserModel.shared.addNotificationToken(token);
   };
 }
 

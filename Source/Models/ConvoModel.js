@@ -2,26 +2,29 @@ import firebase from "firebase";
 import "firebase/firestore";
 import Fire from "../Fire";
 import "firebase/functions";
-import { Alert } from "react-native";
 
 class ConvoModel {
   get ref() {
     return Fire.shared.ref.collection("conversations");
   }
 
+  parseHelper = ({ numberStamp, text, uid }) => {
+    const timestamp = numberStamp.toDate();
+
+    const message = {
+      _id: timestamp.getTime(),
+      timestamp,
+      text,
+      user: { _id: uid, name: "Anonymous" },
+    };
+    return message;
+  };
+
   parseMessages = (changes) => {
     const mapped_array = changes.map(({ doc }) => {
       const { timestamp: numberStamp, text, uid } = doc.data();
 
-      const timestamp = numberStamp.toDate();
-
-      const message = {
-        _id: timestamp.getTime(),
-        timestamp,
-        text,
-        user: { _id: uid, name: "Anonymous" },
-      };
-      return message;
+      return this.parseHelper({ numberStamp, text, uid });
     });
 
     const sorted_array = mapped_array.sort((a, b) => {
@@ -30,21 +33,11 @@ class ConvoModel {
     return sorted_array;
   };
 
-  //can probablu be abstracted with pending messages
   parsePendingMessages = (message_array, uid) => {
     const mapped_array = message_array.map((message_element) => {
       const { timestamp: numberStamp, text } = message_element;
 
-      const timestamp = numberStamp.toDate();
-
-      const message = {
-        _id: timestamp.getTime(),
-        timestamp,
-        text,
-        user: { _id: uid, name: "Anonymous" },
-      };
-
-      return message;
+      return this.parseHelper({ numberStamp, text, uid });
     });
 
     const sorted_array = mapped_array.sort((a, b) => {
@@ -54,7 +47,7 @@ class ConvoModel {
   };
 
   listenForPendingMessages = (callback, convo_id) => {
-    //console.log("adding listener for pendinf convo messages");
+    console.log("adding listener for pendinf convo messages");
     return this.ref.doc(convo_id).onSnapshot(
       (snapshot) => {
         console.log("callback for pending convo message listener called");
@@ -72,20 +65,18 @@ class ConvoModel {
   };
 
   listenForMessages = (callback, convo_id, alert) => {
-    //console.log("turn on convo message listener");
+    console.log("turn on convo message listener");
     return this.ref
       .doc(convo_id)
       .collection("messages")
       .onSnapshot(
         (querySnapshot) => {
           console.log("listening to messages");
-          // console.log("getting normal convo messages callback");
-          //if collection deleted popup saying this convo has been resolved/ended
           if (!querySnapshot.empty) {
             callback(this.parseMessages(querySnapshot.docChanges()));
           }
         },
-        (error) => {
+        () => {
           alert();
         }
       );
@@ -106,7 +97,7 @@ class ConvoModel {
   };
 
   appendMessage = async (text, convo_id) => {
-    // console.log("send message call");
+    console.log("send message call");
 
     const token = await firebase.auth().currentUser.getIdToken(true);
     const data = { convo_id, text, token };
@@ -116,11 +107,8 @@ class ConvoModel {
     return createMessage(data);
   };
 
-  //move to cloud function
   appendPendingMessage = async (text, convo_id) => {
-    // console.log("sending")
-    // console.log(text)
-    // console.log(convo_id)
+    console.log("sending");
     const token = await firebase.auth().currentUser.getIdToken(true);
     const data = { convo_id, text, token };
 
@@ -130,9 +118,7 @@ class ConvoModel {
   };
 
   addUserToConvo = async (convo_id) => {
-    // console.log("adding user to convo");
-
-    // console.log(convo_id)
+    console.log("adding user to convo");
     const token = await firebase.auth().currentUser.getIdToken(true);
     const addUserToConvo = firebase.functions().httpsCallable("addUserToConvo");
     return addUserToConvo({ convo_id, token });
@@ -144,9 +130,8 @@ class ConvoModel {
     return removeUserFromConvo({ convo_id, token });
   };
 
-  //use push so that it returns the id
   create = async (question) => {
-    // console.log("create pending convo");
+    console.log("create pending convo");
 
     const token = await firebase.auth().currentUser.getIdToken(true);
     const data = { question, token };
@@ -157,14 +142,14 @@ class ConvoModel {
   };
 
   getConvos = async (uid, prevDoc) => {
-    // console.log("getting pending convos (first 20)");
+    console.log("getting pending convos (first 20)");
     const convos = [];
     let documentSnapshots;
 
     if (prevDoc) {
-      documentSnapshots = await this.ref.startAfter(prevDoc).where("pending", "==", true).limit(100).get();
+      documentSnapshots = await this.ref.startAfter(prevDoc).where("pending", "==", true).limit(20).get();
     } else {
-      documentSnapshots = await this.ref.where("pending", "==", true).limit(100).get();
+      documentSnapshots = await this.ref.where("pending", "==", true).limit(20).get();
     }
 
     prevDoc = null;
@@ -184,7 +169,7 @@ class ConvoModel {
   };
 
   delete = (convo_id) => {
-    // console.log("deleting pending convo");
+    console.log("deleting pending convo");
     return this.ref.doc(convo_id).delete();
   };
 

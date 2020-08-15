@@ -2,7 +2,6 @@ import ConvoModel from "../Models/ConvoModel";
 import ReportModel from "../Models/ReportModel";
 
 async function start(callback, id, alert, pending) {
-  //start both listeners
   if (pending) {
     console.log('listening for pending messages')
     return ConvoModel.shared.listenForPendingMessages(callback, id);

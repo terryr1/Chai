@@ -1,18 +1,16 @@
 import React from "react";
-import { Text, View, Animated, PanResponder, StatusBar, TouchableOpacity } from "react-native";
+import { Text, View, Animated, PanResponder, StatusBar, TouchableOpacity, SafeAreaView } from "react-native";
 import ConvoController from "../Controllers/ConvoController";
 import Constants from "./../Constants";
 import { unionWith } from "lodash";
-import { Button, Icon } from "react-native-elements";
 import LottieView from "lottie-react-native";
-import { SafeAreaView } from "react-navigation";
 
 class ConvoCards extends React.Component {
   constructor(props) {
     super(props);
 
     this.position = new Animated.ValueXY();
-    //prob need a position 2 if u want to do that. i think just leave it for later
+
     this.rotate = this.position.x.interpolate({
       inputRange: [-Constants.SCREEN_WIDTH / 2, 0, Constants.SCREEN_WIDTH / 2],
       outputRange: ["-10deg", "0deg", "10deg"],
@@ -24,6 +22,7 @@ class ConvoCards extends React.Component {
       },
       ...this.position.getTranslateTransform(),
     ];
+
     this.state = {
       currentIndex: 0,
       data: [],
@@ -91,7 +90,7 @@ class ConvoCards extends React.Component {
     });
   }
 
-  async componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate = async () => {
     if (this.state.data.length == 0 && this.state.numDocs > 0 && !this.startedConvoGet) {
       this.startedConvoGet = true;
       this.getConvos.call(this);
@@ -99,10 +98,9 @@ class ConvoCards extends React.Component {
     if (this.animation && this.state.numDocs == 0) {
       this.animation.play(120, 120);
     }
-  }
+  };
 
-  //make a doc to store the number of convos? maybe not sure if this is smart :(
-  async componentDidMount() {
+  componentDidMount = async () => {
     this.getConvos.call(this);
     if (this.animation) {
       this.animation.play(120, 120);
@@ -115,21 +113,22 @@ class ConvoCards extends React.Component {
     this._unsubscribeBlur = this.props.navigation.addListener("blur", () => {
       this._isMounted = false;
     });
-  }
+  };
 
-  componentWillUnmount() {
+  componentWillUnmount = () => {
+    this._isMounted = false;
     this._unsubscribeFocus();
     this._unsubscribeBlur();
-  }
+  };
 
-  async getConvos() {
+  getConvos = async () => {
     const request = await ConvoController.getPendingConvos(this.props.route.params.user.id, this.prevDoc);
     this.prevDoc = request.prevDoc;
     const unioned_data = unionWith(this.state.data, request.convos, (a, b) => a.id == b.id);
     this.setState({ data: unioned_data, numDocs: request.convos.length }, () => {
       this.startedConvoGet = false;
     });
-  }
+  };
 
   renderCards = () => {
     const style = {
@@ -171,8 +170,6 @@ class ConvoCards extends React.Component {
     return [second_card, first_card];
   };
 
-  //create a list of strings with all the pending questions - use two cards and switch between them updating the strings in the list?
-  //if swipe right navigate to convo, if swipe left show next question bittttt
   render() {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: "black" }}>
@@ -181,7 +178,15 @@ class ConvoCards extends React.Component {
         {this.state.numDocs > 0 ? (
           <View style={{ flex: 1, justifyContent: "center", alignContent: "center" }}>{this.renderCards()}</View>
         ) : (
-          <View style={{ flex: 1, backgroundColor: "black", justifyContent: "center", alignContent: "center",  margin: Constants.SCREEN_WIDTH/4 }}>
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: "black",
+              justifyContent: "center",
+              alignContent: "center",
+              margin: Constants.SCREEN_WIDTH / 4,
+            }}
+          >
             <LottieView
               ref={(animation) => {
                 this.animation = animation;
@@ -190,7 +195,7 @@ class ConvoCards extends React.Component {
               loop={false}
             ></LottieView>
             <TouchableOpacity
-              style={{ height: Constants.SCREEN_HEIGHT, width: Constants.SCREEN_WIDTH}}
+              style={{ height: Constants.SCREEN_HEIGHT, width: Constants.SCREEN_WIDTH }}
               onPress={() => {
                 this.animation.play(0, 100);
                 this.getConvos();

@@ -1,44 +1,63 @@
 import React from "react";
-import Convo from "./Convo";
-import { TextInput, View, FlatList, StatusBar } from "react-native";
+import { FlatList, StatusBar, SafeAreaView } from "react-native";
 import { ListItem } from "react-native-elements";
 import MessageListController from "../Controllers/MessageListController";
 import { Icon } from "react-native-elements";
 import { SvgXml } from "react-native-svg";
+import { unionWith, difference } from "lodash";
 import Constants from "./../Constants";
-import { SafeAreaView } from "react-navigation";
+import AsyncStorage from "@react-native-community/async-storage";
 
 class MessageList extends React.Component {
   constructor(props) {
     super(props);
   }
 
-  componentDidMount() {
-    this._unsubscribeFocus = this.props.navigation.addListener("focus", () => {
-      this._isMounted = true;
-      MessageListController.start((data) => {
-        if (this._isMounted) {
-          this.setState({ data });
-        }
-      }, "" + this.props.route.params.user.id);
-    });
-
-    this._unsubscribeBlur = this.props.navigation.addListener("blur", () => {
-      this._isMounted = false;
-      MessageListController.stop(this.props.route.params.user.id);
-    });
-  }
-
-  componentWillUnmount() {
-    this._unsubscribeFocus();
-    this._unsubscribeBlur();
-  }
-
   state = {
     data: [],
   };
 
-  //(item, index) refers to the data list we give to FlatList
+  componentDidMount = async () => {
+    AsyncStorage.getItem("convos").then((convos) => {
+      if (convos) {
+        this.setState({ data: JSON.parse(convos) });
+      }
+    });
+
+    this._unsubscribeFocus = this.props.navigation.addListener("focus", () => {
+      this._isMounted = true;
+      this.startController();
+    });
+
+    this._unsubscribeBlur = this.props.navigation.addListener("blur", () => {
+      this.onBlur();
+    });
+  };
+
+  startController = () => {
+    MessageListController.start((data) => {
+      const diff = difference(this.state.data, data);
+      diff.forEach((item) => {
+        AsyncStorage.removeItem(item.convo_id);
+      });
+      if (this._isMounted) {
+        this.setState({ data });
+        AsyncStorage.setItem("convos", JSON.stringify(data));
+      }
+    }, "" + this.props.route.params.user.id);
+  };
+
+  onBlur = () => {
+    this._isMounted = false;
+    MessageListController.stop(this.props.route.params.user.id);
+  };
+
+  componentWillUnmount = () => {
+    this.onBlur();
+    this._unsubscribeFocus();
+    this._unsubscribeBlur();
+  };
+
   keyExtractor = (item, index) => index.toString();
 
   onPress = (item) => {
@@ -61,13 +80,20 @@ class MessageList extends React.Component {
       }
       onPress={() => this.onPress(item)}
       backgroundColor="black"
-      containerStyle={{ marginLeft: 5, marginRight: 5, marginTop: 5, borderWidth: 0, backgroundColor: "#fff" }}
+      containerStyle={{
+        marginLeft: 5,
+        marginRight: 5,
+        marginTop: 5,
+        borderWidth: 0,
+        borderColor: "black",
+        backgroundColor: "#fff",
+      }}
       linearGradientProps={{
         colors: ["black", "black"],
         start: [1, 0],
         end: [0.2, 0],
       }}
-      style={{ borderBottomWidth: 0 }}
+      style={{ borderWidth: 0, borderColor: "black" }}
       chevron
     />
   );
@@ -76,7 +102,12 @@ class MessageList extends React.Component {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: "black" }}>
         <StatusBar backgroundColor="black" barStyle="light-content" />
-        <FlatList keyExtractor={this.keyExtractor} data={this.state.data} renderItem={this.renderItem} />
+        <FlatList
+          style={{ borderWidth: 0, borderColor: "black" }}
+          keyExtractor={this.keyExtractor}
+          data={this.state.data}
+          renderItem={this.renderItem}
+        />
       </SafeAreaView>
     );
   }

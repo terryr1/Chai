@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "846830191629",
+    "firebase_url": "https://chai-87874.firebaseio.com",
+    "project_id": "chai-87874",
+    "storage_bucket": "chai-87874.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:846830191629:android:32fc939511fb13750c0144",
+        "android_client_info": {
+          "package_name": "com.chai"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "846830191629-8m8an2b6t8npm1aa5nodo28fv90kke08.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_9XO_cNGsw4yP434pn5i8auDOGDNHbi4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "846830191629-8m8an2b6t8npm1aa5nodo28fv90kke08.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "846830191629-0f0mg1t4v7ce3qnmt3acckjllbsohsn2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.chai"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

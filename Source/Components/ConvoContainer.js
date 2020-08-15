@@ -5,12 +5,34 @@ import { Animated, View, StyleSheet, TouchableOpacity, Text, ScrollView } from "
 import SideMenu from "react-native-side-menu";
 import Constants from "../Constants";
 import MessageListController from "../Controllers/MessageListController";
+import { Icon } from "react-native-elements";
 
 function DrawerContent(props) {
+  const style = StyleSheet.create({
+    container: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: "black",
+    },
+    buttonText: {
+      color: "white",
+      lineHeight: 50,
+    },
+    button: {
+      margin: 40,
+      width: "80%",
+      borderRadius: 15,
+      backgroundColor: props.primary ? "#4285F4" : "#E65858",
+      height: 50,
+      alignItems: "center",
+    },
+  });
+
   return (
     <ScrollView
       scrollsToTop={false}
-      style={{ flex: 1, width: window.width, height: window.height, backgroundColor: "#1c1c1c", padding: 20 }}
+      style={{ flex: 1, width: window.width, height: window.height, backgroundColor: "black", padding: 20 }}
     >
       <View style={style.container}>
         {props.pending && !props.primary ? null : (
@@ -23,48 +45,26 @@ function DrawerContent(props) {
             <Text style={style.buttonText}>GET NEW OPINION</Text>
           </TouchableOpacity>
         ) : null}
-        <TouchableOpacity
-          style={style.button}
-          onPress={() => {
-            props.report();
-          }}
-        >
-          <Text style={style.buttonText}>REPORT</Text>
-        </TouchableOpacity>
+        {props.primary && props.pending ? null : (
+          <TouchableOpacity
+            style={style.button}
+            onPress={() => {
+              props.report();
+            }}
+          >
+            <Text style={style.buttonText}>REPORT</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </ScrollView>
   );
 }
 
-const style = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#1c1c1c",
-  },
-  buttonText: {
-    color: "white",
-    lineHeight: 50,
-  },
-  button: {
-    margin: 40,
-    width: "80%",
-    backgroundColor: "#6a8fcc",
-    borderRadius: 25,
-    height: 50,
-    alignItems: "center",
-  },
-});
-
-//pretty easy, just
 class ConvoContainer extends React.Component {
   state = {
     pending: "not set",
     isOpen: false,
   };
-
-  componentDidMount = async () => {};
 
   updateContainer = (pending) => {
     this.setState({ pending });
@@ -77,7 +77,6 @@ class ConvoContainer extends React.Component {
       //notify new user
     }
 
-    console.log("replacing");
     this.props.navigation.replace("ConvoContainer", {
       id: this.props.route.params.id,
       user: this.props.route.params.user,
@@ -85,11 +84,10 @@ class ConvoContainer extends React.Component {
     });
   };
 
-  updateMenuState(isOpen) {
+  updateMenuState = (isOpen) => {
     this.setState({ isOpen });
-  }
+  };
 
-  //needs to only remove the convo from the user if not primary
   resolve = async () => {
     this.props.route.params.user.primary
       ? await ConvoController.deleteConvo(
@@ -98,13 +96,12 @@ class ConvoContainer extends React.Component {
           this.state.pending
         )
       : await MessageListController.removeConvo(this.props.route.params.id);
-    this.props.navigation.goBack(); //go back twice
+    this.props.navigation.goBack();
   };
 
   report = async () => {
     await ConvoController.report(this.props.route.params.id);
     if (!this.state.pending) {
-      console.log("resetting");
       this.props.route.params.user.primary
         ? await ConvoController.resetConvo(this.props.route.params.id)
         : await MessageListController.removeConvo(this.props.route.params.id);
@@ -112,9 +109,7 @@ class ConvoContainer extends React.Component {
     this.props.navigation.goBack();
   };
 
-  // only show new opinion if primary user
   render() {
-    //drawerContent={(props) => <CustomDrawerContent {...props} />}
     const menu = (
       <DrawerContent
         primary={this.props.route.params.user.primary}
@@ -142,11 +137,25 @@ class ConvoContainer extends React.Component {
         onChange={(isOpen) => this.updateMenuState(isOpen)}
       >
         <View style={{ flex: 1, backgroundColor: "black" }}>
+          <View style={{ width: "100%", height: 60, flexDirection: "row", justifyContent: "space-between" }}>
+            <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
+              <Icon
+                style={{ marginLeft: 20, marginTop: 10 }}
+                name="arrow-back"
+                type="material"
+                color="dimgray"
+                size={35}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => this.updateMenuState(true)}>
+              <Icon style={{ marginRight: 20, marginTop: 10 }} name="menu" type="material" color="dimgray" size={35} />
+            </TouchableOpacity>
+          </View>
           <Convo {...{ ...this.props, updateContainer: this.updateContainer.bind(this) }} />
         </View>
       </SideMenu>
     );
   }
 }
-//<Convo style={{backgroundColor:'black'}} {...{ ...this.props, updateContainer: this.updateContainer.bind(this) }} />
+
 export default ConvoContainer;

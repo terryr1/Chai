@@ -1,7 +1,4 @@
-import React, { useRef } from "react";
 import firebase from "firebase";
-import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
-import { Alert } from "react-native";
 
 class AuthModel {
   checkForAuthentication = (callback) => {
@@ -20,7 +17,8 @@ class AuthModel {
   sendVerification = async (email) => {
     console.log("sending verification");
     const actionCodeSettings = {
-      url: "https://chaiapp.page.link/verify",
+      url: "https://chailogin.page.link/verify",
+      dynamicLinkDomain: "chailogin.page.link",
       handleCodeInApp: true,
       iOS: {
         bundleId: "com.chai",

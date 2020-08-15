@@ -2,6 +2,8 @@ import React from "react";
 import { View, TextInput, StatusBar, Linking, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { SafeAreaView } from "react-navigation";
 import AuthController from "../Controllers/AuthController";
+import { Notifications } from "expo";
+import * as Permissions from "expo-permissions";
 
 class Setup extends React.Component {
   constructor(props) {
@@ -15,15 +17,34 @@ class Setup extends React.Component {
     };
   }
 
-  async componentDidUpdate() {
+  registerForPushNotifications = async () => {
+    const { status } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+    let finalStatus = status;
+
+    if (status !== "granted") {
+      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      finalStatus = status;
+    }
+
+    if (finalStatus !== "granted") {
+      return;
+    }
+
+    let token = await Notifications.getExpoPushTokenAsync();
+    AuthController.shared.addNotificationToken(token);
+  };
+
+  componentDidUpdate = async () => {
     if (this.state.user) {
       this.props.navigation.replace("Main", { uid: this.state.user.uid });
     }
-  }
+  };
 
-  componentDidMount() {
+  componentDidMount = () => {
     this._unsubscribeFocus = this.props.navigation.addListener("focus", () => {
-      AuthController.shared.checkForAuthentication((user) => this.setState({ user: user }));
+      AuthController.shared.checkForAuthentication((user) =>
+        this.setState({ user: user }, this.registerForPushNotifications)
+      );
       Linking.addEventListener("url", (event) => {
         AuthController.shared.confirmLink(this.enteredEmail, event.url);
       });
@@ -32,12 +53,12 @@ class Setup extends React.Component {
     this._unsubscribeBlur = this.props.navigation.addListener("blur", () => {
       AuthController.shared.stopCheckForAuthentication();
     });
-  }
+  };
 
-  componentWillUnmount() {
+  componentWillUnmount = () => {
     this._unsubscribeFocus();
     this._unsubscribeBlur();
-  }
+  };
 
   onChangeEmail = (val) => {
     this.setState({ email: val });
@@ -120,7 +141,6 @@ class Setup extends React.Component {
     );
   };
 
-  //make this two pages -> first enter email -> page that says click the verification link
   render() {
     return (
       <SafeAreaView style={style.container}>
