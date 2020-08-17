@@ -73,10 +73,18 @@ class Convo extends React.Component {
 
   updateCallback = (messages, pending) => {
     if (this._isMounted) {
-      const new_messages = unionWith(this.state.messages, messages, (a, b) => a._id == b._id);
+      const new_messages = unionWith(messages, this.state.messages, (a, b) => {
+        if (a._id == 99999999999999) {
+          return a.text == b.text;
+        } else {
+          return a._id == b._id;
+        }
+      });
+
       const sorted_msgs = new_messages.sort((a, b) => {
         return b._id - a._id;
       });
+
 
       if (!this.state.pending || this.props.route.params.user.primary) {
         AsyncStorage.setItem(this.props.route.params.id, JSON.stringify(sorted_msgs));
@@ -110,6 +118,13 @@ class Convo extends React.Component {
   //make this look like its happending fast by updating the chat before the call gets put out, then check if there's another message with the same text and user made within the last 10 seconds
   //or send the timestamp, not a big deal and makes code less complex
   send = async (messages) => {
+    mapped_messages = messages.map((message) => ({
+      _id: 99999999999999,
+      text: message.text,
+      user: message.user,
+    }));
+
+    this.setState({ messages: [...mapped_messages, ...this.state.messages] });
     if (this.state.pending && !this.props.route.params.user.primary) {
       await ConvoController.addUserToConvo(
         this.state.messages[0].text,
@@ -119,6 +134,7 @@ class Convo extends React.Component {
 
       this.setState({ pending: false });
     }
+
     ConvoController.send(messages, "" + this.props.route.params.id, this.state.pending);
   };
 
@@ -173,7 +189,7 @@ class Convo extends React.Component {
         name="send"
         type="material"
         color={this.props.route.params.user.primary ? "#4285F4" : "#E65858"}
-        size={30}
+        size={32}
       />
     </Send>
   );
@@ -195,7 +211,7 @@ class Convo extends React.Component {
           renderInputToolbar={this.renderInputToolbar}
           renderSend={this.renderSend}
           alwaysShowSend
-          renderAvatar={() => null}
+          renderAvatar={null}
           textInputStyle={{ color: "#fff", padding: 10, backgroundColor: "#1c1c1c", borderRadius: 15, lineHeight: 20 }}
           scrollToBottom
           minInputToolbarHeight={53}

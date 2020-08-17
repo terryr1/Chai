@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, View, Animated, PanResponder, StatusBar, TouchableOpacity, SafeAreaView } from "react-native";
+import { Text, View, Animated, PanResponder, StatusBar, TouchableOpacity, SafeAreaView, PixelRatio } from "react-native";
 import ConvoController from "../Controllers/ConvoController";
 import Constants from "./../Constants";
 import { unionWith } from "lodash";
@@ -149,7 +149,7 @@ class ConvoCards extends React.Component {
           {...this.PanResponder.panHandlers}
           style={{ transform: this.rotateAndTranslate, ...style }}
         >
-          <Text style={{ fontSize: 25, fontWeight: "bold", color: "black", paddingHorizontal: 40 }}>
+          <Text style={{ fontSize: 24 / PixelRatio.getFontScale(), fontWeight: "bold", color: "black", paddingHorizontal: 40 }}>
             {this.state.data[0].question}
           </Text>
         </Animated.View>
@@ -161,7 +161,7 @@ class ConvoCards extends React.Component {
           key={1}
           style={{ ...style, opacity: this.nextCardOpacity, transform: [{ scale: this.nextCardScale }] }}
         >
-          <Text style={{ fontSize: 25, fontWeight: "bold", color: "black", paddingHorizontal: 40 }}>
+          <Text style={{ fontSize: 24 / PixelRatio.getFontScale(), fontWeight: "bold", color: "black", paddingHorizontal: 40 }}>
             {this.state.data[1].question}
           </Text>
         </Animated.View>

@@ -1,8 +1,8 @@
 import React from "react";
-import { TextInput, Text, StatusBar, Button, StyleSheet, View, Animated, SafeAreaView } from "react-native";
+import { TextInput, Text, StatusBar, Button, StyleSheet, View, Animated, SafeAreaView, PixelRatio } from "react-native";
 import CreateConvoController from "../Controllers/CreateConvoController";
 import LottieView from "lottie-react-native";
-import Constants from './../Constants'
+import Constants from "./../Constants";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Icon } from "react-native-elements";
 
@@ -28,6 +28,7 @@ class CreateConvo extends React.Component {
   };
 
   componentDidMount = () => {
+    console.log(PixelRatio.getFontScale())
     this._unsubscribeFocus = this.props.navigation.addListener("focus", async () => {
       if (this.animation) {
         this.animation.play();
@@ -48,14 +49,15 @@ class CreateConvo extends React.Component {
     return (
       <SafeAreaView style={style.container}>
         <StatusBar backgroundColor="black" barStyle="light-content" />
+
+        <Text style={style.mainText}>So, what's on your mind?</Text>
         <LottieView
-          style={{ marginBottom: 15 }}
+          style={{ marginBottom: 20 }}
           ref={(animation) => {
             this.animation = animation;
           }}
           source={require("./../../resources/tea-anim.json")}
         ></LottieView>
-        <Text style={style.mainText}>So, what's on your mind?</Text>
         <View
           style={{
             flexDirection: "row",
@@ -71,23 +73,19 @@ class CreateConvo extends React.Component {
               onChangeText={this.onChangeText}
               value={this.state.inputVal}
               placeholder="Something on your mind..."
+              placeholderTextColor="white"
             />
           </View>
-          <View style={{ alignSelf: "flex-start", justifyContent: "center", marginRight: 15, marginTop: 9 }}>
+          <View style={{ alignSelf: "flex-start", justifyContent: "center", marginTop: 4 }}>
             {this.state.loading ? (
-              <></>
+              <View style={{ width: 30, height: 30 }}></View>
             ) : (
               <TouchableOpacity
                 onPress={() => {
                   this.setState({ loading: true }, () => this.sendMessage.call(this));
                 }}
               >
-                <Icon
-                  name="send"
-                  type="material"
-                  color="white"
-                  size={30}
-                />
+                <Icon name="send" type="material" color="white" size={32} />
               </TouchableOpacity>
             )}
           </View>
@@ -105,26 +103,30 @@ const style = StyleSheet.create({
     backgroundColor: "black",
   },
   mainText: {
-    padding: 40,
     marginTop: 50,
+    borderRadius: 15,
+    width: "85%",
     color: "white",
     fontWeight: "normal",
-    textAlign: "center",
-    fontSize: 33,
+    textAlign: "left",
+    fontSize: 30 / PixelRatio.getFontScale(),
   },
   inputView: {
     margin: 20,
-    marginBottom: Constants.SCREEN_HEIGHT/3,
+    marginBottom: Constants.SCREEN_HEIGHT / 3,
     width: "85%",
-    backgroundColor: "black",
-    borderRadius: 15,
-    height: 50,
+    height: 40,
   },
   inputText: {
-    height: 50,
-    padding: 15,
-    fontSize: 16,
-    color: "white"
+    height: 40,
+    paddingLeft: 0,
+    marginRight: 30,
+    fontSize: 18 / PixelRatio.getFontScale(),
+    fontWeight: "normal",
+    color: "white",
+    borderBottomColor: "white",
+    borderRadius: 15,
+    // borderBottomWidth: 1,
   },
 });
 

@@ -13,7 +13,7 @@ class ConvoModel {
 
     const message = {
       _id: timestamp.getTime(),
-      timestamp,
+      createdAt: timestamp,
       text,
       user: { _id: uid, name: "Anonymous" },
     };

@@ -1,9 +1,5 @@
 PENDING REFACTOR:
 
-AsyncStorage.setItem('key', JSON.stringify(object))
-let obj = await AsyncStorage.getItem('key')
-let parsed = JSON.parse(obj)
-AsyncStorage.removeItem('key')
 figure out how to not make call to firebase
   - only listen for new changes
   - every time we open a convo query the messages collection for all messages where id != any of the ids we already have
@@ -13,11 +9,8 @@ change all == to ===
 
 COLORS: #E65858 - red, "#4285F4" - blue
 
-hide lottie when keyboard open, make tab bar taller
 
-NEXT TITLE: IMPROVE YOUR MENTAL HEALTH THROUGH conversation __IMPORTANT__
-
-make an index on a boolean field called pending - then get where pending = true
+NEXT TITLE: I made an app to IMPROVE YOUR MENTAL HEALTH THROUGH conversation __IMPORTANT__
 
 NEXT STEP: notifications ->  encryption | asthetics, add in alert messages to errors
 
@@ -27,11 +20,9 @@ reporting - lets do one report create a document in a reports collection - that 
 next have a cloud function that disables that users account if the report count gets past a certain number - 20?
 for now lets not do time based reporting - if u get reported over 20 times your blacklisted
 
-SET LIMITS FOR NUMBER OF CONVERSATIONS YOU CANN HAVE ASSIGNED TO YOU, LIMIT CONVERSATIONS TO 500 messages, limit convos to 20, 
+SET LIMITS FOR NUMBER OF CONVERSATIONS YOU CANN HAVE ASSIGNED TO YOU, LIMIT CONVERSATIONS TO 500 messages, limit convos to 10 at a time, 
 make sure to limit gets as much as possible look through the code
 minimize errors in firestore functions - this will probably slow stuff down if there are errors
-
-speed everything up by rendering messages before the request gets sent out
 
 BATCH READ convo messages - only read like 20 at a time unlesss they scroll up or something
 

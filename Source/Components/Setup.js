@@ -89,7 +89,7 @@ class Setup extends React.Component {
           />
         </View>
         <TouchableOpacity
-          style={{ ...style.button }}
+          style={{ ...style.button, marginBottom: 40 }}
           onPress={() => AuthController.shared.confirmLink(this.enteredEmail, this.state.url)}
         >
           <Text style={style.buttonText}>VERIFY</Text>
@@ -108,7 +108,7 @@ class Setup extends React.Component {
     return (
       <>
         <Text style={style.mainText}>Click the link we sent to your email to continue</Text>
-        <TouchableOpacity style={{ ...style.button }} onPress={() => this.setState({ currentStep: this.stepThree })}>
+        <TouchableOpacity style={{ ...style.button, marginBottom: 40 }} onPress={() => this.setState({ currentStep: this.stepThree })}>
           <Text style={style.buttonText}>ENTER LINK MANUALLY</Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -183,6 +183,7 @@ const style = StyleSheet.create({
   },
   button: {
     margin: 40,
+    marginBottom: 150,
     width: "80%",
     backgroundColor: "#4285F4",
     borderRadius: 25,
