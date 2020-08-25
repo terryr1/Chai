@@ -9,6 +9,7 @@ change all == to ===
 
 COLORS: #E65858 - red, "#4285F4" - blue
 
+change colors, constants to be in CONSTATNTS file
 
 NEXT TITLE: I made an app to IMPROVE YOUR MENTAL HEALTH THROUGH conversation __IMPORTANT__
 
@@ -52,3 +53,5 @@ https://www.npmjs.com/package/hybrid-crypto-js#documentation
 
 Messages should be created with timestamp - then send them - this way it can be loaded faster as well and timestamp is accurate
 remove npm modules we don't use anymore (there's a few)
+
+catch error if invalid email link clicked

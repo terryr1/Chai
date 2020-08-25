@@ -1,5 +1,6 @@
 {
   "expo": {
+    "userInterfaceStyle": "automatic",
     "name": "Chai",
     "slug": "Chai",
     "version": "1.0.0",

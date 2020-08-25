@@ -1,5 +1,5 @@
 import React from "react";
-import { FlatList, StatusBar, SafeAreaView } from "react-native";
+import { FlatList, StatusBar, SafeAreaView, View } from "react-native";
 import { ListItem } from "react-native-elements";
 import MessageListController from "../Controllers/MessageListController";
 import { Icon } from "react-native-elements";
@@ -7,6 +7,7 @@ import { SvgXml } from "react-native-svg";
 import { unionWith, difference } from "lodash";
 import Constants from "./../Constants";
 import AsyncStorage from "@react-native-community/async-storage";
+import LottieView from "lottie-react-native";
 
 class MessageList extends React.Component {
   constructor(props) {
@@ -18,14 +19,26 @@ class MessageList extends React.Component {
   };
 
   componentDidMount = async () => {
-    AsyncStorage.getItem("convos").then((convos) => {
+    // AsyncStorage.getItem("convos").then((convos) => {
+    //   if (convos) {
+    //     this.setState({ data: JSON.parse(convos) });
+    //   }
+    // });
+
+    try {
+      const convos = await AsyncStorage.getItem("convos");
       if (convos) {
         this.setState({ data: JSON.parse(convos) });
       }
-    });
+    } catch (error) {
+      console.log(error);
+    }
 
     this._unsubscribeFocus = this.props.navigation.addListener("focus", () => {
       this._isMounted = true;
+      if (this.animation) {
+        this.animation.play();
+      }
       this.startController();
     });
 
@@ -70,44 +83,66 @@ class MessageList extends React.Component {
   renderItem = ({ item }) => (
     <ListItem
       title={item.name}
-      titleStyle={{ color: "white", fontWeight: "bold", fontSize: 16 }}
+      titleStyle={{ color: Constants.mainTextColor, fontWeight: "bold", fontSize: 16 }}
       leftIcon={
         item.primary ? (
-          <Icon name="face" type="material" color="white" size={47} />
+          <Icon name="face" type="material" color={Constants.mainTextColor} size={47} />
         ) : (
-          <SvgXml xml={Constants.agent} width={47} height={47} fill="white" color="white" />
+          <SvgXml
+            xml={Constants.agent}
+            width={47}
+            height={47}
+            fill={Constants.mainTextColor}
+            color={Constants.mainTextColor}
+          />
         )
       }
+      underlayColor="rgba(255, 255, 255, .2)"
       onPress={() => this.onPress(item)}
-      backgroundColor="black"
       containerStyle={{
-        marginLeft: 5,
-        marginRight: 5,
-        marginTop: 5,
-        borderWidth: 0,
-        borderColor: "black",
-        backgroundColor: "#fff",
+        paddingHorizontal: 0,
+        marginHorizontal: 16,
+        borderRadius: 1,
+        backgroundColor: "rgba(0, 0, 0, 0)",
       }}
-      linearGradientProps={{
-        colors: ["black", "black"],
-        start: [1, 0],
-        end: [0.2, 0],
-      }}
-      style={{ borderWidth: 0, borderColor: "black" }}
-      chevron
+      chevron={true}
     />
   );
 
   render() {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: "black" }}>
-        <StatusBar backgroundColor="black" barStyle="light-content" />
-        <FlatList
-          style={{ borderWidth: 0, borderColor: "black" }}
-          keyExtractor={this.keyExtractor}
-          data={this.state.data}
-          renderItem={this.renderItem}
-        />
+      <SafeAreaView style={{ flex: 1, backgroundColor: Constants.backgroundColor }}>
+        <StatusBar backgroundColor={Constants.backgroundColor} barStyle="light-content" />
+        <LottieView
+          style={{ zIndex: 1, position: "absolute", width: "100%", bottom: 0 }}
+          ref={(animation) => {
+            this.animation = animation;
+          }}
+          autoPlay
+          source={require("./../../resources/messagelist.json")}
+        ></LottieView>
+        <View
+          style={{
+            flex: 1,
+            zIndex: 5,
+            marginTop: 15,
+            marginLeft: 15,
+            marginRight: 15,
+            marginBottom: 10,
+            backgroundColor: "rgba(28, 28, 28, 1)",
+            borderRadius: 25,
+            paddingVertical: 20,
+          }}
+        >
+          <FlatList
+            style={{
+              zIndex: 5,
+            }}
+            keyExtractor={this.keyExtractor}
+            data={this.state.data}
+            renderItem={this.renderItem}
+          />
+        </View>
       </SafeAreaView>
     );
   }

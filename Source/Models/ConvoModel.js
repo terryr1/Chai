@@ -2,6 +2,7 @@ import firebase from "firebase";
 import "firebase/firestore";
 import Fire from "../Fire";
 import "firebase/functions";
+import { Alert } from "react-native";
 
 class ConvoModel {
   get ref() {
@@ -138,7 +139,7 @@ class ConvoModel {
 
     const createConvo = firebase.functions().httpsCallable("createConvo");
     const result = await createConvo(data);
-    return result.data._path.segments[1];
+    return result.data;
   };
 
   getConvos = async (uid, prevDoc) => {
@@ -168,9 +169,13 @@ class ConvoModel {
     return { convos, prevDoc };
   };
 
-  delete = (convo_id) => {
+  delete = async (convo_id) => {
     console.log("deleting pending convo");
-    return this.ref.doc(convo_id).delete();
+    const token = await firebase.auth().currentUser.getIdToken(true);
+    const data = { convo_id, token };
+
+    const deleteConvo = firebase.functions().httpsCallable("deleteConvo");
+    return deleteConvo(data);
   };
 
   isPending = async (convo_id) => {

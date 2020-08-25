@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useDebugValue } from "react";
 import Main from "./Source/Tabs/Main";
 import Setup from "./Source/Components/Setup";
 import { NavigationContainer } from "@react-navigation/native";
@@ -10,6 +10,9 @@ import { SplashScreen } from "expo";
 import { Asset } from "expo-asset";
 import Constants from "./Source/Constants";
 import { Easing } from "react-native-reanimated";
+import * as Notifications from "expo-notifications";
+import { JosefinSans_400Regular } from "@expo-google-fonts/josefin-sans";
+import * as Font from "expo-font";
 
 //fixed a random error------
 if (!global.btoa) {
@@ -22,6 +25,14 @@ if (!global.atob) {
 // ------------------------
 
 const Stack = createStackNavigator();
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 class App extends React.Component {
   constructor() {
@@ -42,12 +53,16 @@ class App extends React.Component {
     user: false,
     splashAnimation: new Animated.Value(0),
     splashAnimationComplete: false,
+    notification: {},
   };
 
   componentDidMount = async () => {
+    // this.onNotificationListener = Notifications.addNotificationReceivedListener(this.handleNotification);
+    this.onResponseListener = Notifications.addNotificationResponseReceivedListener(this.handleResponse);
     SplashScreen.preventAutoHide();
     //maybe try await this
     await this.loadAsync();
+
     AuthController.shared.checkForAuthentication((user) => {
       if (user) {
         this.setState({ user });
@@ -55,6 +70,35 @@ class App extends React.Component {
         this.setState({ user: "noUser" });
       }
     });
+  };
+
+  // handleNotification = async (notification) => {
+  //   if (notification.request.content.data.convo_id) {
+  //     this.setState({ notificationData: notification.request.content.data });
+  //   }
+  // };
+
+  handleResponse = async (response) => {
+    if (response.notification.request.content.data.convo_id) {
+      this.setState({ notificationData: response.notification.request.content.data });
+    }
+  };
+
+  handleNavigation = () => {
+    // if (this.state.notificationData && this.state.notificationData.convo_id) {
+    //   const { convo_id, primary, pending } = this.state.notificationData;
+    //   this.navigationRef.current?.navigate("Main", {
+    //     screen: "Messages",
+    //     params: {
+    //       screen: "ConvoContainer",
+    //       params: { id: convo_id, pending, user: { uid: this.props.route.params.uid, primary: primary } },
+    //     },
+    //   });
+    // }
+  };
+
+  componentWillUnmount = () => {
+    Notifications.removeNotificationSubscription(this.onResponseListener);
   };
 
   animateOut = () => {
@@ -80,7 +124,10 @@ class App extends React.Component {
   };
 
   loadResourcesAsync = async () => {
-    return Promise.all([Asset.loadAsync([require("./assets/splashscreen.png")])]);
+    return Promise.all([
+      Asset.loadAsync([require("./assets/splashscreen.png")]),
+      Font.loadAsync({ JosefinSans_400Regular }),
+    ]);
   };
 
   handleLoadingError = (error) => {
@@ -106,7 +153,7 @@ class App extends React.Component {
           right: 0,
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "black",
+          backgroundColor: Constants.backgroundColor,
           opacity: this.state.splashAnimation.interpolate({
             inputRange: [1, 2],
             outputRange: [1, 0],
@@ -141,12 +188,16 @@ class App extends React.Component {
 
   render() {
     if (!this.state.isLoadingComplete || !this.state.user) {
-      return <View style={{ width: "100%", height: "100%", backgroundColor: "black" }} />;
+      return <View style={{ width: "100%", height: "100%", backgroundColor: Constants.backgroundColor }} />;
     }
 
     return (
-      <View style={{ flex: 1, backgroundColor: "black" }}>
-        <NavigationContainer theme={this.MyTheme}>
+      <View style={{ flex: 1, backgroundColor: Constants.backgroundColor }}>
+        <NavigationContainer
+          theme={this.MyTheme}
+          ref={(navigation) => (this.navigationRef = navigation)}
+          onReady={this.handleNavigation}
+        >
           <Stack.Navigator
             initialRouteName={this.state.user == "noUser" ? "Setup" : "Main"}
             screenOptions={{
@@ -157,7 +208,10 @@ class App extends React.Component {
             <Stack.Screen
               name="Main"
               component={Main}
-              initialParams={{ uid: this.state.user == "noUser" ? null : this.state.user.uid }}
+              initialParams={{
+                uid: this.state.user == "noUser" ? null : this.state.user.uid,
+                notificationData: this.state.notificationData,
+              }}
             />
             <Stack.Screen name="Setup" component={Setup} />
           </Stack.Navigator>

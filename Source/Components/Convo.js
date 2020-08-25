@@ -5,6 +5,7 @@ import { unionWith } from "lodash";
 import { Icon } from "react-native-elements";
 import ConvoController from "./../Controllers/ConvoController";
 import AsyncStorage from "@react-native-community/async-storage";
+import Constants from "../Constants";
 
 //TODO: notifications
 //dismiss notifications when open convo - notifications should have the question (messages[0])
@@ -85,7 +86,6 @@ class Convo extends React.Component {
         return b._id - a._id;
       });
 
-
       if (!this.state.pending || this.props.route.params.user.primary) {
         AsyncStorage.setItem(this.props.route.params.id, JSON.stringify(sorted_msgs));
       }
@@ -152,7 +152,7 @@ class Convo extends React.Component {
         }}
         wrapperStyle={{
           right: {
-            backgroundColor: this.props.route.params.user.primary ? "#4285F4" : "#E65858",
+            backgroundColor: this.props.route.params.user.primary ? Constants.accentColorOne : Constants.accentColorTwo,
             borderRadius: 15,
           },
           left: {
@@ -168,7 +168,7 @@ class Convo extends React.Component {
     <InputToolbar
       {...props}
       containerStyle={{
-        backgroundColor: "black",
+        backgroundColor: Constants.backgroundColor,
         borderTopWidth: 0,
         paddingTop: 15,
       }}
@@ -188,7 +188,7 @@ class Convo extends React.Component {
       <Icon
         name="send"
         type="material"
-        color={this.props.route.params.user.primary ? "#4285F4" : "#E65858"}
+        color={this.props.route.params.user.primary ? Constants.accentColorOne : Constants.accentColorTwo}
         size={32}
       />
     </Send>
@@ -198,21 +198,21 @@ class Convo extends React.Component {
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
       <ActivityIndicator
         size="large"
-        color={this.props.route.params.user.primary ? "#4285F4" : "#E65858"}
+        color={this.props.route.params.user.primary ? Constants.accentColorOne : Constants.accentColorTwo}
       ></ActivityIndicator>
     </View>
   );
 
   render() {
     return (
-      <View style={{ flex: 1, backgroundColor: "black" }}>
+      <View style={{ flex: 1, backgroundColor: Constants.backgroundColor }}>
         <GiftedChat
           renderBubble={this.renderBubble}
           renderInputToolbar={this.renderInputToolbar}
           renderSend={this.renderSend}
           alwaysShowSend
           renderAvatar={null}
-          textInputStyle={{ color: "#fff", padding: 10, backgroundColor: "#1c1c1c", borderRadius: 15, lineHeight: 20 }}
+          textInputStyle={{ color: Constants.mainTextColor, padding: 10, backgroundColor: '#1c1c1c', borderRadius: 15, lineHeight: 20 }}
           scrollToBottom
           minInputToolbarHeight={53}
           messages={this.state.messages}

@@ -4,6 +4,8 @@ import { SafeAreaView } from "react-navigation";
 import AuthController from "../Controllers/AuthController";
 import { Notifications } from "expo";
 import * as Permissions from "expo-permissions";
+import AsyncStorage from "@react-native-community/async-storage";
+import Constants from "../Constants";
 
 class Setup extends React.Component {
   constructor(props) {
@@ -41,10 +43,13 @@ class Setup extends React.Component {
   };
 
   componentDidMount = () => {
+    AsyncStorage.clear();
     this._unsubscribeFocus = this.props.navigation.addListener("focus", () => {
-      AuthController.shared.checkForAuthentication((user) =>
-        this.setState({ user: user }, this.registerForPushNotifications)
-      );
+      AuthController.shared.checkForAuthentication((user) => {
+        if (user) {
+          this.setState({ user: user }, this.registerForPushNotifications);
+        }
+      });
       Linking.addEventListener("url", (event) => {
         AuthController.shared.confirmLink(this.enteredEmail, event.url);
       });
@@ -108,7 +113,10 @@ class Setup extends React.Component {
     return (
       <>
         <Text style={style.mainText}>Click the link we sent to your email to continue</Text>
-        <TouchableOpacity style={{ ...style.button, marginBottom: 40 }} onPress={() => this.setState({ currentStep: this.stepThree })}>
+        <TouchableOpacity
+          style={{ ...style.button, marginBottom: 40 }}
+          onPress={() => this.setState({ currentStep: this.stepThree })}
+        >
           <Text style={style.buttonText}>ENTER LINK MANUALLY</Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -144,7 +152,7 @@ class Setup extends React.Component {
   render() {
     return (
       <SafeAreaView style={style.container}>
-        <StatusBar backgroundColor="black" barStyle="light-content" />
+        <StatusBar backgroundColor={Constants.backgroundColor} barStyle="light-content" />
         {this.state.currentStep()}
       </SafeAreaView>
     );
@@ -158,11 +166,11 @@ const style = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "black",
+    backgroundColor: Constants.backgroundColor,
   },
   mainText: {
     padding: 40,
-    color: "white",
+    color: Constants.mainTextColor,
     fontSize: 30,
   },
   inputView: {
@@ -185,7 +193,7 @@ const style = StyleSheet.create({
     margin: 40,
     marginBottom: 150,
     width: "80%",
-    backgroundColor: "#4285F4",
+    backgroundColor: Constants.accentColorOne,
     borderRadius: 25,
     height: 50,
     alignItems: "center",

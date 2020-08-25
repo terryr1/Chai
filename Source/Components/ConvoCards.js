@@ -1,5 +1,14 @@
 import React from "react";
-import { Text, View, Animated, PanResponder, StatusBar, TouchableOpacity, SafeAreaView, PixelRatio } from "react-native";
+import {
+  Text,
+  View,
+  Animated,
+  PanResponder,
+  StatusBar,
+  TouchableOpacity,
+  SafeAreaView,
+  PixelRatio,
+} from "react-native";
 import ConvoController from "../Controllers/ConvoController";
 import Constants from "./../Constants";
 import { unionWith } from "lodash";
@@ -107,6 +116,9 @@ class ConvoCards extends React.Component {
     }
 
     this._unsubscribeFocus = this.props.navigation.addListener("focus", () => {
+      if(this.bg_animation) {
+        this.bg_animation.play()
+      }
       this._isMounted = true;
     });
 
@@ -132,7 +144,9 @@ class ConvoCards extends React.Component {
 
   renderCards = () => {
     const style = {
-      backgroundColor: "white",
+      backgroundColor: "#1c1c1c",
+      // borderWidth: 5,
+      borderColor: "#1c1c1c",
       height: "100%",
       width: Constants.SCREEN_WIDTH - 40,
       marginLeft: 20,
@@ -149,7 +163,14 @@ class ConvoCards extends React.Component {
           {...this.PanResponder.panHandlers}
           style={{ transform: this.rotateAndTranslate, ...style }}
         >
-          <Text style={{ fontSize: 24 / PixelRatio.getFontScale(), fontWeight: "bold", color: "black", paddingHorizontal: 40 }}>
+          <Text
+            style={{
+              fontSize: 24 / PixelRatio.getFontScale(),
+              fontWeight: "bold",
+              color: Constants.mainTextColor,
+              paddingHorizontal: 40,
+            }}
+          >
             {this.state.data[0].question}
           </Text>
         </Animated.View>
@@ -161,7 +182,14 @@ class ConvoCards extends React.Component {
           key={1}
           style={{ ...style, opacity: this.nextCardOpacity, transform: [{ scale: this.nextCardScale }] }}
         >
-          <Text style={{ fontSize: 24 / PixelRatio.getFontScale(), fontWeight: "bold", color: "black", paddingHorizontal: 40 }}>
+          <Text
+            style={{
+              fontSize: 24 / PixelRatio.getFontScale(),
+              fontWeight: "bold",
+              color: Constants.mainTextColor,
+              paddingHorizontal: 40,
+            }}
+          >
             {this.state.data[1].question}
           </Text>
         </Animated.View>
@@ -172,8 +200,17 @@ class ConvoCards extends React.Component {
 
   render() {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: "black" }}>
-        <StatusBar backgroundColor="black" barStyle="light-content" />
+      <SafeAreaView style={{ flex: 1, backgroundColor: Constants.backgroundColor }}>
+        <StatusBar backgroundColor={Constants.backgroundColor} barStyle="light-content" />
+        <LottieView
+        style={{zIndex: -1, position: "absolute", width: '100%', bottom: 0}}
+          ref={(animation) => {
+            this.bg_animation = animation;
+          }}
+          autoPlay
+          source={require("./../../resources/cardsbg.json")}
+          loop={true}
+        ></LottieView>
         <View style={{ height: "5%" }}></View>
         {this.state.numDocs > 0 ? (
           <View style={{ flex: 1, justifyContent: "center", alignContent: "center" }}>{this.renderCards()}</View>
@@ -181,7 +218,6 @@ class ConvoCards extends React.Component {
           <View
             style={{
               flex: 1,
-              backgroundColor: "black",
               justifyContent: "center",
               alignContent: "center",
               margin: Constants.SCREEN_WIDTH / 4,

@@ -19,8 +19,6 @@ class AuthController {
   };
 
   confirmLink = async (email, link) => {
-    console.log(email)
-    console.log(link)
     if (AuthModel.shared.checkIfValidLink(link)) {
       AuthModel.shared.signIn(email, link);
     }
