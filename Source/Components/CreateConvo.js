@@ -66,82 +66,69 @@ class CreateConvo extends React.Component {
           ref={(animation) => {
             this.animation = animation;
           }}
-          source={require("./../../resources/tea-anim3.json")}
+          source={require("./../../resources/tea-anim.json")}
+          speed={0.75}
         ></LottieView>
-        <View style={style.container}>
-          {/* <Svg height="60" width="400" style={{ bottom: 150 }}>
-            <Text fill="black" stroke="black" fontSize="30" strokeWidth="0" fontWeight="bold" x="180" y="30" textAnchor="middle">
-              So, what's on your mind?
-            </Text>
-          </Svg> */}
-          <Text
-            style={{
-              bottom: "22%",
-              fontSize: 30,
-              color: "rgba(255, 255, 255, 1)",
-              padding: 20,
-              paddingLeft: 30,
-              borderRadius: 0,
-              fontWeight: "bold",
-              textAlign: "left",
-              alignSelf: "center",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "100%",
-            }}
-          >
-            Chai?
-          </Text>
-          <Text
-            style={{
-              bottom: "29%",
-              fontSize: 24,
-              color: "rgba(255, 255, 255, .5)",
-              padding: 20,
-              paddingLeft: 30,
-              borderRadius: 0,
-              fontWeight: "bold",
-              textAlign: "left",
-              alignSelf: "center",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "100%",
-            }}
-          >
-            So, what's on your mind?
-          </Text>
-          <View
-            style={{
-              flexDirection: "row",
-              margin: 40,
-              width: window.width,
-              justifyContent: "center",
-              ...style.inputView,
-            }}
-          >
-            <View style={{ flex: 4 }}>
-              <TextInput
-                style={style.inputText}
-                onChangeText={this.onChangeText}
-                value={this.state.inputVal}
-                placeholder="Something on your mind..."
-              />
-            </View>
-            <View style={{ alignSelf: "flex-start", justifyContent: "center", marginTop: 4 }}>
-              {this.state.loading ? (
-                <View style={{ width: 30, height: 30 }}></View>
-              ) : (
-                <TouchableOpacity
-                  onPress={() => {
-                    if (this.state.inputVal.length > 0) {
-                      this.setState({ loading: true }, () => this.sendMessage.call(this));
-                    }
-                  }}
-                >
-                  <Icon name="send" type="material" color={Constants.mainTextColor} size={32} />
-                </TouchableOpacity>
-              )}
-            </View>
+
+        <Text
+          style={{
+            fontSize: 45,
+            color: "rgba(255, 255, 255, 1)",
+            padding: 20,
+            paddingLeft: 27,
+            fontWeight: "bold",
+            textAlign: "left",
+            width: "100%",
+          }}
+        >
+          Chai
+        </Text>
+        <Text
+          style={{
+            fontSize: 25,
+            color: "rgba(255, 255, 255, .5)",
+            bottom: 20,
+            paddingLeft: 27,
+            fontWeight: "bold",
+            textAlign: "left",
+            width: "100%",
+          }}
+        >
+          So, what's on your mind?
+        </Text>
+        <View
+          style={{
+            marginTop: "65%",
+            flexDirection: "row",
+            margin: 40,
+            width: window.width,
+            justifyContent: "center",
+            ...style.inputView,
+          }}
+        >
+          <View style={{ flex: 4 }}>
+            <TextInput
+              style={style.inputText}
+              onChangeText={this.onChangeText}
+              value={this.state.inputVal}
+              placeholder="Something on your mind..."
+              placeholderTextColor="white"
+            />
+          </View>
+          <View style={{ alignSelf: "flex-start", justifyContent: "center", marginTop: 2 }}>
+            {this.state.loading ? (
+              <View style={{ width: 30, height: 30 }}></View>
+            ) : (
+              <TouchableOpacity
+                onPress={() => {
+                  if (this.state.inputVal.length > 0) {
+                    this.setState({ loading: true }, () => this.sendMessage.call(this));
+                  }
+                }}
+              >
+                <Icon name="send" type="material" color={Constants.mainTextColor} size={32} />
+              </TouchableOpacity>
+            )}
           </View>
         </View>
         {this.state.loading && (
@@ -192,15 +179,14 @@ const style = StyleSheet.create({
   },
   inputText: {
     height: 40,
-    paddingLeft: 15,
+    paddingLeft: 7,
     marginRight: 30,
     fontSize: 16 / PixelRatio.getFontScale(),
     fontWeight: "normal",
     color: Constants.mainTextColor,
-    backgroundColor: "#1c1c1c",
-    borderRadius: 15
-    // borderBottomWidth: 1,
-    // borderBottomColor: "dimgray"
+    borderRadius: 15,
+    // borderWidth: 1,
+    // borderColor: "white"
   },
 });
 

@@ -170,15 +170,15 @@ class App extends React.Component {
             left: 0,
             bottom: 0,
             right: 0,
-            resizeMode: "contain",
-            transform: [
-              {
-                translateY: this.state.splashAnimation.interpolate({
-                  inputRange: [0, 0.5],
-                  outputRange: [0, Constants.SCREEN_HEIGHT * 0.05],
-                }),
-              },
-            ],
+            resizeMode: "cover",
+            // transform: [
+            //   {
+            //     translateY: this.state.splashAnimation.interpolate({
+            //       inputRange: [0, 0.5],
+            //       outputRange: [0, Constants.SCREEN_HEIGHT * 0.05],
+            //     }),
+            //   },
+            // ],
           }}
           onLoadEnd={this.animateOut}
         />

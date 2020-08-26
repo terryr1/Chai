@@ -1,5 +1,5 @@
 import React from "react";
-import { FlatList, StatusBar, SafeAreaView, View } from "react-native";
+import { FlatList, StatusBar, SafeAreaView, View, Text, TouchableOpacity, Alert } from "react-native";
 import { ListItem } from "react-native-elements";
 import MessageListController from "../Controllers/MessageListController";
 import { Icon } from "react-native-elements";
@@ -36,9 +36,9 @@ class MessageList extends React.Component {
 
     this._unsubscribeFocus = this.props.navigation.addListener("focus", () => {
       this._isMounted = true;
-      if (this.animation) {
-        this.animation.play();
-      }
+      // if (this.animation) {
+      //   this.animation.play();
+      // }
       this.startController();
     });
 
@@ -83,7 +83,7 @@ class MessageList extends React.Component {
   renderItem = ({ item }) => (
     <ListItem
       title={item.name}
-      titleStyle={{ color: Constants.mainTextColor, fontWeight: "bold", fontSize: 16 }}
+      titleStyle={{ color: "rgba(255, 255, 255, 1)", fontWeight: "bold", fontSize: 16 }}
       leftIcon={
         item.primary ? (
           <Icon name="face" type="material" color={Constants.mainTextColor} size={47} />
@@ -105,7 +105,6 @@ class MessageList extends React.Component {
         borderRadius: 1,
         backgroundColor: "rgba(0, 0, 0, 0)",
       }}
-      chevron={true}
     />
   );
 
@@ -118,20 +117,32 @@ class MessageList extends React.Component {
           ref={(animation) => {
             this.animation = animation;
           }}
-          autoPlay
           source={require("./../../resources/messagelist.json")}
         ></LottieView>
         <View
           style={{
+            zIndex: 5,
+            width: "100%",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            backgroundColor: "rgba(0,0,0,0)",
+            paddingVertical: 20
+          }}
+        >
+          <Text style={{ color: "white", fontSize: 30, marginLeft: 27, fontWeight: "bold" }}>Chats</Text>
+          <TouchableOpacity onPress={() => Alert.alert("yo")}>
+            <Icon style={{ marginRight: 10 }} name="more-vert" type="material" color="white" size={35} />
+          </TouchableOpacity>
+        </View>
+        <View
+          style={{
             flex: 1,
             zIndex: 5,
-            marginTop: 15,
-            marginLeft: 15,
-            marginRight: 15,
+            marginLeft: 5,
+            marginRight: 10,
             marginBottom: 10,
-            backgroundColor: "rgba(28, 28, 28, 1)",
             borderRadius: 25,
-            paddingVertical: 20,
+            paddingBottom: 20,
           }}
         >
           <FlatList
@@ -141,6 +152,7 @@ class MessageList extends React.Component {
             keyExtractor={this.keyExtractor}
             data={this.state.data}
             renderItem={this.renderItem}
+            showsVerticalScrollIndicator={false}
           />
         </View>
       </SafeAreaView>

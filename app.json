@@ -8,7 +8,7 @@
     "icon": "./assets/chai_icon.png",
     "splash": {
       "image": "./assets/splashscreen.png",
-      "resizeMode": "contain",
+      "resizeMode": "cover",
       "backgroundColor": "#000000",
       "scheme": "chai"
     },

@@ -116,9 +116,9 @@ class ConvoCards extends React.Component {
     }
 
     this._unsubscribeFocus = this.props.navigation.addListener("focus", () => {
-      if(this.bg_animation) {
-        this.bg_animation.play()
-      }
+      // if(this.bg_animation) {
+      //   this.bg_animation.play()
+      // }
       this._isMounted = true;
     });
 
@@ -207,7 +207,6 @@ class ConvoCards extends React.Component {
           ref={(animation) => {
             this.bg_animation = animation;
           }}
-          autoPlay
           source={require("./../../resources/cardsbg.json")}
           loop={true}
         ></LottieView>
