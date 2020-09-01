@@ -1,4 +1,3 @@
-import UserModel from "../Models/UserModel";
 import ConvoModel from "../Models/ConvoModel";
 
 async function create(question, uid) {

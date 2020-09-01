@@ -4,7 +4,7 @@ import { ListItem } from "react-native-elements";
 import MessageListController from "../Controllers/MessageListController";
 import { Icon } from "react-native-elements";
 import { SvgXml } from "react-native-svg";
-import { unionWith, difference } from "lodash";
+import { difference } from "lodash";
 import Constants from "./../Constants";
 import AsyncStorage from "@react-native-community/async-storage";
 import LottieView from "lottie-react-native";
@@ -19,12 +19,6 @@ class MessageList extends React.Component {
   };
 
   componentDidMount = async () => {
-    // AsyncStorage.getItem("convos").then((convos) => {
-    //   if (convos) {
-    //     this.setState({ data: JSON.parse(convos) });
-    //   }
-    // });
-
     try {
       const convos = await AsyncStorage.getItem("convos");
       if (convos) {
@@ -36,9 +30,6 @@ class MessageList extends React.Component {
 
     this._unsubscribeFocus = this.props.navigation.addListener("focus", () => {
       this._isMounted = true;
-      // if (this.animation) {
-      //   this.animation.play();
-      // }
       this.startController();
     });
 
@@ -83,15 +74,15 @@ class MessageList extends React.Component {
   renderItem = ({ item }) => (
     <ListItem
       title={item.name}
-      titleStyle={{ color: "rgba(255, 255, 255, 1)", fontWeight: "bold", fontSize: 16 }}
+      titleStyle={{ color: Constants.mainTextColor, fontWeight: "bold", fontSize: 16 }}
       leftIcon={
         item.primary ? (
-          <Icon name="face" type="material" color={Constants.mainTextColor} size={47} />
+          <Icon name="face" type="material" color={Constants.mainTextColor} size={45} />
         ) : (
           <SvgXml
             xml={Constants.agent}
-            width={47}
-            height={47}
+            width={45}
+            height={45}
             fill={Constants.mainTextColor}
             color={Constants.mainTextColor}
           />

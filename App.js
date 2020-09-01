@@ -1,4 +1,4 @@
-import React, { useDebugValue } from "react";
+import React from "react";
 import Main from "./Source/Tabs/Main";
 import Setup from "./Source/Components/Setup";
 import { NavigationContainer } from "@react-navigation/native";
@@ -11,8 +11,6 @@ import { Asset } from "expo-asset";
 import Constants from "./Source/Constants";
 import { Easing } from "react-native-reanimated";
 import * as Notifications from "expo-notifications";
-import { JosefinSans_400Regular } from "@expo-google-fonts/josefin-sans";
-import * as Font from "expo-font";
 
 //fixed a random error------
 if (!global.btoa) {
@@ -40,10 +38,7 @@ class App extends React.Component {
     this.MyTheme = {
       dark: true,
       colors: {
-        primary: "rgb(255, 255, 255)",
         background: "rgb(0, 0, 0)",
-        card: "rgb(64, 64, 64)",
-        text: "rgb(255, 255, 255)",
         border: "rgb(0, 0, 0)",
       },
     };
@@ -57,10 +52,9 @@ class App extends React.Component {
   };
 
   componentDidMount = async () => {
-    // this.onNotificationListener = Notifications.addNotificationReceivedListener(this.handleNotification);
+    this.onNotificationListener = Notifications.addNotificationReceivedListener(this.handleNotification);
     this.onResponseListener = Notifications.addNotificationResponseReceivedListener(this.handleResponse);
     SplashScreen.preventAutoHide();
-    //maybe try await this
     await this.loadAsync();
 
     AuthController.shared.checkForAuthentication((user) => {
@@ -72,29 +66,17 @@ class App extends React.Component {
     });
   };
 
-  // handleNotification = async (notification) => {
-  //   if (notification.request.content.data.convo_id) {
-  //     this.setState({ notificationData: notification.request.content.data });
-  //   }
-  // };
+  //should be done differently
+  handleNotification = async (notification) => {
+    if (notification.request.content.data.convo_id) {
+      this.setState({ notificationData: notification.request.content.data });
+    }
+  };
 
   handleResponse = async (response) => {
     if (response.notification.request.content.data.convo_id) {
       this.setState({ notificationData: response.notification.request.content.data });
     }
-  };
-
-  handleNavigation = () => {
-    // if (this.state.notificationData && this.state.notificationData.convo_id) {
-    //   const { convo_id, primary, pending } = this.state.notificationData;
-    //   this.navigationRef.current?.navigate("Main", {
-    //     screen: "Messages",
-    //     params: {
-    //       screen: "ConvoContainer",
-    //       params: { id: convo_id, pending, user: { uid: this.props.route.params.uid, primary: primary } },
-    //     },
-    //   });
-    // }
   };
 
   componentWillUnmount = () => {
@@ -126,7 +108,6 @@ class App extends React.Component {
   loadResourcesAsync = async () => {
     return Promise.all([
       Asset.loadAsync([require("./assets/splashscreen.png")]),
-      Font.loadAsync({ JosefinSans_400Regular }),
     ]);
   };
 
@@ -155,7 +136,7 @@ class App extends React.Component {
           justifyContent: "center",
           backgroundColor: Constants.backgroundColor,
           opacity: this.state.splashAnimation.interpolate({
-            inputRange: [1, 2],
+            inputRange: [0, 2],
             outputRange: [1, 0],
           }),
         }}
@@ -171,14 +152,6 @@ class App extends React.Component {
             bottom: 0,
             right: 0,
             resizeMode: "cover",
-            // transform: [
-            //   {
-            //     translateY: this.state.splashAnimation.interpolate({
-            //       inputRange: [0, 0.5],
-            //       outputRange: [0, Constants.SCREEN_HEIGHT * 0.05],
-            //     }),
-            //   },
-            // ],
           }}
           onLoadEnd={this.animateOut}
         />

@@ -16,7 +16,6 @@ async function send(messages, id, pending) {
 }
 
 async function deleteConvo(uid, id) {
-  //to delete 11 only remove from user model
   return ConvoModel.shared.delete(id);
 }
 

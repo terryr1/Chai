@@ -4,12 +4,9 @@ import Messages from "./Messages";
 import Explore from "./Explore";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Icon } from "react-native-elements";
-import { Alert } from "react-native";
 import Constants from "../Constants";
 
 const Tabs = createBottomTabNavigator();
-
-//how notifications are handled while the app is open
 
 class Main extends React.Component {
   constructor() {
@@ -32,19 +29,6 @@ class Main extends React.Component {
     }
   };
 
-  // handleResponse = (response) => {
-  //   Alert.alert(JSON.stringify(response.notification.request.content));
-  //   Alert.alert(JSON.stringify(response.notification.request.content.data));
-  //   if (response.notification.request.content.data.convo_id) {
-  //     const { convo_id, primary, pending } = response.notification.request.content.data;
-
-  //     this.props.navigation.navigate("Messages", {
-  //       screen: "ConvoContainer",
-  //       params: { id: convo_id, pending, user: { uid: this.props.route.params.uid, primary: primary } },
-  //     });
-  //   }
-  // };
-
   render() {
     return (
       <Tabs.Navigator
@@ -66,13 +50,13 @@ class Main extends React.Component {
       >
         <Tabs.Screen
           name="Home"
-          unmountOnBlur={true}
           component={Home}
+          unmountOnBlur={true}
           initialParams={{
             uid: this.props.route.params.uid,
           }}
           options={{
-            tabBarIcon: ({ color, size }) => <Icon name="home" type="material" color={color} size={30} />,
+            tabBarIcon: ({ color }) => <Icon name="home" type="material" color={color} size={30} />,
           }}
         />
         <Tabs.Screen
@@ -83,7 +67,7 @@ class Main extends React.Component {
             uid: this.props.route.params.uid,
           }}
           options={{
-            tabBarIcon: ({ color, size }) => <Icon name="forum" type="material" color={color} size={30} />,
+            tabBarIcon: ({ color }) => <Icon name="forum" type="material" color={color} size={30} />,
           }}
         />
         <Tabs.Screen
@@ -94,7 +78,7 @@ class Main extends React.Component {
             uid: this.props.route.params.uid,
           }}
           options={{
-            tabBarIcon: ({ color, size }) => <Icon name="search" type="material" color={color} size={30} />,
+            tabBarIcon: ({ color }) => <Icon name="search" type="material" color={color} size={30} />,
           }}
         />
       </Tabs.Navigator>

@@ -2,14 +2,12 @@ import React from "react";
 import {
   TextInput,
   StatusBar,
-  Button,
   StyleSheet,
   View,
   Animated,
   SafeAreaView,
   PixelRatio,
   ActivityIndicator,
-  ImageBackground,
   Text,
 } from "react-native";
 import CreateConvoController from "../Controllers/CreateConvoController";
@@ -17,7 +15,6 @@ import LottieView from "lottie-react-native";
 import Constants from "./../Constants";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Icon } from "react-native-elements";
-//import Svg, { Text } from "react-native-svg";
 
 class CreateConvo extends React.Component {
   state = {
@@ -45,6 +42,9 @@ class CreateConvo extends React.Component {
       if (this.animation) {
         this.animation.play();
       }
+      if (this.teaAnimation) {
+        this.teaAnimation.play();
+      }
     });
 
     this._unsubscribeBlur = this.props.navigation.addListener("blur", async () => {
@@ -69,7 +69,14 @@ class CreateConvo extends React.Component {
           source={require("./../../resources/tea-anim.json")}
           speed={0.75}
         ></LottieView>
-
+        <LottieView
+          style={{ bottom: -40, position: "absolute",  width: "95%", left: "2.5%" }}
+          ref={(animation) => {
+            this.teaAnimation = animation;
+          }}
+          source={require("./../../resources/teacup.json")}
+          speed={0.75}
+        ></LottieView>
         <Text
           style={{
             fontSize: 45,
@@ -164,16 +171,10 @@ const style = StyleSheet.create({
     color: Constants.mainTextColor,
     textAlign: "left",
     fontSize: 30 / PixelRatio.getFontScale(),
-    // textShadowOffset: {
-    //   width: 0,
-    //   height: 0,
-    // },
-    // textShadowColor: Constants.backgroundColor,
-    // textShadowRadius: 1,
   },
   inputView: {
     margin: 20,
-    bottom: "30%", //Constants.SCREEN_HEIGHT/3,
+    bottom: "30%",
     width: "90%",
     height: 40,
   },
@@ -185,8 +186,6 @@ const style = StyleSheet.create({
     fontWeight: "normal",
     color: Constants.mainTextColor,
     borderRadius: 15,
-    // borderWidth: 1,
-    // borderColor: "white"
   },
 });
 

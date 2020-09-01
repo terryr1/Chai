@@ -7,11 +7,6 @@ const backgroundColor = "black";
 const accentColorOne = "#4285F4";
 const accentColorTwo = "#E65858";
 const mainTextColor = "#E7E7E7";
-const fontFamily = "JosefinSans_400Regular";
-
-// const backgroundColor = "black";
-// const accentColorOne = "#4285F4";
-// const accentColorTwo = "#E65858";
 
 export default {
   SCREEN_HEIGHT,
@@ -21,5 +16,4 @@ export default {
   accentColorOne,
   accentColorTwo,
   mainTextColor,
-  fontFamily,
 };

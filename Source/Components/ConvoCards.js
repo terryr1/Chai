@@ -38,11 +38,6 @@ class ConvoCards extends React.Component {
       numDocs: 0,
     };
 
-    this.nextCardOpacity = this.position.x.interpolate({
-      inputRange: [-Constants.SCREEN_WIDTH - 50, 0, Constants.SCREEN_WIDTH + 50],
-      outputRange: [1, 0.8, 1],
-      extrapolate: "clamp",
-    });
     this.nextCardScale = this.position.x.interpolate({
       inputRange: [-Constants.SCREEN_WIDTH - 50, 0, Constants.SCREEN_WIDTH + 50],
       outputRange: [1, 0.8, 1],
@@ -116,9 +111,6 @@ class ConvoCards extends React.Component {
     }
 
     this._unsubscribeFocus = this.props.navigation.addListener("focus", () => {
-      // if(this.bg_animation) {
-      //   this.bg_animation.play()
-      // }
       this._isMounted = true;
     });
 
@@ -144,8 +136,8 @@ class ConvoCards extends React.Component {
 
   renderCards = () => {
     const style = {
-      backgroundColor: "#1c1c1c",
-      // borderWidth: 5,
+      backgroundColor: Constants.backgroundColor,
+      borderWidth: 3,
       borderColor: "#1c1c1c",
       height: "100%",
       width: Constants.SCREEN_WIDTH - 40,
@@ -178,10 +170,7 @@ class ConvoCards extends React.Component {
 
     const second_card =
       this.state.data.length > 1 ? (
-        <Animated.View
-          key={1}
-          style={{ ...style, opacity: this.nextCardOpacity, transform: [{ scale: this.nextCardScale }] }}
-        >
+        <Animated.View key={1} style={{ ...style, transform: [{ scale: this.nextCardScale }] }}>
           <Text
             style={{
               fontSize: 24 / PixelRatio.getFontScale(),
@@ -203,7 +192,7 @@ class ConvoCards extends React.Component {
       <SafeAreaView style={{ flex: 1, backgroundColor: Constants.backgroundColor }}>
         <StatusBar backgroundColor={Constants.backgroundColor} barStyle="light-content" />
         <LottieView
-        style={{zIndex: -1, position: "absolute", width: '100%', bottom: 0}}
+          style={{ zIndex: -1, position: "absolute", width: "100%", bottom: 0 }}
           ref={(animation) => {
             this.bg_animation = animation;
           }}

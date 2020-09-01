@@ -7,8 +7,6 @@ import ConvoController from "./../Controllers/ConvoController";
 import AsyncStorage from "@react-native-community/async-storage";
 import Constants from "../Constants";
 
-//TODO: notifications
-//dismiss notifications when open convo - notifications should have the question (messages[0])
 class Convo extends React.Component {
   constructor(props) {
     super(props);
@@ -115,8 +113,6 @@ class Convo extends React.Component {
     );
   };
 
-  //make this look like its happending fast by updating the chat before the call gets put out, then check if there's another message with the same text and user made within the last 10 seconds
-  //or send the timestamp, not a big deal and makes code less complex
   send = async (messages) => {
     mapped_messages = messages.map((message) => ({
       _id: 99999999999999,
@@ -212,13 +208,14 @@ class Convo extends React.Component {
           renderSend={this.renderSend}
           alwaysShowSend
           renderAvatar={null}
-          textInputStyle={{ color: Constants.mainTextColor, padding: 10, backgroundColor: '#1c1c1c', borderRadius: 15, lineHeight: 20 }}
+          textInputStyle={{ color: Constants.mainTextColor, padding: 10, backgroundColor: '#1c1c1c', borderRadius: 15, lineHeight: 24 }}
           scrollToBottom
           minInputToolbarHeight={53}
           messages={this.state.messages}
           onSend={this.send}
           user={{ _id: this.props.route.params.user.id, name: "Anonymous" }}
           renderLoading={this.renderLoading}
+          placeholder="Text here..."
         />
       </View>
     );

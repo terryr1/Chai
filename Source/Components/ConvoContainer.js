@@ -1,7 +1,7 @@
 import React from "react";
 import Convo from "../Components/Convo";
 import ConvoController from "../Controllers/ConvoController";
-import { Animated, View, StyleSheet, TouchableOpacity, Text, ScrollView, ActivityIndicator } from "react-native";
+import { Animated, View, StyleSheet, TouchableOpacity, Text, ScrollView, ActivityIndicator, SafeAreaView } from "react-native";
 import SideMenu from "react-native-side-menu";
 import Constants from "../Constants";
 import MessageListController from "../Controllers/MessageListController";
@@ -35,7 +35,7 @@ function DrawerContent(props) {
       scrollsToTop={false}
       style={{ flex: 1, width: window.width, height: window.height, backgroundColor: Constants.backgroundColor, padding: 20 }}
     >
-      <View style={style.container}>
+      <SafeAreaView style={style.container}>
         {props.pending && !props.primary ? null : (
           <TouchableOpacity style={style.button} onPress={() => props.resolve()}>
             <Text style={style.buttonText}>RESOLVE</Text>
@@ -56,7 +56,7 @@ function DrawerContent(props) {
             <Text style={style.buttonText}>REPORT</Text>
           </TouchableOpacity>
         )}
-      </View>
+      </SafeAreaView>
     </ScrollView>
   );
 }
@@ -147,7 +147,7 @@ class ConvoContainer extends React.Component {
           isOpen={this.state.isOpen}
           onChange={(isOpen) => this.updateMenuState(isOpen)}
         >
-          <View style={{ flex: 1, backgroundColor: Constants.backgroundColor }}>
+          <SafeAreaView style={{ flex: 1, marginBottom: 15, backgroundColor: Constants.backgroundColor }}>
             <View style={{ width: "100%", height: 60, flexDirection: "row", justifyContent: "space-between" }}>
               <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
                 <Icon
@@ -169,7 +169,7 @@ class ConvoContainer extends React.Component {
               </TouchableOpacity>
             </View>
             <Convo {...{ ...this.props, updateContainer: this.updateContainer.bind(this) }} />
-          </View>
+          </SafeAreaView>
         </SideMenu>
         {this.state.loading && (
           <View

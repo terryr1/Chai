@@ -7,10 +7,6 @@ figure out how to not make call to firebase
 
 change all == to ===
 
-COLORS: #E65858 - red, "#4285F4" - blue
-
-change colors, constants to be in CONSTATNTS file
-
 NEXT TITLE: I made an app to IMPROVE YOUR MENTAL HEALTH THROUGH conversation __IMPORTANT__
 
 NEXT STEP: notifications ->  encryption | asthetics, add in alert messages to errors
@@ -32,18 +28,8 @@ that way people don't know how to query, also keep all your code private
 
 ADD TRANSACTIONS TO CLOUD FUNCTIONS
 
-in notifications: store user id and token id ?
-
 https://github.com/zo0r/react-native-push-notification
-
-use lottie for the chai animation
 limit titles/questions to 200 characters
-
-cloud function for notifications - convo on create, convo on message update, convo on pending create - notify a random user
-
-can see which conversations were written by the same person - fine then we can encrypt all the text stored in the database
-
-https://www.npmjs.com/package/hybrid-crypto-js#documentation
 
     **MAKE EVERYTHING FASTER WITH ASYNC CALSS
 
