@@ -2,6 +2,7 @@ import firebase from "firebase";
 import "firebase/firestore";
 import Fire from "../Fire";
 import "firebase/functions";
+import { Alert } from "react-native";
 
 class ConvoModel {
   get ref() {
@@ -46,10 +47,10 @@ class ConvoModel {
   };
 
   listenForPendingMessages = (callback, convo_id) => {
-    console.log("adding listener for pendinf convo messages");
+    // console.log("adding listener for pendinf convo messages");
     return this.ref.doc(convo_id).onSnapshot(
       (snapshot) => {
-        console.log("callback for pending convo message listener called");
+        // console.log("callback for pending convo message listener called");
         if (snapshot.exists) {
           callback(
             this.parsePendingMessages(snapshot.data().pending_messages, snapshot.data().uid),
@@ -58,13 +59,13 @@ class ConvoModel {
         }
       },
       (error) => {
-        console.log("got some error: ", error);
+        Alert.alert(error);
       }
     );
   };
 
   listenForMessages = (callback, convo_id, alert) => {
-    console.log("turn on convo message listener");
+    // console.log("turn on convo message listener");
     return this.ref
       .doc(convo_id)
       .collection("messages")
@@ -72,7 +73,7 @@ class ConvoModel {
       .limitToLast(20)
       .onSnapshot(
         (querySnapshot) => {
-          console.log("listening to messages");
+          // console.log("listening to messages");
           if (!querySnapshot.empty) {
             callback(this.parseMessages(querySnapshot.docChanges()));
           }
@@ -85,7 +86,6 @@ class ConvoModel {
 
   getMessages = async (startTimestamp, convo_id) => {
     const date = new Date(startTimestamp);
-    console.log(date);
     const documentSnapshots = await this.ref
       .doc(convo_id)
       .collection("messages")
@@ -111,7 +111,7 @@ class ConvoModel {
   };
 
   appendMessage = async (text, convo_id) => {
-    console.log("send message call");
+    // console.log("send message call");
 
     const token = await firebase.auth().currentUser.getIdToken(true);
     const data = { convo_id, text, token };
@@ -122,7 +122,7 @@ class ConvoModel {
   };
 
   appendPendingMessage = async (text, convo_id) => {
-    console.log("sending");
+    // console.log("sending");
     const token = await firebase.auth().currentUser.getIdToken(true);
     const data = { convo_id, text, token };
 
@@ -132,7 +132,7 @@ class ConvoModel {
   };
 
   addUserToConvo = async (convo_id) => {
-    console.log("adding user to convo");
+    // console.log("adding user to convo");
     const token = await firebase.auth().currentUser.getIdToken(true);
     const addUserToConvo = firebase.functions().httpsCallable("addUserToConvo");
     return addUserToConvo({ convo_id, token });
@@ -145,7 +145,7 @@ class ConvoModel {
   };
 
   create = async (question) => {
-    console.log("create pending convo");
+    // console.log("create pending convo");
 
     const token = await firebase.auth().currentUser.getIdToken(true);
     const data = { question, token };
@@ -156,7 +156,7 @@ class ConvoModel {
   };
 
   getConvos = async (uid, prevDoc) => {
-    console.log("getting pending convos (first 20)");
+    // console.log("getting pending convos (first 20)");
     const convos = [];
     let documentSnapshots;
 
@@ -183,7 +183,7 @@ class ConvoModel {
   };
 
   delete = async (convo_id) => {
-    console.log("deleting pending convo");
+    // console.log("deleting pending convo");
     const token = await firebase.auth().currentUser.getIdToken(true);
     const data = { convo_id, token };
 

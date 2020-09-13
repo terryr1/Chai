@@ -4,10 +4,10 @@ import UserModel from "../Models/UserModel";
 
 async function start(callback, id, alert, pending) {
   if (pending) {
-    console.log("listening for pending messages");
+    // console.log("listening for pending messages");
     return ConvoModel.shared.listenForPendingMessages(callback, id);
   } else {
-    console.log("listening for normal messages");
+    // console.log("listening for normal messages");
     return ConvoModel.shared.listenForMessages(callback, id, alert);
   }
 }

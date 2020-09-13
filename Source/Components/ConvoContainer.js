@@ -84,8 +84,6 @@ class ConvoContainer extends React.Component {
   };
 
   updateContainer = (pending) => {
-    console.log("set pending");
-    console.log(pending);
     this.setState({ pending });
   };
 

@@ -10,8 +10,6 @@ class UserModel {
   parse = (conversations) => {
     const ids = Object.keys(conversations);
     return ids.map((id) => {
-      console.log(id);
-      console.log(conversations[id].unread);
       return {
         name: conversations[id].question,
         convo_id: id,
@@ -31,16 +29,16 @@ class UserModel {
   };
 
   on = (callback, uid) => {
-    console.log("start user convo listener called");
+    // console.log("start user convo listener called");
     this.user_ref.doc(uid).onSnapshot((snapshot) => {
-      console.log("user convo listener callback called");
+      // console.log("user convo listener callback called");
       const data = this.parse(snapshot.data().conversations);
       callback(data);
     });
   };
 
   off(uid) {
-    console.log("stop user convo listener");
+    // console.log("stop user convo listener");
     this.user_ref.doc(uid).onSnapshot(() => {});
   }
 

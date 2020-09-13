@@ -219,12 +219,10 @@ class Convo extends React.Component {
   );
 
   onLoadEarlier = async () => {
-    console.log(this.state.messages[this.state.messages.length - 1]);
     const oldMsgs = await ConvoController.getMessages(
       this.state.messages[this.state.messages.length - 1].createdAt,
       this.props.route.params.id
     );
-    console.log(oldMsgs);
     this.updateCallback(oldMsgs);
   };
 

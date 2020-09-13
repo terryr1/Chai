@@ -2,20 +2,20 @@ import firebase from "firebase";
 
 class AuthModel {
   checkForAuthentication = (callback) => {
-    console.log("start check for authentication");
+    // console.log("start check for authentication");
     firebase.auth().onAuthStateChanged((user) => {
-      console.log("check for authentication listener called");
+      // console.log("check for authentication listener called");
       callback(user);
     });
   };
 
   stopCheckForAuthentication = () => {
-    console.log("stop check for authentiocation");
+    // console.log("stop check for authentiocation");
     firebase.auth().onAuthStateChanged(() => {});
   };
 
   sendVerification = async (email) => {
-    console.log("sending verification");
+    // console.log("sending verification");
     const actionCodeSettings = {
       url: "https://chailogin.page.link/verify",
       dynamicLinkDomain: "chailogin.page.link",
@@ -32,17 +32,17 @@ class AuthModel {
   };
 
   checkIfValidLink = (link) => {
-    console.log("check if valid link called");
+    // console.log("check if valid link called");
     return firebase.auth().isSignInWithEmailLink(link);
   };
 
   getUser = async () => {
-    console.log("get user called");
+    // console.log("get user called");
     return firebase.auth().currentUser;
   };
 
   signIn = async (email, link) => {
-    console.log("signing in with email link");
+    // console.log("signing in with email link");
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
     firebase.auth().signInWithEmailLink(email, link);
   };

@@ -35,7 +35,7 @@ class MessageList extends React.Component {
         this.setState({ data: JSON.parse(convos) });
       }
     } catch (error) {
-      console.log(error);
+      Alert.alert(error);
     }
     this.startController();
 
@@ -90,7 +90,6 @@ class MessageList extends React.Component {
   };
 
   renderItem = ({ item }) => {
-    console.log("RERENDER");
     const BadgedIcon = item.unread
       ? withBadge("", { badgeStyle: { backgroundColor: "#946FA6", borderColor: "#946FA6" } })(Icon)
       : Icon;
@@ -98,7 +97,6 @@ class MessageList extends React.Component {
       ? withBadge("", { badgeStyle: { backgroundColor: "#946FA6", borderColor: "#946FA6" } })(SvgXml)
       : SvgXml;
 
-    console.log(item.unread);
     return (
       <ListItem
         title={item.name}
