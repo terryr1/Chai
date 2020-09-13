@@ -31,11 +31,13 @@ class CreateConvo extends React.Component {
   sendMessage = async () => {
     const convo_id = await CreateConvoController.create(this.state.inputVal, this.props.route.params.user.id);
     this.setState({ inputVal: "", loading: false });
-    this.props.navigation.navigate("ConvoContainer", {
-      id: convo_id,
-      pending: true,
-      user: { ...this.props.route.params.user, primary: true },
-    });
+    if (convo_id) {
+      this.props.navigation.navigate("ConvoContainer", {
+        id: convo_id,
+        pending: true,
+        user: { ...this.props.route.params.user, primary: true },
+      });
+    }
   };
 
   componentDidMount = () => {
@@ -71,7 +73,13 @@ class CreateConvo extends React.Component {
           speed={0.75}
         ></LottieView>
         <LottieView
-          style={{ bottom: Platform.OS === 'android' ? -60 : 0, top: Platform.OS === 'android' ? 0 : "2.5%", position: "absolute", width: Platform.OS === 'android' ? "95%" : "100%", left: Platform.OS === 'android' ?  "2.5%" : 0 }}
+          style={{
+            bottom: Platform.OS === "android" ? -60 : 0,
+            top: Platform.OS === "android" ? 0 : "2.5%",
+            position: "absolute",
+            width: Platform.OS === "android" ? "95%" : "100%",
+            left: Platform.OS === "android" ? "2.5%" : 0,
+          }}
           ref={(animation) => {
             this.teaAnimation = animation;
           }}
@@ -119,6 +127,7 @@ class CreateConvo extends React.Component {
               value={this.state.inputVal}
               placeholder="Something on your mind..."
               placeholderTextColor="white"
+              maxLength={200}
             />
           </View>
           <View style={{ alignSelf: "flex-start", justifyContent: "center", marginTop: 2 }}>

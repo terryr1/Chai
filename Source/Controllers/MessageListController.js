@@ -1,11 +1,7 @@
 import UserModel from "../Models/UserModel";
 
-function start(callback, id) {
-  UserModel.shared.on(callback, id);
-}
-
-function stop(id) {
-  UserModel.shared.off(id);
+async function start(callback, id) {
+  return UserModel.shared.on(callback, id);
 }
 
 function removeConvo(id) {
@@ -13,4 +9,4 @@ function removeConvo(id) {
 }
 
 
-export default { start, stop, removeConvo };
+export default { start, removeConvo };

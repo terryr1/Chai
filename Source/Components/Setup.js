@@ -9,7 +9,7 @@ import Constants from "../Constants";
 
 class Setup extends React.Component {
   constructor(props) {
-    super(props);
+    super();
     this.enteredEmail = "";
     this.state = {
       email: "",
@@ -74,6 +74,7 @@ class Setup extends React.Component {
   };
 
   sendVerification = async () => {
+    console.log("send button clicked");
     this.enteredEmail = this.state.email;
     AuthController.shared
       .sendVerification(this.enteredEmail)

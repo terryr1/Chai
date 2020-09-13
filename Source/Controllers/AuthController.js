@@ -1,5 +1,6 @@
 import AuthModel from "./../Models/AuthModel";
 import UserModel from "../Models/UserModel";
+import { Alert } from "react-native";
 
 class AuthController {
   checkForAuthentication = (callback) => {
@@ -11,6 +12,7 @@ class AuthController {
   };
 
   sendVerification = async (email) => {
+    console.log("in controller");
     return AuthModel.shared.sendVerification(email);
   };
 
@@ -18,14 +20,26 @@ class AuthController {
     return AuthModel.shared.getUser();
   };
 
+  deleteUser = async () => {
+    Alert.alert("does nothing");
+  };
+
   confirmLink = async (email, link) => {
-    if (AuthModel.shared.checkIfValidLink(link)) {
-      AuthModel.shared.signIn(email, link);
+    try {
+      if (AuthModel.shared.checkIfValidLink(link)) {
+        AuthModel.shared.signIn(email, link);
+      }
+    } catch (err) {
+      Alert.alert("Uh oh", err.toString());
     }
   };
 
   addNotificationToken = (token) => {
     UserModel.shared.addNotificationToken(token);
+  };
+
+  signOut = () => {
+    AuthModel.shared.signOut();
   };
 }
 

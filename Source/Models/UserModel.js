@@ -30,17 +30,17 @@ class UserModel {
 
   on = (callback, uid) => {
     // console.log("start user convo listener called");
-    this.user_ref.doc(uid).onSnapshot((snapshot) => {
-      // console.log("user convo listener callback called");
-      const data = this.parse(snapshot.data().conversations);
-      callback(data);
-    });
+    return this.user_ref.doc(uid).onSnapshot(
+      (snapshot) => {
+        // console.log("user convo listener callback called");
+        const data = this.parse(snapshot.data().conversations);
+        callback(data);
+      },
+      () => {
+        //err
+      }
+    );
   };
-
-  off(uid) {
-    // console.log("stop user convo listener");
-    this.user_ref.doc(uid).onSnapshot(() => {});
-  }
 
   removeConvo = async (convo_id) => {
     const token = await firebase.auth().currentUser.getIdToken(true);

@@ -13,25 +13,17 @@ make folder names lowercase
 
 change all == to ===
 
-add in alert messages to errors
-
 NEXT TITLE: I made an app to IMPROVE YOUR MENTAL HEALTH THROUGH conversation __IMPORTANT__
-
-
-https://virgilsecurity.com/blog/e3kit-for-firebase
-
-SET LIMITS FOR NUMBER OF CONVERSATIONS YOU CANN HAVE ASSIGNED TO YOU, LIMIT CONVERSATIONS TO 500 messages, limit convos to 10 at a time, 
-make sure to limit gets as much as possible look through the code
-minimize errors in firestore functions - this will probably slow stuff down if there are errors
-
-ADD TRANSACTIONS TO CLOUD FUNCTIONS
-
-limit titles/questions to 200 characters
-
     **MAKE EVERYTHING FASTER WITH ASYNC CALSS
 
     MAKE ALL FIREBASE CALLS ASYNCHRONOUS
 
-remove npm modules we don't use anymore (there's a few)
-
 catch error if invalid email link clicked
+minimize errors in firestore functions - this will probably slow stuff down if there are errors
+
+=======================================================================================================
+
+FINAL STEPS BEFORE RELEASE: 
+
+ADD TRANSACTIONS TO CLOUD FUNCTIONS
+on user delete - delete user and also all conversations and remove from all othe rconversations

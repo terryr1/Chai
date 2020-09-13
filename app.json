@@ -49,6 +49,7 @@
         "backgroundColor": "#000000",
         "resizeMode": "native"
       },
+      "permissions": [],
       "icon": "./assets/android_icon.png",
       "userInterfaceStyle": "dark"
     },

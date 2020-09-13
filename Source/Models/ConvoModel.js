@@ -58,9 +58,7 @@ class ConvoModel {
           );
         }
       },
-      (error) => {
-        Alert.alert(error);
-      }
+      (error) => {}
     );
   };
 
@@ -101,10 +99,10 @@ class ConvoModel {
       const { text } = messages[i];
 
       if (pending) {
-        console.log("sending pending msg");
+        // console.log("sending pending msg");
         this.appendPendingMessage(text, convo_id);
       } else {
-        console.log("sending non pending msg");
+        // console.log("sending non pending msg");
         this.appendMessage(text, convo_id);
       }
     }
@@ -151,8 +149,14 @@ class ConvoModel {
     const data = { question, token };
 
     const createConvo = firebase.functions().httpsCallable("createConvo");
-    const result = await createConvo(data);
-    return result.data;
+
+    try {
+      const result = await createConvo(data);
+      return result.data;
+    } catch (err) {
+      Alert.alert("Uh oh", err.toString()); // TypeError: failed to fetch
+      return null;
+    }
   };
 
   getConvos = async (uid, prevDoc) => {

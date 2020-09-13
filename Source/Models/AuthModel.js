@@ -1,4 +1,5 @@
 import firebase from "firebase";
+import { Alert } from "react-native";
 
 class AuthModel {
   checkForAuthentication = (callback) => {
@@ -15,7 +16,7 @@ class AuthModel {
   };
 
   sendVerification = async (email) => {
-    // console.log("sending verification");
+    console.log("sending verification");
     const actionCodeSettings = {
       url: "https://chailogin.page.link/verify",
       dynamicLinkDomain: "chailogin.page.link",
@@ -43,8 +44,16 @@ class AuthModel {
 
   signIn = async (email, link) => {
     // console.log("signing in with email link");
-    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-    firebase.auth().signInWithEmailLink(email, link);
+    try {
+      firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+      firebase.auth().signInWithEmailLink(email, link);
+    } catch (err) {
+      Alert.alert("Uh oh", err.toString());
+    }
+  };
+
+  signOut = async () => {
+    firebase.auth().signOut();
   };
 }
 

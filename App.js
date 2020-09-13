@@ -11,6 +11,8 @@ import NavigationService from "./Source/NavigationService";
 import Constants from "./Source/Constants";
 import { Easing } from "react-native-reanimated";
 import * as Notifications from "expo-notifications";
+import * as Permissions from "expo-permissions";
+import AsyncStorage from "@react-native-community/async-storage";
 
 //fixed a random error------
 if (!global.btoa) {
@@ -61,6 +63,13 @@ class App extends React.Component {
         this.setState({ user: "noUser" });
       }
     });
+    const { status } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+    const granted = await AsyncStorage.getItem("notification_permission");
+    if (status == "granted" && granted !== "granted") {
+      let token = await Notifications.getExpoPushTokenAsync();
+      AuthController.shared.addNotificationToken(token);
+      AsyncStorage.setItem("notification_permission", "granted");
+    }
   };
 
   handleNotification = async (notification) => {

@@ -9,7 +9,7 @@ class ReportModel {
   }
 
   report = async (convo_id) => {
-    console.log("send message call");
+    // console.log("send message call");
 
     const token = await firebase.auth().currentUser.getIdToken(true);
     const data = { convo_id, token };

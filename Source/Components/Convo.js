@@ -81,8 +81,8 @@ class Convo extends React.Component {
   updateCallback = (messages, pending = this.state.pending) => {
     if (this._isMounted) {
       const new_messages = unionWith(messages, this.state.messages, (a, b) => {
-        if (a._id == 99999999999999) {
-          return a.text == b.text;
+        if (a._id == 0) {
+          return true;
         } else {
           return a._id == b._id;
         }
@@ -104,8 +104,8 @@ class Convo extends React.Component {
     if (!this.props.route.params.user.primary && this._isMounted) {
       this.stopController();
       Alert.alert(
+        "Resolved",
         "This message has been resolved by the original user. Thanks for your help!",
-        "",
         [{ text: "OK", onPress: () => this.props.navigation.goBack() }],
         { cancelable: false }
       );
@@ -121,11 +121,9 @@ class Convo extends React.Component {
     );
   };
 
-  //make this look like its happending fast by updating the chat before the call gets put out, then check if there's another message with the same text and user made within the last 10 seconds
-  //or send the timestamp, not a big deal and makes code less complex
   send = async (messages) => {
     const mapped_messages = messages.map((message) => ({
-      _id: 99999999999999,
+      _id: 0,
       text: message.text,
       user: message.user,
     }));
