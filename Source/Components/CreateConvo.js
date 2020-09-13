@@ -9,6 +9,7 @@ import {
   PixelRatio,
   ActivityIndicator,
   Text,
+  Platform,
 } from "react-native";
 import CreateConvoController from "../Controllers/CreateConvoController";
 import LottieView from "lottie-react-native";
@@ -70,7 +71,7 @@ class CreateConvo extends React.Component {
           speed={0.75}
         ></LottieView>
         <LottieView
-          style={{ bottom: -40, position: "absolute",  width: "95%", left: "2.5%" }}
+          style={{ bottom: Platform.OS === 'android' ? -60 : 0, top: Platform.OS === 'android' ? 0 : "2.5%", position: "absolute", width: Platform.OS === 'android' ? "95%" : "100%", left: Platform.OS === 'android' ?  "2.5%" : 0 }}
           ref={(animation) => {
             this.teaAnimation = animation;
           }}
@@ -105,11 +106,9 @@ class CreateConvo extends React.Component {
         </Text>
         <View
           style={{
-            marginTop: "65%",
+            top: "35%",
             flexDirection: "row",
-            margin: 40,
             width: window.width,
-            justifyContent: "center",
             ...style.inputView,
           }}
         >
@@ -124,7 +123,14 @@ class CreateConvo extends React.Component {
           </View>
           <View style={{ alignSelf: "flex-start", justifyContent: "center", marginTop: 2 }}>
             {this.state.loading ? (
-              <View style={{ width: 30, height: 30 }}></View>
+              <View
+                style={{
+                  width: 30,
+                  height: 30,
+                }}
+              >
+                <ActivityIndicator size="large" color={Constants.mainTextColor} />
+              </View>
             ) : (
               <TouchableOpacity
                 onPress={() => {
@@ -138,21 +144,6 @@ class CreateConvo extends React.Component {
             )}
           </View>
         </View>
-        {this.state.loading && (
-          <View
-            style={{
-              position: "absolute",
-              left: "80%",
-              right: 0,
-              top: 0,
-              bottom: 90,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <ActivityIndicator size="large" color={Constants.mainTextColor} />
-          </View>
-        )}
       </SafeAreaView>
     );
   }
@@ -173,8 +164,7 @@ const style = StyleSheet.create({
     fontSize: 30 / PixelRatio.getFontScale(),
   },
   inputView: {
-    margin: 20,
-    bottom: "30%",
+    marginLeft: 20,
     width: "90%",
     height: 40,
   },

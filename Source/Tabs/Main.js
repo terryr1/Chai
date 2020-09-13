@@ -13,22 +13,6 @@ class Main extends React.Component {
     super();
   }
 
-  componentDidMount = () => {
-    if (this.props.route.params.notificationData) {
-      this.props.navigation.navigate("Main", {
-        screen: "Messages",
-        params: {
-          screen: "ConvoContainer",
-          params: {
-            id: this.props.route.params.notificationData.convo_id,
-            pending: this.props.route.params.notificationData.pending,
-            user: { id: this.props.route.params.uid, primary: this.props.route.params.notificationData.primary },
-          },
-        },
-      });
-    }
-  };
-
   render() {
     return (
       <Tabs.Navigator

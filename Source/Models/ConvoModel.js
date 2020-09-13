@@ -2,7 +2,6 @@ import firebase from "firebase";
 import "firebase/firestore";
 import Fire from "../Fire";
 import "firebase/functions";
-import { Alert } from "react-native";
 
 class ConvoModel {
   get ref() {
@@ -24,7 +23,6 @@ class ConvoModel {
   parseMessages = (changes) => {
     const mapped_array = changes.map(({ doc }) => {
       const { timestamp: numberStamp, text, uid } = doc.data();
-
       return this.parseHelper({ numberStamp, text, uid });
     });
 
@@ -70,6 +68,8 @@ class ConvoModel {
     return this.ref
       .doc(convo_id)
       .collection("messages")
+      .orderBy("timestamp", "asc")
+      .limitToLast(20)
       .onSnapshot(
         (querySnapshot) => {
           console.log("listening to messages");
@@ -81,6 +81,19 @@ class ConvoModel {
           alert();
         }
       );
+  };
+
+  getMessages = async (startTimestamp, convo_id) => {
+    const date = new Date(startTimestamp);
+    console.log(date);
+    const documentSnapshots = await this.ref
+      .doc(convo_id)
+      .collection("messages")
+      .orderBy("timestamp", "asc")
+      .where("timestamp", "<", startTimestamp)
+      .limit(20)
+      .get();
+    return this.parseMessages(documentSnapshots.docChanges());
   };
 
   send = (messages, convo_id, pending) => {

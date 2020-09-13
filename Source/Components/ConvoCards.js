@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   PixelRatio,
+  Platform,
 } from "react-native";
 import ConvoController from "../Controllers/ConvoController";
 import Constants from "./../Constants";
@@ -109,6 +110,10 @@ class ConvoCards extends React.Component {
     if (this.animation) {
       this.animation.play(120, 120);
     }
+  
+    // if (this.bg_animation) {
+    //   this.bg_animation.play(450, 450);
+    // }
 
     this._unsubscribeFocus = this.props.navigation.addListener("focus", () => {
       this._isMounted = true;
@@ -136,10 +141,10 @@ class ConvoCards extends React.Component {
 
   renderCards = () => {
     const style = {
-      backgroundColor: Constants.backgroundColor,
+      backgroundColor: "black",
       borderWidth: 3,
-      borderColor: "#1c1c1c",
-      height: "100%",
+      borderColor: 'rgba(255, 255, 255, .4)',
+      height: Platform.OS === 'android' ? "100%" : "95%",
       width: Constants.SCREEN_WIDTH - 40,
       marginLeft: 20,
       position: "absolute",
@@ -192,12 +197,8 @@ class ConvoCards extends React.Component {
       <SafeAreaView style={{ flex: 1, backgroundColor: Constants.backgroundColor }}>
         <StatusBar backgroundColor={Constants.backgroundColor} barStyle="light-content" />
         <LottieView
-          style={{ zIndex: -1, position: "absolute", width: "100%", bottom: 0 }}
-          ref={(animation) => {
-            this.bg_animation = animation;
-          }}
+          style={{ zIndex: -1, position: "absolute", width: "100%", bottom: Platform.OS === 'android' ? 30 : Constants.SCREEN_HEIGHT/10 }}
           source={require("./../../resources/cardsbg.json")}
-          loop={true}
         ></LottieView>
         <View style={{ height: "5%" }}></View>
         {this.state.numDocs > 0 ? (
@@ -227,7 +228,7 @@ class ConvoCards extends React.Component {
             />
           </View>
         )}
-        <View style={{ height: "5%" }}></View>
+        <View style={{ height: Platform.OS === 'android' ? "5%": "7%"}}></View>
       </SafeAreaView>
     );
   }

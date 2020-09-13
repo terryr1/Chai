@@ -6,7 +6,7 @@ const agent = `<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 
 const backgroundColor = "black";
 const accentColorOne = "#4285F4";
 const accentColorTwo = "#E65858";
-const mainTextColor = "#E7E7E7";
+const mainTextColor = "white";
 
 export default {
   SCREEN_HEIGHT,

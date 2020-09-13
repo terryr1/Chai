@@ -7,7 +7,7 @@ import { decode, encode } from "base-64";
 import AuthController from "./Source/Controllers/AuthController";
 import { View, Animated } from "react-native";
 import { SplashScreen } from "expo";
-import { Asset } from "expo-asset";
+import NavigationService from "./Source/NavigationService";
 import Constants from "./Source/Constants";
 import { Easing } from "react-native-reanimated";
 import * as Notifications from "expo-notifications";
@@ -27,8 +27,8 @@ const Stack = createStackNavigator();
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
   }),
 });
 
@@ -54,28 +54,30 @@ class App extends React.Component {
   componentDidMount = async () => {
     this.onNotificationListener = Notifications.addNotificationReceivedListener(this.handleNotification);
     this.onResponseListener = Notifications.addNotificationResponseReceivedListener(this.handleResponse);
-    SplashScreen.preventAutoHide();
-    await this.loadAsync();
-
     AuthController.shared.checkForAuthentication((user) => {
       if (user) {
-        this.setState({ user });
+        this.setState({ user, isLoadingComplete: true });
       } else {
         this.setState({ user: "noUser" });
       }
     });
   };
 
-  //should be done differently
   handleNotification = async (notification) => {
     if (notification.request.content.data.convo_id) {
-      this.setState({ notificationData: notification.request.content.data });
+      this.queuedNotification = response.notification.request.content.data;
+      if (this.state.user) {
+        NavigationService.navigate({ ...this.queuedNotification, uid: this.state.user.uid });
+      }
     }
   };
 
   handleResponse = async (response) => {
     if (response.notification.request.content.data.convo_id) {
-      this.setState({ notificationData: response.notification.request.content.data });
+      this.queuedNotification = response.notification.request.content.data;
+      if (this.state.user) {
+        NavigationService.navigate({ ...this.queuedNotification, uid: this.state.user.uid });
+      }
     }
   };
 
@@ -86,7 +88,7 @@ class App extends React.Component {
   animateOut = () => {
     SplashScreen.hide();
     Animated.timing(this.state.splashAnimation, {
-      toValue: 2,
+      toValue: 1,
       duration: 700,
       easing: Easing.linear,
       useNativeDriver: true,
@@ -95,34 +97,12 @@ class App extends React.Component {
     });
   };
 
-  loadAsync = async () => {
-    try {
-      await this.loadResourcesAsync();
-    } catch (e) {
-      this.handleLoadingError(e);
-    } finally {
-      this.handleFinishLoading();
-    }
-  };
-
-  loadResourcesAsync = async () => {
-    return Promise.all([
-      Asset.loadAsync([require("./assets/splashscreen.png")]),
-    ]);
-  };
-
-  handleLoadingError = (error) => {
-    // In this case, you might want to report the error to your error
-    // reporting service, for example Sentry
-    console.warn(error);
-  };
-
-  handleFinishLoading = () => {
-    this.setState({ isLoadingComplete: true });
-  };
-
   loadSplashAnimation = () => {
-    return this.state.splashAnimationComplete ? null : (
+    if (this.state.splashAnimationComplete) {
+      return null;
+    }
+    this.animateOut();
+    return (
       <Animated.View
         style={{
           width: "100%",
@@ -136,31 +116,16 @@ class App extends React.Component {
           justifyContent: "center",
           backgroundColor: Constants.backgroundColor,
           opacity: this.state.splashAnimation.interpolate({
-            inputRange: [0, 2],
+            inputRange: [0, 1],
             outputRange: [1, 0],
           }),
         }}
-      >
-        <Animated.Image
-          source={require("./assets/splashscreen.png")}
-          style={{
-            width: undefined,
-            height: undefined,
-            position: "absolute",
-            top: 0,
-            left: 0,
-            bottom: 0,
-            right: 0,
-            resizeMode: "cover",
-          }}
-          onLoadEnd={this.animateOut}
-        />
-      </Animated.View>
+      ></Animated.View>
     );
   };
 
   render() {
-    if (!this.state.isLoadingComplete || !this.state.user) {
+    if (!this.state.user) {
       return <View style={{ width: "100%", height: "100%", backgroundColor: Constants.backgroundColor }} />;
     }
 
@@ -168,8 +133,12 @@ class App extends React.Component {
       <View style={{ flex: 1, backgroundColor: Constants.backgroundColor }}>
         <NavigationContainer
           theme={this.MyTheme}
-          ref={(navigation) => (this.navigationRef = navigation)}
-          onReady={this.handleNavigation}
+          ref={(navigationRef) => NavigationService.setTopLevelNavigator(navigationRef)}
+          onReady={() => {
+            if (this.queuedNotification) {
+              NavigationService.navigate({ ...this.queuedNotification, uid: this.state.user.uid });
+            }
+          }}
         >
           <Stack.Navigator
             initialRouteName={this.state.user == "noUser" ? "Setup" : "Main"}
@@ -183,7 +152,6 @@ class App extends React.Component {
               component={Main}
               initialParams={{
                 uid: this.state.user == "noUser" ? null : this.state.user.uid,
-                notificationData: this.state.notificationData,
               }}
             />
             <Stack.Screen name="Setup" component={Setup} />

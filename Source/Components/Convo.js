@@ -1,6 +1,6 @@
 import React from "react";
-import { View, Alert, ActivityIndicator } from "react-native";
-import { GiftedChat, Bubble, InputToolbar, Send } from "react-native-gifted-chat";
+import { View, Alert, ActivityIndicator, TouchableOpacity } from "react-native";
+import { GiftedChat, Bubble, InputToolbar, Send, LoadEarlier } from "react-native-gifted-chat";
 import { unionWith } from "lodash";
 import { Icon } from "react-native-elements";
 import ConvoController from "./../Controllers/ConvoController";
@@ -25,22 +25,28 @@ class Convo extends React.Component {
     }
   };
 
-  setPendingState = async () => {
+  onFocus = async () => {
+    const callback = async () => {
+      this.props.updateContainer(this.state.pending);
+      this._isMounted = true;
+      this.stopController = await this.startController();
+      if (!this.state.pending && this.props.route.params.unread) {
+        ConvoController.markRead(this.props.route.params.id);
+      }
+    };
+
     if (this.props.route.params.pending == null) {
       const pending = await ConvoController.isPending(this.props.route.params.id);
-      this.setState({ pending }, async () => {
-        this._isMounted = true;
-        this.stopController = await this.startController();
-      });
+      this.setState({ pending }, callback);
     } else {
-      this.setState({ pending: this.props.route.params.pending }, async () => {
-        this._isMounted = true;
-        this.stopController = await this.startController();
-      });
+      this.setState({ pending: this.props.route.params.pending }, callback);
     }
   };
 
   onBlur = () => {
+    if (!this.state.pending && this.props.route.params.unread) {
+      ConvoController.markRead(this.props.route.params.id);
+    }
     this._isMounted = false;
     if (this.stopController) {
       this.stopController();
@@ -48,14 +54,16 @@ class Convo extends React.Component {
   };
 
   componentDidMount = async () => {
-    AsyncStorage.getItem(this.props.route.params.id).then((messages) => {
-      if (messages != null) {
-        this.setState({ messages: JSON.parse(messages) });
-      }
-    });
+    if (!this.props.route.params.pending) {
+      AsyncStorage.getItem(this.props.route.params.id).then((messages) => {
+        if (messages != null) {
+          this.setState({ messages: JSON.parse(messages) });
+        }
+      });
+    }
 
     this._unsubscribeFocus = this.props.navigation.addListener("focus", async () => {
-      await this.setPendingState();
+      await this.onFocus();
     });
 
     this._unsubscribeBlur = this.props.navigation.addListener("blur", () => {
@@ -70,7 +78,7 @@ class Convo extends React.Component {
     this._unsubscribeBlur();
   };
 
-  updateCallback = (messages, pending) => {
+  updateCallback = (messages, pending = this.state.pending) => {
     if (this._isMounted) {
       const new_messages = unionWith(messages, this.state.messages, (a, b) => {
         if (a._id == 99999999999999) {
@@ -113,8 +121,10 @@ class Convo extends React.Component {
     );
   };
 
+  //make this look like its happending fast by updating the chat before the call gets put out, then check if there's another message with the same text and user made within the last 10 seconds
+  //or send the timestamp, not a big deal and makes code less complex
   send = async (messages) => {
-    mapped_messages = messages.map((message) => ({
+    const mapped_messages = messages.map((message) => ({
       _id: 99999999999999,
       text: message.text,
       user: message.user,
@@ -122,11 +132,7 @@ class Convo extends React.Component {
 
     this.setState({ messages: [...mapped_messages, ...this.state.messages] });
     if (this.state.pending && !this.props.route.params.user.primary) {
-      await ConvoController.addUserToConvo(
-        this.state.messages[0].text,
-        this.props.route.params.user.id,
-        this.props.route.params.id
-      );
+      await ConvoController.addUserToConvo(this.props.route.params.id);
 
       this.setState({ pending: false });
     }
@@ -143,7 +149,7 @@ class Convo extends React.Component {
             color: "white",
           },
           left: {
-            color: "black",
+            color: Constants.mainTextColor,
           },
         }}
         wrapperStyle={{
@@ -152,7 +158,7 @@ class Convo extends React.Component {
             borderRadius: 15,
           },
           left: {
-            backgroundColor: "white",
+            backgroundColor: "black",
             borderRadius: 15,
           },
         }}
@@ -190,6 +196,19 @@ class Convo extends React.Component {
     </Send>
   );
 
+  renderLoadEarlier = (props) =>
+    this.state.messages.length >= 20 ? (
+      <TouchableOpacity
+        onPress={() => {
+          if (props.onLoadEarlier) {
+            props.onLoadEarlier();
+          }
+        }}
+      >
+        <Icon name="refresh" type="material" color="dimgray" size={32} style={{ paddingBottom: 30 }} />
+      </TouchableOpacity>
+    ) : null;
+
   renderLoading = () => (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
       <ActivityIndicator
@@ -198,6 +217,16 @@ class Convo extends React.Component {
       ></ActivityIndicator>
     </View>
   );
+
+  onLoadEarlier = async () => {
+    console.log(this.state.messages[this.state.messages.length - 1]);
+    const oldMsgs = await ConvoController.getMessages(
+      this.state.messages[this.state.messages.length - 1].createdAt,
+      this.props.route.params.id
+    );
+    console.log(oldMsgs);
+    this.updateCallback(oldMsgs);
+  };
 
   render() {
     return (
@@ -208,13 +237,22 @@ class Convo extends React.Component {
           renderSend={this.renderSend}
           alwaysShowSend
           renderAvatar={null}
-          textInputStyle={{ color: Constants.mainTextColor, padding: 10, backgroundColor: '#1c1c1c', borderRadius: 15, lineHeight: 24 }}
+          textInputStyle={{
+            color: Constants.mainTextColor,
+            padding: 10,
+            backgroundColor: "#1c1c1c",
+            borderRadius: 15,
+            lineHeight: 24,
+          }}
           scrollToBottom
           minInputToolbarHeight={53}
           messages={this.state.messages}
           onSend={this.send}
           user={{ _id: this.props.route.params.user.id, name: "Anonymous" }}
           renderLoading={this.renderLoading}
+          loadEarlier={true}
+          renderLoadEarlier={this.renderLoadEarlier}
+          onLoadEarlier={this.onLoadEarlier}
           placeholder="Text here..."
         />
       </View>

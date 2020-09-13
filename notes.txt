@@ -1,43 +1,37 @@
 PENDING REFACTOR:
 
-figure out how to not make call to firebase
-  - only listen for new changes
-  - every time we open a convo query the messages collection for all messages where id != any of the ids we already have
-  - the listener will listen for everytthing else
+notifications are important for new opinion - Tell me your story is a good convo, what woudl make it better
+
+Not allowing setState() to be invoked on Render() of a React Component.
+
+https://thoughtbot.com/blog/best-practices-while-developing-a-react-native-app
+
+components and containers and styles in 3 different files ?
+
+make all non component functions be in a different file, make folders for each component?
+make folder names lowercase
 
 change all == to ===
 
+add in alert messages to errors
+
 NEXT TITLE: I made an app to IMPROVE YOUR MENTAL HEALTH THROUGH conversation __IMPORTANT__
 
-NEXT STEP: notifications ->  encryption | asthetics, add in alert messages to errors
 
 https://virgilsecurity.com/blog/e3kit-for-firebase
-
-reporting - lets do one report create a document in a reports collection - that number goes up with every click to report button
-next have a cloud function that disables that users account if the report count gets past a certain number - 20?
-for now lets not do time based reporting - if u get reported over 20 times your blacklisted
 
 SET LIMITS FOR NUMBER OF CONVERSATIONS YOU CANN HAVE ASSIGNED TO YOU, LIMIT CONVERSATIONS TO 500 messages, limit convos to 10 at a time, 
 make sure to limit gets as much as possible look through the code
 minimize errors in firestore functions - this will probably slow stuff down if there are errors
 
-BATCH READ convo messages - only read like 20 at a time unlesss they scroll up or something
-
-CHANGE NAME OF USERS AND COLLECTIONS IN PRODUCTION TO 77447_chaitheapp_users and 77447_chaitheapp_conversations
-that way people don't know how to query, also keep all your code private
-
 ADD TRANSACTIONS TO CLOUD FUNCTIONS
 
-https://github.com/zo0r/react-native-push-notification
 limit titles/questions to 200 characters
 
     **MAKE EVERYTHING FASTER WITH ASYNC CALSS
 
     MAKE ALL FIREBASE CALLS ASYNCHRONOUS
-    eventually - users have ratings, when selecting a user from user collection sort by rating and users have notified section false
-    if deciding against this, delete the rarting field?
 
-Messages should be created with timestamp - then send them - this way it can be loaded faster as well and timestamp is accurate
 remove npm modules we don't use anymore (there's a few)
 
 catch error if invalid email link clicked

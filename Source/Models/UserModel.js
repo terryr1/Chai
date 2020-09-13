@@ -10,14 +10,13 @@ class UserModel {
   parse = (conversations) => {
     const ids = Object.keys(conversations);
     return ids.map((id) => {
-      const primary = id[0] == 0;
-      const convo_id = id.substr(1);
-
+      console.log(id);
+      console.log(conversations[id].unread);
       return {
-        name: conversations[id],
-        convo_id,
-        primary,
-        avatar_url: "",
+        name: conversations[id].question,
+        convo_id: id,
+        primary: conversations[id].primary,
+        unread: conversations[id].unread,
       };
     });
   };
@@ -52,6 +51,14 @@ class UserModel {
     const removeConvo = firebase.functions().httpsCallable("removeConvo");
 
     return removeConvo(data);
+  };
+
+  markRead = async (convo_id) => {
+    const token = await firebase.auth().currentUser.getIdToken(true);
+    const data = { convo_id, token };
+
+    const markRead = firebase.functions().httpsCallable("markRead");
+    return markRead(data);
   };
 }
 

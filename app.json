@@ -5,10 +5,10 @@
     "slug": "Chai",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/chai_icon.png",
+    "icon": "./assets/ios_icon.png",
     "splash": {
       "image": "./assets/splashscreen.png",
-      "resizeMode": "cover",
+      "resizeMode": "contain",
       "backgroundColor": "#000000",
       "scheme": "chai"
     },
@@ -17,9 +17,11 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.chai",
-      "buildNumber": "1.0.0"
+      "supportsTablet": false,
+      "bundleIdentifier": "com.chaitheapp",
+      "buildNumber": "1.0.3",
+      "icon": "./assets/ios_icon.png",
+      "userInterfaceStyle": "dark"
     },
     "androidStatusBar": {
       "barStyle": "light-content",
@@ -42,7 +44,13 @@
       "package": "com.chai",
       "versionCode": 1,
       "softwareKeyboardLayoutMode": "pan",
-      "useNextNotificationsApi": true
+      "useNextNotificationsApi": true,
+      "splash": {
+        "backgroundColor": "#000000",
+        "resizeMode": "native"
+      },
+      "icon": "./assets/android_icon.png",
+      "userInterfaceStyle": "dark"
     },
     "web": {
       "favicon": "./assets/favicon.png"

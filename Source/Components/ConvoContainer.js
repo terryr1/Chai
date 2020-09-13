@@ -1,7 +1,16 @@
 import React from "react";
 import Convo from "../Components/Convo";
 import ConvoController from "../Controllers/ConvoController";
-import { Animated, View, StyleSheet, TouchableOpacity, Text, ScrollView, ActivityIndicator, SafeAreaView } from "react-native";
+import {
+  Animated,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  ScrollView,
+  ActivityIndicator,
+  SafeAreaView,
+} from "react-native";
 import SideMenu from "react-native-side-menu";
 import Constants from "../Constants";
 import MessageListController from "../Controllers/MessageListController";
@@ -33,7 +42,13 @@ function DrawerContent(props) {
   return (
     <ScrollView
       scrollsToTop={false}
-      style={{ flex: 1, width: window.width, height: window.height, backgroundColor: Constants.backgroundColor, padding: 20 }}
+      style={{
+        flex: 1,
+        width: window.width,
+        height: window.height,
+        backgroundColor: Constants.backgroundColor,
+        padding: 20,
+      }}
     >
       <SafeAreaView style={style.container}>
         {props.pending && !props.primary ? null : (
@@ -69,24 +84,28 @@ class ConvoContainer extends React.Component {
   };
 
   updateContainer = (pending) => {
+    console.log("set pending");
+    console.log(pending);
     this.setState({ pending });
   };
 
   getNewOpinion = async () => {
-    this.setState({ loading: true }, async () => {
-      if (!this.state.pending) {
-        await ConvoController.resetConvo(this.props.route.params.id);
-        await AsyncStorage.removeItem(this.props.route.params.id);
-      } else {
-        //either way notify new user
-      }
+    !this.state.loading &&
+      this.setState({ loading: true }, async () => {
+        if (!this.state.pending) {
+          await AsyncStorage.removeItem(this.props.route.params.id);
+          await ConvoController.resetConvo(this.props.route.params.id);
+        } else {
+          //either way notify new user
+        }
 
-      this.props.navigation.replace("ConvoContainer", {
-        id: this.props.route.params.id,
-        user: this.props.route.params.user,
-        pending: true,
+        this._isMounted &&
+          this.props.navigation.replace("ConvoContainer", {
+            id: this.props.route.params.id,
+            user: this.props.route.params.user,
+            pending: true,
+          });
       });
-    });
   };
 
   updateMenuState = (isOpen) => {
@@ -94,29 +113,48 @@ class ConvoContainer extends React.Component {
   };
 
   resolve = async () => {
-    this.setState({ loading: true }, async () => {
-      this.props.route.params.user.primary
-        ? await ConvoController.deleteConvo(
-            this.props.route.params.user.id,
-            this.props.route.params.id,
-            this.state.pending
-          )
-        : await MessageListController.removeConvo(this.props.route.params.id);
-      await AsyncStorage.removeItem(this.props.route.params.id);
-      this.props.navigation.goBack();
-    });
+    !this.state.loading &&
+      this.setState({ loading: true }, async () => {
+        this.props.route.params.user.primary
+          ? await ConvoController.deleteConvo(
+              this.props.route.params.user.id,
+              this.props.route.params.id,
+              this.state.pending
+            )
+          : await MessageListController.removeConvo(this.props.route.params.id);
+        await AsyncStorage.removeItem(this.props.route.params.id);
+        this._isMounted && this.props.navigation.goBack();
+      });
   };
 
   report = async () => {
-    this.setState({ loading: true }, async () => {
-      await ConvoController.report(this.props.route.params.id);
-      if (!this.state.pending) {
-        this.props.route.params.user.primary
-          ? await ConvoController.resetConvo(this.props.route.params.id)
-          : await MessageListController.removeConvo(this.props.route.params.id);
-      }
-      this.props.navigation.goBack();
+    !this.state.loading &&
+      this.setState({ loading: true }, async () => {
+        await ConvoController.report(this.props.route.params.id);
+        if (!this.state.pending) {
+          this.props.route.params.user.primary
+            ? await ConvoController.resetConvo(this.props.route.params.id)
+            : await MessageListController.removeConvo(this.props.route.params.id);
+        }
+        await AsyncStorage.removeItem(this.props.route.params.id);
+        this._isMounted && this.props.navigation.goBack();
+      });
+  };
+
+  componentDidMount = async () => {
+    this._unsubscribeFocus = this.props.navigation.addListener("focus", async () => {
+      this._isMounted = true;
     });
+
+    this._unsubscribeBlur = this.props.navigation.addListener("blur", () => {
+      this._isMounted = false;
+    });
+  };
+
+  componentWillUnmount = () => {
+    this._isMounted = false;
+    this._unsubscribeFocus();
+    this._unsubscribeBlur();
   };
 
   render() {
