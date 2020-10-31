@@ -5,6 +5,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { decode, encode } from "base-64";
 import AuthController from "./Source/Controllers/AuthController";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { View, Animated } from "react-native";
 import { SplashScreen } from "expo";
 import NavigationService from "./Source/NavigationService";
@@ -65,7 +66,7 @@ class App extends React.Component {
     });
     const { status } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
     const granted = await AsyncStorage.getItem("notification_permission");
-    if (status == "granted" && granted !== "granted") {
+    if (status == "granted" && granted !== "granted" && this.state.user !== "noUser") {
       let token = await Notifications.getExpoPushTokenAsync();
       AuthController.shared.addNotificationToken(token);
       AsyncStorage.setItem("notification_permission", "granted");

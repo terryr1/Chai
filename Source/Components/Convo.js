@@ -1,15 +1,17 @@
 import React from "react";
 import { View, Alert, ActivityIndicator, TouchableOpacity } from "react-native";
 import { GiftedChat, Bubble, InputToolbar, Send, LoadEarlier } from "react-native-gifted-chat";
-import { unionWith } from "lodash";
+import { unionWith, reverse } from "lodash";
 import { Icon } from "react-native-elements";
 import ConvoController from "./../Controllers/ConvoController";
 import AsyncStorage from "@react-native-community/async-storage";
 import Constants from "../Constants";
+import Filter from "bad-words";
 
 class Convo extends React.Component {
   constructor(props) {
     super(props);
+    this.filter = new Filter();
   }
 
   state = {
@@ -81,15 +83,11 @@ class Convo extends React.Component {
   updateCallback = (messages, pending = this.state.pending) => {
     if (this._isMounted) {
       const new_messages = unionWith(messages, this.state.messages, (a, b) => {
-        if (a._id == 0) {
-          return true;
-        } else {
-          return a._id == b._id;
-        }
+        return a._id == b._id;
       });
 
       const sorted_msgs = new_messages.sort((a, b) => {
-        return b._id - a._id;
+        return b.createdAt - a.createdAt;
       });
 
       if (!this.state.pending || this.props.route.params.user.primary) {
@@ -122,11 +120,18 @@ class Convo extends React.Component {
   };
 
   send = async (messages) => {
-    const mapped_messages = messages.map((message) => ({
-      _id: 0,
-      text: message.text,
-      user: message.user,
-    }));
+    let mapped_messages = await Promise.all(
+      messages.map(async (message) => {
+        const id = await ConvoController.getMessageId(this.props.route.params.id);
+        return {
+          _id: id,
+          text: this.filter.clean(message.text),
+          user: message.user,
+        };
+      })
+    );
+
+    mapped_messages = reverse(mapped_messages);
 
     this.setState({ messages: [...mapped_messages, ...this.state.messages] });
     if (this.state.pending && !this.props.route.params.user.primary) {
@@ -135,7 +140,7 @@ class Convo extends React.Component {
       this.setState({ pending: false });
     }
 
-    ConvoController.send(messages, "" + this.props.route.params.id, this.state.pending);
+    ConvoController.send(mapped_messages, "" + this.props.route.params.id, this.state.pending);
   };
 
   renderBubble = (props) => {

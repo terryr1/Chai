@@ -53,6 +53,10 @@ async function report(id) {
   return ReportModel.shared.report(id);
 }
 
+async function getMessageId(convo_id) {
+  return ConvoModel.shared.getMessageId(convo_id);
+}
+
 export default {
   start,
   send,
@@ -65,4 +69,5 @@ export default {
   report,
   getMessages,
   markRead,
+  getMessageId,
 };

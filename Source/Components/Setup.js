@@ -74,12 +74,24 @@ class Setup extends React.Component {
   };
 
   sendVerification = async () => {
-    console.log("send button clicked");
-    this.enteredEmail = this.state.email;
-    AuthController.shared
-      .sendVerification(this.enteredEmail)
-      .then(() => this.setState({ currentStep: this.stepTwo }))
-      .catch((err) => Alert.alert(err.message));
+    Alert.alert(
+      "Note",
+      `We STRONGLY recommend against using an email with your name in it. Developers (just me right now) can connect your email to your conversations, we may look at these for development reasons. Are you sure you want to continue with '${this.state.email}'?`,
+
+      [
+        { text: "Cancel", onPress: () => {} },
+        {
+          text: "OK",
+          onPress: () => {
+            this.enteredEmail = this.state.email;
+            AuthController.shared
+              .sendVerification(this.enteredEmail)
+              .then(() => this.setState({ currentStep: this.stepTwo }))
+              .catch((err) => Alert.alert(err.message));
+          },
+        },
+      ]
+    );
   };
 
   stepThree = () => {
@@ -185,6 +197,7 @@ const style = StyleSheet.create({
   },
   inputText: {
     height: 50,
+    color: "black"
   },
   buttonText: {
     color: "white",

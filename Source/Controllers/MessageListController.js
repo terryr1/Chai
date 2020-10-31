@@ -8,5 +8,8 @@ function removeConvo(id) {
   return UserModel.shared.removeConvo(id);
 }
 
+function clearNotificationToken() {
+  return UserModel.shared.clearNotificationToken();
+}
 
-export default { start, removeConvo };
+export default { start, removeConvo, clearNotificationToken };

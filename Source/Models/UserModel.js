@@ -28,6 +28,15 @@ class UserModel {
     return addNotificationToken(data);
   };
 
+  clearNotificationToken = async () => {
+    const token = await firebase.auth().currentUser.getIdToken(true);
+    const data = { token };
+
+    const clearNotificationToken = firebase.functions().httpsCallable("clearNotificationToken");
+
+    return clearNotificationToken(data);
+  };
+
   on = (callback, uid) => {
     // console.log("start user convo listener called");
     return this.user_ref.doc(uid).onSnapshot(

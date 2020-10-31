@@ -21,7 +21,8 @@
       "bundleIdentifier": "com.chaitheapp",
       "buildNumber": "1.0.3",
       "icon": "./assets/ios_icon.png",
-      "userInterfaceStyle": "dark"
+      "userInterfaceStyle": "dark",
+      "associatedDomains": ["applinks:chailogin.page.link"]
     },
     "androidStatusBar": {
       "barStyle": "light-content",
@@ -33,9 +34,11 @@
       "intentFilters": [
         {
           "action": "VIEW",
+          "autoVerify": true,
           "data": [
             {
-              "scheme": "chai"
+              "scheme": "https",
+              "host": ""
             }
           ],
           "category": ["BROWSABLE", "DEFAULT"]

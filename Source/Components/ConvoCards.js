@@ -39,6 +39,11 @@ class ConvoCards extends React.Component {
       numDocs: 0,
     };
 
+    this.nextCardOpacity = this.position.x.interpolate({
+      inputRange: [-Constants.SCREEN_WIDTH - 50, 0, Constants.SCREEN_WIDTH + 50],
+      outputRange: [1, 0.8, 1],
+      extrapolate: "clamp",
+    });
     this.nextCardScale = this.position.x.interpolate({
       inputRange: [-Constants.SCREEN_WIDTH - 50, 0, Constants.SCREEN_WIDTH + 50],
       outputRange: [1, 0.8, 1],
@@ -110,7 +115,7 @@ class ConvoCards extends React.Component {
     if (this.animation) {
       this.animation.play(120, 120);
     }
-  
+
     // if (this.bg_animation) {
     //   this.bg_animation.play(450, 450);
     // }
@@ -141,10 +146,10 @@ class ConvoCards extends React.Component {
 
   renderCards = () => {
     const style = {
-      backgroundColor: "black",
-      borderWidth: 3,
-      borderColor: 'rgba(255, 255, 255, .4)',
-      height: Platform.OS === 'android' ? "100%" : "95%",
+      backgroundColor: Constants.mainTextColor,
+      borderWidth: 0,
+      borderColor: Constants.backgroundColor,
+      height: Platform.OS === "android" ? "100%" : "95%",
       width: Constants.SCREEN_WIDTH - 40,
       marginLeft: 20,
       position: "absolute",
@@ -164,7 +169,7 @@ class ConvoCards extends React.Component {
             style={{
               fontSize: 24 / PixelRatio.getFontScale(),
               fontWeight: "bold",
-              color: Constants.mainTextColor,
+              color: Constants.backgroundColor,
               paddingHorizontal: 40,
             }}
           >
@@ -175,12 +180,15 @@ class ConvoCards extends React.Component {
 
     const second_card =
       this.state.data.length > 1 ? (
-        <Animated.View key={1} style={{ ...style, transform: [{ scale: this.nextCardScale }] }}>
+        <Animated.View
+          key={1}
+          style={{ ...style, opacity: this.nextCardOpacity, transform: [{ scale: this.nextCardScale }] }}
+        >
           <Text
             style={{
               fontSize: 24 / PixelRatio.getFontScale(),
               fontWeight: "bold",
-              color: Constants.mainTextColor,
+              color: Constants.backgroundColor,
               paddingHorizontal: 40,
             }}
           >
@@ -189,7 +197,16 @@ class ConvoCards extends React.Component {
         </Animated.View>
       ) : null;
 
-    return [second_card, first_card];
+    const third_card =
+      this.state.data.length > 1 ? (
+        <Animated.View
+          key={2}
+          style={{ ...style, backgroundColor: "black", transform: [{ scale: this.nextCardScale }] }}
+        >
+        </Animated.View>
+      ) : null;
+
+    return [third_card, second_card, first_card];
   };
 
   render() {
@@ -197,7 +214,12 @@ class ConvoCards extends React.Component {
       <SafeAreaView style={{ flex: 1, backgroundColor: Constants.backgroundColor }}>
         <StatusBar backgroundColor={Constants.backgroundColor} barStyle="light-content" />
         <LottieView
-          style={{ zIndex: -1, position: "absolute", width: "100%", bottom: Platform.OS === 'android' ? 30 : Constants.SCREEN_HEIGHT/10 }}
+          style={{
+            zIndex: -1,
+            position: "absolute",
+            width: "100%",
+            bottom: Platform.OS === "android" ? 30 : Constants.SCREEN_HEIGHT / 10,
+          }}
           source={require("./../../resources/cardsbg.json")}
         ></LottieView>
         <View style={{ height: "5%" }}></View>
@@ -228,7 +250,7 @@ class ConvoCards extends React.Component {
             />
           </View>
         )}
-        <View style={{ height: Platform.OS === 'android' ? "5%": "7%"}}></View>
+        <View style={{ height: Platform.OS === "android" ? "5%" : "7%" }}></View>
       </SafeAreaView>
     );
   }

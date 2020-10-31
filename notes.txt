@@ -27,3 +27,4 @@ FINAL STEPS BEFORE RELEASE:
 
 ADD TRANSACTIONS TO CLOUD FUNCTIONS
 on user delete - delete user and also all conversations and remove from all othe rconversations
+setup android app links for security - also ios associated domains should work now? - keytool/sha256?

@@ -9,11 +9,11 @@ class ConvoModel {
     return Fire.shared.ref.collection("conversations");
   }
 
-  parseHelper = ({ numberStamp, text, uid }) => {
+  parseHelper = ({ numberStamp, text, uid, _id }) => {
     const timestamp = numberStamp.toDate();
 
     const message = {
-      _id: timestamp.getTime(),
+      _id,
       createdAt: timestamp,
       text,
       user: { _id: uid, name: "Anonymous" },
@@ -24,26 +24,17 @@ class ConvoModel {
   parseMessages = (changes) => {
     const mapped_array = changes.map(({ doc }) => {
       const { timestamp: numberStamp, text, uid } = doc.data();
-      return this.parseHelper({ numberStamp, text, uid });
+      return this.parseHelper({ numberStamp, text, uid, _id: doc.id });
     });
-
-    const sorted_array = mapped_array.sort((a, b) => {
-      return b._id - a._id;
-    });
-    return sorted_array;
+    return mapped_array;
   };
 
   parsePendingMessages = (message_array, uid) => {
     const mapped_array = message_array.map((message_element) => {
-      const { timestamp: numberStamp, text } = message_element;
-
-      return this.parseHelper({ numberStamp, text, uid });
+      const { timestamp: numberStamp, text, _id } = message_element;
+      return this.parseHelper({ numberStamp, text, uid, _id });
     });
-
-    const sorted_array = mapped_array.sort((a, b) => {
-      return b._id - a._id;
-    });
-    return sorted_array;
+    return mapped_array;
   };
 
   listenForPendingMessages = (callback, convo_id) => {
@@ -95,34 +86,32 @@ class ConvoModel {
   };
 
   send = (messages, convo_id, pending) => {
-    for (let i = 0; i < messages.length; i++) {
-      const { text } = messages[i];
-
+    messages.forEach((message) => {
       if (pending) {
         // console.log("sending pending msg");
-        this.appendPendingMessage(text, convo_id);
+        this.appendPendingMessage(message.text, convo_id, message._id);
       } else {
         // console.log("sending non pending msg");
-        this.appendMessage(text, convo_id);
+        this.appendMessage(message.text, convo_id, message._id);
       }
-    }
+    });
   };
 
-  appendMessage = async (text, convo_id) => {
+  appendMessage = async (text, convo_id, message_id) => {
     // console.log("send message call");
 
     const token = await firebase.auth().currentUser.getIdToken(true);
-    const data = { convo_id, text, token };
+    const data = { convo_id, text, token, message_id };
 
     const createMessage = firebase.functions().httpsCallable("createMessage");
 
     return createMessage(data);
   };
 
-  appendPendingMessage = async (text, convo_id) => {
+  appendPendingMessage = async (text, convo_id, message_id) => {
     // console.log("sending");
     const token = await firebase.auth().currentUser.getIdToken(true);
-    const data = { convo_id, text, token };
+    const data = { convo_id, text, token, message_id };
 
     const createPendingMessage = firebase.functions().httpsCallable("createPendingMessage");
 
@@ -198,6 +187,10 @@ class ConvoModel {
   isPending = async (convo_id) => {
     const doc = await this.ref.doc(convo_id).get();
     return doc.data().pending;
+  };
+
+  getMessageId = async (convo_id) => {
+    return this.ref.doc(convo_id).collection("messages").doc().id;
   };
 }
 

@@ -3,7 +3,6 @@ import {
   Animated,
   FlatList,
   StatusBar,
-  SafeAreaView,
   View,
   Text,
   TouchableOpacity,
@@ -23,6 +22,7 @@ import Constants from "./../Constants";
 import AsyncStorage from "@react-native-community/async-storage";
 import LottieView from "lottie-react-native";
 import AuthController from "../Controllers/AuthController";
+import SafeAreaView from "react-native-safe-area-view";
 
 function DrawerContent(props) {
   const style = StyleSheet.create({
@@ -57,48 +57,38 @@ function DrawerContent(props) {
         padding: 20,
       }}
     >
-      <SafeAreaView style={style.container}>
-        <TouchableOpacity
-          style={style.button}
-          onPress={async () => {
-            await Linking.openURL("https://sites.google.com/view/chaitheapp/home");
-          }}
-        >
-          <Text style={style.buttonText}>HELP</Text>
-        </TouchableOpacity>
+      <TouchableOpacity
+        style={style.button}
+        onPress={async () => {
+          await Linking.openURL("https://www.chaitheapp.com/home");
+        }}
+      >
+        <Text style={style.buttonText}>HELP</Text>
+      </TouchableOpacity>
 
-        <TouchableOpacity
-          style={style.button}
-          onPress={async () => {
-            await Linking.openURL("https://sites.google.com/view/chaitheapp/home");
-          }}
-        >
-          <Text style={style.buttonText}>PRIVACY POLICY</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={style.button}
-          onPress={() => {
-            props.signOut();
-          }}
-        >
-          <Text style={style.buttonText}>SIGN OUT</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{ ...style.button, backgroundColor: Constants.accentColorTwo }}
-          onPress={() => {
-            props.deleteAccount();
-          }}
-        >
-          <Text style={style.buttonText}>DELETE ACCOUNT</Text>
-        </TouchableOpacity>
-      </SafeAreaView>
+      <TouchableOpacity
+        style={style.button}
+        onPress={async () => {
+          await Linking.openURL("https://www.chaitheapp.com/privacy-policy");
+        }}
+      >
+        <Text style={style.buttonText}>PRIVACY POLICY</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={style.button}
+        onPress={() => {
+          props.signOut();
+        }}
+      >
+        <Text style={style.buttonText}>SIGN OUT</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
 
 class MessageList extends React.Component {
   state = {
-    data: [],
+    data: false,
   };
 
   componentDidMount = async () => {
@@ -139,7 +129,7 @@ class MessageList extends React.Component {
 
   onBlur = () => {
     this._isMounted = false;
-    this.stopController();
+    if (this.stopController) this.stopController();
   };
 
   componentWillUnmount = () => {
@@ -160,29 +150,14 @@ class MessageList extends React.Component {
 
   renderItem = ({ item }) => {
     const BadgedIcon = item.unread
-      ? withBadge("", { badgeStyle: { backgroundColor: "#946FA6", borderColor: "#946FA6" } })(Icon)
+      ? withBadge(" ", { badgeStyle: { backgroundColor: "yellow", borderColor: "yellow" } })(Icon)
       : Icon;
     const BadgedAssistantIcon = item.unread
-      ? withBadge("", { badgeStyle: { backgroundColor: "#946FA6", borderColor: "#946FA6" } })(SvgXml)
+      ? withBadge(" ", { badgeStyle: { backgroundColor: "yellow", borderColor: "yellow" } })(SvgXml)
       : SvgXml;
 
     return (
       <ListItem
-        title={item.name}
-        titleStyle={{ color: Constants.mainTextColor, fontWeight: "bold", fontSize: 16 }}
-        leftIcon={
-          item.primary ? (
-            <BadgedIcon name="face" type="material" color={Constants.mainTextColor} size={45} />
-          ) : (
-            <BadgedAssistantIcon
-              xml={Constants.agent}
-              width={45}
-              height={45}
-              fill={Constants.mainTextColor}
-              color={Constants.mainTextColor}
-            />
-          )
-        }
         underlayColor="rgba(255, 255, 255, .2)"
         onPress={() => this.onPress(item)}
         containerStyle={{
@@ -191,7 +166,22 @@ class MessageList extends React.Component {
           borderRadius: 1,
           backgroundColor: "rgba(0, 0, 0, 0)",
         }}
-      />
+      >
+        {item.primary ? (
+          <BadgedIcon name="face" type="material" color={Constants.mainTextColor} size={45} />
+        ) : (
+          <BadgedAssistantIcon
+            xml={Constants.agent}
+            width={45}
+            height={45}
+            fill={Constants.mainTextColor}
+            color={Constants.mainTextColor}
+          />
+        )}
+        <Text style={{ color: Constants.mainTextColor, fontWeight: "bold", fontSize: 16, width: "80%" }}>
+          {item.name}
+        </Text>
+      </ListItem>
     );
   };
 
@@ -217,18 +207,78 @@ class MessageList extends React.Component {
     );
   };
 
-  signOut = () => {
-    this.props.navigation.replace("Setup");
-    console.log("SIGN OUT");
-    this.onBlur();
-    AuthController.shared.signOut();
+  signOut = async () => {
+    const success = MessageListController.clearNotificationToken();
+    if (success) {
+      this.props.navigation.replace("Setup");
+      console.log("SIGN OUT");
+      this.onBlur();
+      AuthController.shared.signOut();
+    } else {
+      Alert.alert("Sign out failed, try again");
+    }
+  };
+
+  displayList = () => {
+    if (this.state.data) {
+      return this.state.data.length > 0 ? (
+        <View
+          style={{
+            flex: 1,
+            zIndex: 5,
+            marginLeft: 5,
+            marginRight: 10,
+            marginBottom: 10,
+            borderRadius: 25,
+            paddingBottom: 20,
+          }}
+        >
+          <FlatList
+            style={{
+              zIndex: 5,
+            }}
+            keyExtractor={this.keyExtractor}
+            data={this.state.data}
+            renderItem={this.renderItem}
+            showsVerticalScrollIndicator={false}
+          />
+        </View>
+      ) : (
+        <View
+          style={{
+            flex: 1,
+            zIndex: 5,
+            justifyContent: "center",
+            alignItems: "center",
+            padding: 70,
+          }}
+        >
+          <Text
+            style={{
+              color: Constants.mainTextColor,
+              backgroundColor: "black",
+              borderRadius: 15,
+              overflow: "hidden",
+              padding: 20,
+              fontWeight: "bold",
+              fontSize: 20,
+              textAlign: "center",
+              lineHeight: 30,
+            }}
+          >
+            Looks like there's nothing here, join a conversation in the explore tab or start your own conversation in
+            the home tab.
+          </Text>
+        </View>
+      );
+    }
   };
 
   render() {
     const menu = <DrawerContent deleteAccount={this.deleteAccount} signOut={this.signOut} />;
 
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: Constants.backgroundColor }}>
+      <SafeAreaView forceInset={{ top: "always" }} style={{ flex: 1, backgroundColor: Constants.backgroundColor }}>
         <SideMenu
           animationFunction={(prop, value) =>
             Animated.spring(prop, {
@@ -244,12 +294,8 @@ class MessageList extends React.Component {
           isOpen={this.state.isOpen}
           onChange={(isOpen) => this.updateMenuState(isOpen)}
         >
-          <View style={{ flex: 1, backgroundColor: Constants.backgroundColor }}>
+          <SafeAreaView forceInset={{ top: "always" }} style={{ flex: 1, backgroundColor: Constants.backgroundColor }}>
             <StatusBar backgroundColor={Constants.backgroundColor} barStyle="light-content" />
-            <LottieView
-              style={{ zIndex: 1, position: "absolute", width: "100%", bottom: Platform.OS === "android" ? 30 : 70 }}
-              source={require("./../../resources/messagelist.json")}
-            ></LottieView>
             <View
               style={{
                 zIndex: 5,
@@ -260,62 +306,22 @@ class MessageList extends React.Component {
                 paddingVertical: 20,
               }}
             >
+              <SvgXml
+                style={{
+                  zIndex: -1,
+                  position: "absolute",
+                  top: "-300%",
+                }}
+                width="100%"
+                xml={Constants.messageListBg}
+              />
               <Text style={{ color: "white", fontSize: 30, marginLeft: 27, fontWeight: "bold" }}>Chats</Text>
               <TouchableOpacity onPress={() => this.updateMenuState(true)}>
                 <Icon style={{ marginRight: 27, marginTop: 4 }} name="menu" type="material" color="white" size={35} />
               </TouchableOpacity>
             </View>
-            {this.state.data.length > 0 ? (
-              <View
-                style={{
-                  flex: 1,
-                  zIndex: 5,
-                  marginLeft: 5,
-                  marginRight: 10,
-                  marginBottom: 10,
-                  borderRadius: 25,
-                  paddingBottom: 20,
-                }}
-              >
-                <FlatList
-                  style={{
-                    zIndex: 5,
-                  }}
-                  keyExtractor={this.keyExtractor}
-                  data={this.state.data}
-                  renderItem={this.renderItem}
-                  showsVerticalScrollIndicator={false}
-                />
-              </View>
-            ) : (
-              <View
-                style={{
-                  flex: 1,
-                  zIndex: 5,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  padding: 70,
-                }}
-              >
-                <Text
-                  style={{
-                    color: Constants.mainTextColor,
-                    backgroundColor: "black",
-                    borderRadius: 15,
-                    overflow: "hidden",
-                    padding: 20,
-                    fontWeight: "bold",
-                    fontSize: 20,
-                    textAlign: "center",
-                    lineHeight: 30,
-                  }}
-                >
-                  Looks like there's nothing here, join a conversation in the explore tab or start your own conversation
-                  in the home tab.
-                </Text>
-              </View>
-            )}
-          </View>
+            {this.displayList()}
+          </SafeAreaView>
         </SideMenu>
       </SafeAreaView>
     );

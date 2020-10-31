@@ -22,7 +22,7 @@ class AuthModel {
       dynamicLinkDomain: "chailogin.page.link",
       handleCodeInApp: true,
       iOS: {
-        bundleId: "com.chai",
+        bundleId: "com.chaitheapp",
       },
       android: {
         packageName: "com.chai",
