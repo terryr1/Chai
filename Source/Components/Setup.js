@@ -6,6 +6,7 @@ import { Notifications } from "expo";
 import * as Permissions from "expo-permissions";
 import AsyncStorage from "@react-native-community/async-storage";
 import Constants from "../Constants";
+import { Link } from "@react-navigation/native";
 
 class Setup extends React.Component {
   constructor(props) {
@@ -73,25 +74,27 @@ class Setup extends React.Component {
     this.setState({ url: val });
   };
 
-  sendVerification = async () => {
+  verifyEmail = async () => {
     Alert.alert(
       "Note",
-      `We STRONGLY recommend against using an email with your name in it. Developers (just me right now) can connect your email to your conversations, we may look at these for development reasons. Are you sure you want to continue with '${this.state.email}'?`,
+      `For the sake of anonymity, we STRONGLY reccommend against using an email with your name in it. Developers can connect your email to your conversations, we may look at these for development reasons. Are you sure you want to continue with '${this.state.email}'?`,
 
       [
         { text: "Cancel", onPress: () => {} },
         {
           text: "OK",
-          onPress: () => {
-            this.enteredEmail = this.state.email;
-            AuthController.shared
-              .sendVerification(this.enteredEmail)
-              .then(() => this.setState({ currentStep: this.stepTwo }))
-              .catch((err) => Alert.alert(err.message));
-          },
+          onPress: () => this.setState({ currentStep: this.stepOneHalf }),
         },
       ]
     );
+  };
+
+  sendVerification = async () => {
+    this.enteredEmail = this.state.email;
+    AuthController.shared
+      .sendVerification(this.enteredEmail)
+      .then(() => this.setState({ currentStep: this.stepTwo }))
+      .catch((err) => Alert.alert(err.message));
   };
 
   stepThree = () => {
@@ -103,19 +106,17 @@ class Setup extends React.Component {
             style={{ ...style.inputText }}
             onChangeText={this.onChangeUrl}
             value={this.state.url}
-            placeholder="Link"
+            placeholder="Paste link here..."
+            placeholderTextColor="white"
           />
         </View>
         <TouchableOpacity
-          style={{ ...style.button, marginBottom: 40 }}
+          style={{ ...style.button, marginBottom: 10 }}
           onPress={() => AuthController.shared.confirmLink(this.enteredEmail, this.state.url)}
         >
           <Text style={style.buttonText}>VERIFY</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={{ ...style.button, backgroundColor: "#454545" }}
-          onPress={() => this.setState({ currentStep: this.stepTwo })}
-        >
+        <TouchableOpacity style={{ ...style.button }} onPress={() => this.setState({ currentStep: this.stepTwo })}>
           <Text style={style.buttonText}>GO BACK</Text>
         </TouchableOpacity>
       </>
@@ -127,13 +128,51 @@ class Setup extends React.Component {
       <>
         <Text style={style.mainText}>Click the link we sent to your email to continue</Text>
         <TouchableOpacity
-          style={{ ...style.button, marginBottom: 40 }}
+          style={{ ...style.button, marginBottom: 10 }}
           onPress={() => this.setState({ currentStep: this.stepThree })}
         >
           <Text style={style.buttonText}>ENTER LINK MANUALLY</Text>
         </TouchableOpacity>
+        <TouchableOpacity style={{ ...style.button }} onPress={() => this.setState({ currentStep: this.stepOne })}>
+          <Text style={style.buttonText}>GO BACK</Text>
+        </TouchableOpacity>
+      </>
+    );
+  };
+
+  stepOneHalf = () => {
+    return (
+      <>
+        <Text style={{ ...style.mainText, paddingVertical: 0, fontSize: 20, adjustsFontSizeToFit: true }}>
+          By pressing accept, you accept the terms and conditions and privacy policy found in the links below:
+        </Text>
         <TouchableOpacity
-          style={{ ...style.button, backgroundColor: "#454545" }}
+          style={{
+            ...style.button,
+            marginBottom: 10,
+            alignItems: "flex-start",
+          }}
+          onPress={() => Linking.openURL("https://www.chaitheapp.com/terms-and-conditions")}
+        >
+          <Text style={{ ...style.buttonText, color: "white" }}>Terms and Conditions</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{
+            ...style.button,
+            marginBottom: 10,
+            margin: 10,
+            alignItems: "flex-start",
+          }}
+          onPress={() => Linking.openURL("https://www.chaitheapp.com/privacy-policy")}
+        >
+          <Text style={{ ...style.buttonText, color: "white" }}>Privacy Policy</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={{ ...style.button, marginBottom: 10, margin: 0 }} onPress={this.sendVerification}>
+          <Text style={style.buttonText}>ACCEPT</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{ ...style.button, marginBottom: 10, margin: 0 }}
           onPress={() => this.setState({ currentStep: this.stepOne })}
         >
           <Text style={style.buttonText}>GO BACK</Text>
@@ -145,17 +184,18 @@ class Setup extends React.Component {
   stepOne = () => {
     return (
       <>
-        <Text style={style.mainText}>Enter your email to login or sign up:</Text>
+        <Text style={style.mainText}>Welcome to Chai, enter your email to login or sign up:</Text>
         <View style={style.inputView}>
           <TextInput
             keyboardType="email-address"
             style={style.inputText}
             onChangeText={this.onChangeEmail}
             value={this.state.email}
-            placeholder="Email"
+            placeholder="Type email here..."
+            placeholderTextColor="white"
           />
         </View>
-        <TouchableOpacity style={style.button} onPress={this.sendVerification}>
+        <TouchableOpacity style={style.button} onPress={this.verifyEmail}>
           <Text style={style.buttonText}>CONTINUE</Text>
         </TouchableOpacity>
       </>
@@ -182,35 +222,36 @@ const style = StyleSheet.create({
     backgroundColor: Constants.backgroundColor,
   },
   mainText: {
-    padding: 40,
+    paddingVertical: 25,
+    paddingHorizontal: 5,
+    width: "80%",
     color: Constants.mainTextColor,
-    fontSize: 30,
+    fontSize: 23,
   },
   inputView: {
-    margin: 40,
-    paddingHorizontal: 20,
+    paddingVertical: 25,
+    paddingHorizontal: 5,
     width: "80%",
-    backgroundColor: "white",
-    borderRadius: 25,
-    height: 50,
+    height: 35,
     justifyContent: "center",
   },
   inputText: {
     height: 50,
-    color: "black"
+    fontSize: 18,
+    color: Constants.accentColorOne,
   },
   buttonText: {
-    color: "white",
+    color: Constants.accentColorOne,
     lineHeight: 50,
+    fontSize: 18,
   },
   button: {
-    margin: 40,
+    marginTop: 30,
+    paddingHorizontal: 5,
     marginBottom: 150,
     width: "80%",
-    backgroundColor: Constants.accentColorOne,
-    borderRadius: 25,
-    height: 50,
-    alignItems: "center",
+    height: 35,
+    alignItems: "flex-end",
     justifyContent: "center",
   },
 });

@@ -10,16 +10,16 @@
       "image": "./assets/splashscreen.png",
       "resizeMode": "contain",
       "backgroundColor": "#000000",
-      "scheme": "chai"
+      "scheme": "chaitheapp"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 30000
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.chaitheapp",
-      "buildNumber": "1.0.3",
+      "buildNumber": "1.0.6",
       "icon": "./assets/ios_icon.png",
       "userInterfaceStyle": "dark",
       "associatedDomains": ["applinks:chailogin.page.link"]
@@ -44,14 +44,10 @@
           "category": ["BROWSABLE", "DEFAULT"]
         }
       ],
-      "package": "com.chai",
+      "package": "com.chaitheapp",
       "versionCode": 1,
       "softwareKeyboardLayoutMode": "pan",
       "useNextNotificationsApi": true,
-      "splash": {
-        "backgroundColor": "#000000",
-        "resizeMode": "native"
-      },
       "permissions": [],
       "icon": "./assets/android_icon.png",
       "userInterfaceStyle": "dark"

@@ -7,7 +7,7 @@ import { decode, encode } from "base-64";
 import AuthController from "./Source/Controllers/AuthController";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { View, Animated } from "react-native";
-import { SplashScreen } from "expo";
+import * as SplashScreen from 'expo-splash-screen';
 import NavigationService from "./Source/NavigationService";
 import Constants from "./Source/Constants";
 import { Easing } from "react-native-reanimated";
@@ -34,6 +34,10 @@ Notifications.setNotificationHandler({
     shouldSetBadge: true,
   }),
 });
+
+const linking = {
+  prefixes: ["https://chailogin.page.link"],
+};
 
 class App extends React.Component {
   constructor() {
@@ -74,8 +78,10 @@ class App extends React.Component {
   };
 
   handleNotification = async (notification) => {
-    if (notification.request.content.data.convo_id) {
-      this.queuedNotification = response.notification.request.content.data;
+    if (notification.request.content.data.convo_id || notification.request.content.data.body.convo_id) {
+      this.queuedNotification = notification.request.content.data.convo_id
+        ? response.notification.request.content.data
+        : notification.request.content.data.body;
       if (this.state.user) {
         NavigationService.navigate({ ...this.queuedNotification, uid: this.state.user.uid });
       }
@@ -83,8 +89,13 @@ class App extends React.Component {
   };
 
   handleResponse = async (response) => {
-    if (response.notification.request.content.data.convo_id) {
-      this.queuedNotification = response.notification.request.content.data;
+    if (
+      response.notification.request.content.data.convo_id ||
+      response.notification.request.content.data.body.convo_id
+    ) {
+      this.queuedNotification = response.notification.request.content.data.convo_id
+        ? response.notification.request.content.data
+        : response.notification.request.content.data.body;
       if (this.state.user) {
         NavigationService.navigate({ ...this.queuedNotification, uid: this.state.user.uid });
       }
@@ -96,7 +107,7 @@ class App extends React.Component {
   };
 
   animateOut = () => {
-    SplashScreen.hide();
+    SplashScreen.hideAsync();
     Animated.timing(this.state.splashAnimation, {
       toValue: 1,
       duration: 700,
@@ -143,6 +154,7 @@ class App extends React.Component {
       <View style={{ flex: 1, backgroundColor: Constants.backgroundColor }}>
         <NavigationContainer
           theme={this.MyTheme}
+          linking={linking}
           ref={(navigationRef) => NavigationService.setTopLevelNavigator(navigationRef)}
           onReady={() => {
             if (this.queuedNotification) {

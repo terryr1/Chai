@@ -25,7 +25,7 @@ class AuthModel {
         bundleId: "com.chaitheapp",
       },
       android: {
-        packageName: "com.chai",
+        packageName: "com.chaitheapp",
       },
     };
 
