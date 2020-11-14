@@ -168,7 +168,7 @@ class ConvoCards extends React.Component {
           <Text
             style={{
               fontSize: 24 / PixelRatio.getFontScale(),
-              fontWeight: "bold",
+              fontWeight: "normal",
               color: Constants.backgroundColor,
               paddingHorizontal: 40,
             }}
@@ -187,7 +187,7 @@ class ConvoCards extends React.Component {
           <Text
             style={{
               fontSize: 24 / PixelRatio.getFontScale(),
-              fontWeight: "bold",
+              fontWeight: "normal",
               color: Constants.backgroundColor,
               paddingHorizontal: 40,
             }}

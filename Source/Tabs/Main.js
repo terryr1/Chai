@@ -39,6 +39,7 @@ class Main extends React.Component {
           initialParams={{
             uid: this.props.route.params.uid,
           }}
+          listeners={({ navigation }) => ({ blur: () => navigation.setParams({ screen: undefined }) })}
           options={{
             tabBarIcon: ({ color }) => <Icon name="home" type="material" color={color} size={30} />,
           }}
@@ -50,6 +51,7 @@ class Main extends React.Component {
           initialParams={{
             uid: this.props.route.params.uid,
           }}
+          listeners={({ navigation }) => ({ blur: () => navigation.setParams({ screen: undefined }) })}
           options={{
             tabBarIcon: ({ color }) => <Icon name="forum" type="material" color={color} size={30} />,
           }}
@@ -61,6 +63,7 @@ class Main extends React.Component {
           initialParams={{
             uid: this.props.route.params.uid,
           }}
+          listeners={({ navigation }) => ({ blur: () => navigation.setParams({ screen: undefined }) })}
           options={{
             tabBarIcon: ({ color }) => <Icon name="search" type="material" color={color} size={30} />,
           }}

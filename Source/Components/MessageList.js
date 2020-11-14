@@ -28,21 +28,21 @@ function DrawerContent(props) {
   const style = StyleSheet.create({
     container: {
       flex: 1,
-      alignItems: "center",
-      justifyContent: "center",
+      flexDirection: "column-reverse",
       backgroundColor: Constants.backgroundColor,
     },
     buttonText: {
-      color: "white",
+      color: Constants.mainTextColor,
+      fontSize: 22,
       lineHeight: 50,
     },
     button: {
-      margin: 40,
+      marginHorizontal: 40,
+      marginVertical: 5,
       width: "80%",
       borderRadius: 15,
-      backgroundColor: Constants.accentColorOne,
       height: 50,
-      alignItems: "center",
+      alignItems: "flex-end",
     },
   });
 
@@ -55,33 +55,36 @@ function DrawerContent(props) {
         height: window.height,
         backgroundColor: Constants.backgroundColor,
         padding: 20,
+        paddingTop: Platform.OS === "android" ? "5%" : "15%",
       }}
     >
-      <TouchableOpacity
-        style={style.button}
-        onPress={async () => {
-          await Linking.openURL("https://www.chaitheapp.com/home");
-        }}
-      >
-        <Text style={style.buttonText}>HELP</Text>
-      </TouchableOpacity>
+      <SafeAreaView style={style.container}>
+        <TouchableOpacity
+          style={style.button}
+          onPress={async () => {
+            await Linking.openURL("https://www.chaitheapp.com/home");
+          }}
+        >
+          <Text style={style.buttonText}>HELP</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity
-        style={style.button}
-        onPress={async () => {
-          await Linking.openURL("https://www.chaitheapp.com/privacy-policy");
-        }}
-      >
-        <Text style={style.buttonText}>PRIVACY POLICY</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={style.button}
-        onPress={() => {
-          props.signOut();
-        }}
-      >
-        <Text style={style.buttonText}>SIGN OUT</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={style.button}
+          onPress={async () => {
+            await Linking.openURL("https://www.chaitheapp.com/privacy-policy");
+          }}
+        >
+          <Text style={style.buttonText}>PRIVACY POLICY</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={style.button}
+          onPress={() => {
+            props.signOut();
+          }}
+        >
+          <Text style={style.buttonText}>SIGN OUT</Text>
+        </TouchableOpacity>
+      </SafeAreaView>
     </ScrollView>
   );
 }
@@ -150,10 +153,10 @@ class MessageList extends React.Component {
 
   renderItem = ({ item }) => {
     const BadgedIcon = item.unread
-      ? withBadge(" ", { badgeStyle: { backgroundColor: "yellow", borderColor: "yellow" } })(Icon)
+      ? withBadge("", { badgeStyle: { backgroundColor: "#004ec9", borderColor: "#004ec9" } })(Icon)
       : Icon;
     const BadgedAssistantIcon = item.unread
-      ? withBadge(" ", { badgeStyle: { backgroundColor: "yellow", borderColor: "yellow" } })(SvgXml)
+      ? withBadge("", { badgeStyle: { backgroundColor: "#004ec9", borderColor: "#004ec9" } })(SvgXml)
       : SvgXml;
 
     return (
@@ -178,7 +181,14 @@ class MessageList extends React.Component {
             color={Constants.mainTextColor}
           />
         )}
-        <Text style={{ color: Constants.mainTextColor, fontWeight: "bold", fontSize: 16, width: "80%" }}>
+        <Text
+          style={{
+            color: Constants.mainTextColor,
+            fontWeight: item.unread ? "bold" : "normal",
+            fontSize: 16,
+            width: "80%",
+          }}
+        >
           {item.name}
         </Text>
       </ListItem>
@@ -260,7 +270,7 @@ class MessageList extends React.Component {
               borderRadius: 15,
               overflow: "hidden",
               padding: 20,
-              fontWeight: "bold",
+              fontWeight: "normal",
               fontSize: 20,
               textAlign: "center",
               lineHeight: 30,
@@ -278,52 +288,50 @@ class MessageList extends React.Component {
     const menu = <DrawerContent deleteAccount={this.deleteAccount} signOut={this.signOut} />;
 
     return (
-      <SafeAreaView forceInset={{ top: "always" }} style={{ flex: 1, backgroundColor: Constants.backgroundColor }}>
-        <SideMenu
-          animationFunction={(prop, value) =>
-            Animated.spring(prop, {
-              toValue: value,
-              friction: 8,
-              useNativeDriver: true,
-            })
-          }
-          menu={menu}
-          menuPosition="right"
-          openMenuOffset={Constants.SCREEN_WIDTH - 50}
-          edgeHitWidth={Constants.SCREEN_WIDTH}
-          isOpen={this.state.isOpen}
-          onChange={(isOpen) => this.updateMenuState(isOpen)}
-        >
-          <SafeAreaView forceInset={{ top: "always" }} style={{ flex: 1, backgroundColor: Constants.backgroundColor }}>
-            <StatusBar backgroundColor={Constants.backgroundColor} barStyle="light-content" />
-            <View
+      <SideMenu
+        animationFunction={(prop, value) =>
+          Animated.spring(prop, {
+            toValue: value,
+            friction: 8,
+            useNativeDriver: true,
+          })
+        }
+        menu={menu}
+        menuPosition="right"
+        openMenuOffset={Constants.SCREEN_WIDTH - 50}
+        edgeHitWidth={Constants.SCREEN_WIDTH}
+        isOpen={this.state.isOpen}
+        onChange={(isOpen) => this.updateMenuState(isOpen)}
+      >
+        <SafeAreaView forceInset={{ top: "always" }} style={{ flex: 1, backgroundColor: Constants.backgroundColor }}>
+          <StatusBar backgroundColor={Constants.backgroundColor} barStyle="light-content" />
+          <View
+            style={{
+              zIndex: 5,
+              width: "100%",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              backgroundColor: "rgba(0,0,0,0)",
+              paddingVertical: 20,
+            }}
+          >
+            <SvgXml
               style={{
-                zIndex: 5,
-                width: "100%",
-                flexDirection: "row",
-                justifyContent: "space-between",
-                backgroundColor: "rgba(0,0,0,0)",
-                paddingVertical: 20,
+                zIndex: -1,
+                position: "absolute",
+                top: "-300%",
               }}
-            >
-              <SvgXml
-                style={{
-                  zIndex: -1,
-                  position: "absolute",
-                  top: "-300%",
-                }}
-                width="100%"
-                xml={Constants.messageListBg}
-              />
-              <Text style={{ color: "white", fontSize: 30, marginLeft: 27, fontWeight: "bold" }}>Chats</Text>
-              <TouchableOpacity onPress={() => this.updateMenuState(true)}>
-                <Icon style={{ marginRight: 27, marginTop: 4 }} name="menu" type="material" color="white" size={35} />
-              </TouchableOpacity>
-            </View>
-            {this.displayList()}
-          </SafeAreaView>
-        </SideMenu>
-      </SafeAreaView>
+              width="100%"
+              xml={Constants.messageListBg}
+            />
+            <Text style={{ color: "white", fontSize: 30, marginLeft: 27, fontWeight: "bold" }}>Chats</Text>
+            <TouchableOpacity onPress={() => this.updateMenuState(true)}>
+              <Icon style={{ marginRight: 27, marginTop: 4 }} name="menu" type="material" color="white" size={35} />
+            </TouchableOpacity>
+          </View>
+          {this.displayList()}
+        </SafeAreaView>
+      </SideMenu>
     );
   }
 }

@@ -21,21 +21,21 @@ function DrawerContent(props) {
   const style = StyleSheet.create({
     container: {
       flex: 1,
-      alignItems: "center",
-      justifyContent: "center",
+      flexDirection: "column-reverse",
       backgroundColor: Constants.backgroundColor,
     },
     buttonText: {
-      color: "white",
+      color: "white", //props.primary ? Constants.accentColorOne : Constants.accentColorTwo,
       lineHeight: 50,
+      fontSize: 22,
     },
     button: {
-      margin: 40,
+      marginHorizontal: 40,
+      marginVertical: 5,
       width: "80%",
       borderRadius: 15,
-      backgroundColor: props.primary ? Constants.accentColorOne : Constants.accentColorTwo,
       height: 50,
-      alignItems: "center",
+      alignItems: "flex-end",
     },
   });
 
@@ -48,6 +48,7 @@ function DrawerContent(props) {
         height: window.height,
         backgroundColor: Constants.backgroundColor,
         padding: 20,
+        paddingTop: Platform.OS === "android" ? "5%" : "15%",
       }}
     >
       <SafeAreaView style={style.container}>
@@ -219,10 +220,7 @@ class ConvoContainer extends React.Component {
               justifyContent: "center",
             }}
           >
-            <ActivityIndicator
-              size="large"
-              color={this.props.route.params.user.primary ? Constants.accentColorTwo : Constants.accentColorOne}
-            />
+            <ActivityIndicator size="large" color={Constants.mainTextColor} />
           </View>
         )}
       </>

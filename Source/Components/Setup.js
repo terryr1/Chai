@@ -238,7 +238,7 @@ const style = StyleSheet.create({
   inputText: {
     height: 50,
     fontSize: 18,
-    color: Constants.accentColorOne,
+    color: Constants.mainTextColor,
   },
   buttonText: {
     color: Constants.accentColorOne,

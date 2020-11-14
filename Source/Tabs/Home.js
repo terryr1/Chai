@@ -9,7 +9,7 @@ const Stack = createStackNavigator();
 function ResetScreenOnBlur({ navigation }) {
   useFocusEffect(
     React.useCallback(() => {
-      return () => navigation.setParams({ screen: "CreateConvo" });
+      return () => navigation.setParams({ screen: undefined, params: undefined });
     }, [navigation])
   );
 

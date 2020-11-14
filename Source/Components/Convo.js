@@ -87,6 +87,12 @@ class Convo extends React.Component {
       });
 
       const sorted_msgs = new_messages.sort((a, b) => {
+        if (!a.createdAt) {
+          return -1;
+        } else if (!b.createdAt) {
+          return 1;
+        }
+
         return b.createdAt - a.createdAt;
       });
 
@@ -214,10 +220,7 @@ class Convo extends React.Component {
 
   renderLoading = () => (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <ActivityIndicator
-        size="large"
-        color={this.props.route.params.user.primary ? Constants.accentColorOne : Constants.accentColorTwo}
-      ></ActivityIndicator>
+      <ActivityIndicator size="large" color={Constants.mainTextColor}></ActivityIndicator>
     </View>
   );
 
