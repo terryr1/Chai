@@ -20,6 +20,7 @@ class UserModel {
   };
 
   addNotificationToken = async (notificationToken) => {
+    // console.log('add token')
     const token = await firebase.auth().currentUser.getIdToken(true);
     const data = { notificationToken, token };
 
@@ -29,6 +30,7 @@ class UserModel {
   };
 
   clearNotificationToken = async () => {
+    // console.log('clear token')
     const token = await firebase.auth().currentUser.getIdToken(true);
     const data = { token };
 

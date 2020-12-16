@@ -1,5 +1,7 @@
 PENDING REFACTOR:
 
+firebase emulators:start --import=./<dir-name> --export-on-exit
+
 notifications are important for new opinion - Tell me your story is a good convo, what woudl make it better
 
 Not allowing setState() to be invoked on Render() of a React Component.

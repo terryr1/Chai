@@ -25,12 +25,8 @@ class AuthController {
   };
 
   confirmLink = async (email, link) => {
-    try {
-      if (AuthModel.shared.checkIfValidLink(link)) {
-        AuthModel.shared.signIn(email, link);
-      }
-    } catch (err) {
-      Alert.alert("Uh oh", err.toString());
+    if (AuthModel.shared.checkIfValidLink(link)) {
+      AuthModel.shared.signIn(email, link);
     }
   };
 

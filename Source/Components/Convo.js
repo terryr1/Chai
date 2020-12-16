@@ -155,7 +155,7 @@ class Convo extends React.Component {
         {...props}
         textStyle={{
           right: {
-            color: "white",
+            color: Constants.mainTextColor,
           },
           left: {
             color: Constants.mainTextColor,
@@ -163,11 +163,11 @@ class Convo extends React.Component {
         }}
         wrapperStyle={{
           right: {
-            backgroundColor: this.props.route.params.user.primary ? Constants.accentColorOne : Constants.accentColorTwo,
+            backgroundColor: Constants.backgroundColor,
             borderRadius: 15,
           },
           left: {
-            backgroundColor: "black",
+            backgroundColor: this.props.route.params.user.primary ? Constants.accentColorOne : Constants.accentColorTwo,
             borderRadius: 15,
           },
         }}
@@ -248,7 +248,6 @@ class Convo extends React.Component {
             borderRadius: 15,
             lineHeight: 24,
           }}
-          scrollToBottom
           minInputToolbarHeight={53}
           messages={this.state.messages}
           onSend={this.send}
@@ -258,6 +257,7 @@ class Convo extends React.Component {
           renderLoadEarlier={this.renderLoadEarlier}
           onLoadEarlier={this.onLoadEarlier}
           placeholder="Text here..."
+          timeTextStyle={{ left: { color: Constants.mainTextColor },right: { color:'gray'} }}
         />
       </View>
     );

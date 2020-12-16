@@ -6,8 +6,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { decode, encode } from "base-64";
 import AuthController from "./Source/Controllers/AuthController";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { View, Animated } from "react-native";
-import * as SplashScreen from 'expo-splash-screen';
+import { View, Animated, TouchableOpacity, TouchableHighlight } from "react-native";
+import * as SplashScreen from "expo-splash-screen";
 import NavigationService from "./Source/NavigationService";
 import Constants from "./Source/Constants";
 import { Easing } from "react-native-reanimated";
@@ -25,6 +25,9 @@ if (!global.atob) {
 }
 // ------------------------
 
+TouchableOpacity.defaultProps = { ...(TouchableOpacity.defaultProps || {}), delayPressIn: 0 };
+TouchableHighlight.defaultProps = { ...(TouchableHighlight.defaultProps || {}), delayPressIn: 0 };
+
 const Stack = createStackNavigator();
 
 Notifications.setNotificationHandler({
@@ -36,7 +39,7 @@ Notifications.setNotificationHandler({
 });
 
 const linking = {
-  prefixes: ["https://chailogin.page.link"],
+  prefixes: ["https://chailogin.page.link", "https://chaibeta.page.link"],
 };
 
 class App extends React.Component {
@@ -61,20 +64,20 @@ class App extends React.Component {
   componentDidMount = async () => {
     this.onNotificationListener = Notifications.addNotificationReceivedListener(this.handleNotification);
     this.onResponseListener = Notifications.addNotificationResponseReceivedListener(this.handleResponse);
-    AuthController.shared.checkForAuthentication((user) => {
+    AuthController.shared.checkForAuthentication(async (user) => {
       if (user) {
         this.setState({ user, isLoadingComplete: true });
+        const { status } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+        const granted = await AsyncStorage.getItem("notification_permission");
+        if (status == "granted" && granted !== "granted" && this.state.user !== "noUser") {
+          let token = await Notifications.getExpoPushTokenAsync();
+          AuthController.shared.addNotificationToken(token);
+          AsyncStorage.setItem("notification_permission", "granted");
+        }
       } else {
         this.setState({ user: "noUser" });
       }
     });
-    const { status } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
-    const granted = await AsyncStorage.getItem("notification_permission");
-    if (status == "granted" && granted !== "granted" && this.state.user !== "noUser") {
-      let token = await Notifications.getExpoPushTokenAsync();
-      AuthController.shared.addNotificationToken(token);
-      AsyncStorage.setItem("notification_permission", "granted");
-    }
   };
 
   handleNotification = async (notification) => {

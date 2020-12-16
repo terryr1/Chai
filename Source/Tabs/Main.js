@@ -45,18 +45,6 @@ class Main extends React.Component {
           }}
         />
         <Tabs.Screen
-          name="Messages"
-          component={Messages}
-          unmountOnBlur={true}
-          initialParams={{
-            uid: this.props.route.params.uid,
-          }}
-          listeners={({ navigation }) => ({ blur: () => navigation.setParams({ screen: undefined }) })}
-          options={{
-            tabBarIcon: ({ color }) => <Icon name="forum" type="material" color={color} size={30} />,
-          }}
-        />
-        <Tabs.Screen
           name="Explore"
           component={Explore}
           unmountOnBlur={true}
@@ -66,6 +54,18 @@ class Main extends React.Component {
           listeners={({ navigation }) => ({ blur: () => navigation.setParams({ screen: undefined }) })}
           options={{
             tabBarIcon: ({ color }) => <Icon name="search" type="material" color={color} size={30} />,
+          }}
+        />
+        <Tabs.Screen
+          name="Messages"
+          component={Messages}
+          unmountOnBlur={true}
+          initialParams={{
+            uid: this.props.route.params.uid,
+          }}
+          listeners={({ navigation }) => ({ blur: () => navigation.setParams({ screen: undefined }) })}
+          options={{
+            tabBarIcon: ({ color }) => <Icon name="forum" type="material" color={color} size={30} />,
           }}
         />
       </Tabs.Navigator>

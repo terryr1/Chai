@@ -1,5 +1,7 @@
 import firebase from "firebase";
 import "firebase/firestore";
+import "firebase/functions";
+import FirebaseConstants from "./FirebaseConstants";
 
 class Fire {
   constructor() {
@@ -10,20 +12,14 @@ class Fire {
     return firebase.firestore();
   }
 
-
   init = () => {
     if (!firebase.apps.length) {
-      firebase.initializeApp({
-        apiKey: "AIzaSyCXuiM5nxFnSkXaTuLHSylTJjfz6AqSEYA",
-        authDomain: "chai-87874.firebaseapp.com",
-        databaseURL: "https://chai-87874.firebaseio.com",
-        projectId: "chai-87874",
-        storageBucket: "chai-87874.appspot.com",
-        messagingSenderId: "846830191629",
-        appId: "1:846830191629:web:9b4d5ae19db360e30c0144",
-        measurementId: "G-K253SKL3P4",
-      });
+      firebase.initializeApp(FirebaseConstants.config);
     }
+
+    // firebase.firestore().settings({ host: "10.0.2.2:8080", ssl: false });
+    // firebase.functions().useFunctionsEmulator("http://10.0.2.2:5001");
+    // firebase.auth().useEmulator("http://10.0.2.2:9099/");
   };
 }
 

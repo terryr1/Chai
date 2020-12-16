@@ -188,19 +188,19 @@ class ConvoContainer extends React.Component {
             <View style={{ width: "100%", height: 60, flexDirection: "row", justifyContent: "space-between" }}>
               <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
                 <Icon
-                  style={{ marginLeft: 20, marginTop: 10 }}
+                  style={{ marginLeft: 20, marginTop: 24 }}
                   name="arrow-back"
                   type="material"
-                  color="dimgray"
+                  color="gray"
                   size={35}
                 />
               </TouchableOpacity>
               <TouchableOpacity onPress={() => this.updateMenuState(true)}>
                 <Icon
-                  style={{ marginRight: 20, marginTop: 10 }}
+                  style={{ marginRight: 27, marginTop: 24 }}
                   name="menu"
                   type="material"
-                  color="dimgray"
+                  color="gray"
                   size={35}
                 />
               </TouchableOpacity>

@@ -12,15 +12,15 @@ import {
   ScrollView,
   Linking,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import SideMenu from "react-native-side-menu";
-import { ListItem } from "react-native-elements";
+import { ListItem, Avatar } from "react-native-elements";
 import MessageListController from "../Controllers/MessageListController";
 import { Icon, withBadge, Badge } from "react-native-elements";
 import { SvgXml } from "react-native-svg";
 import { difference } from "lodash";
 import Constants from "./../Constants";
 import AsyncStorage from "@react-native-community/async-storage";
-import LottieView from "lottie-react-native";
 import AuthController from "../Controllers/AuthController";
 import SafeAreaView from "react-native-safe-area-view";
 
@@ -152,33 +152,34 @@ class MessageList extends React.Component {
   };
 
   renderItem = ({ item }) => {
-    const BadgedIcon = item.unread
-      ? withBadge("", { badgeStyle: { backgroundColor: "#004ec9", borderColor: "#004ec9" } })(Icon)
-      : Icon;
-    const BadgedAssistantIcon = item.unread
-      ? withBadge("", { badgeStyle: { backgroundColor: "#004ec9", borderColor: "#004ec9" } })(SvgXml)
-      : SvgXml;
+    const BadgedAvatar = item.unread
+      ? withBadge("", { badgeStyle: { backgroundColor: "#946FA6", borderColor: "#946FA6", borderWidth: 7, borderRadius: 7 } })(Avatar)
+      : Avatar;
 
     return (
       <ListItem
         underlayColor="rgba(255, 255, 255, .2)"
         onPress={() => this.onPress(item)}
         containerStyle={{
-          paddingHorizontal: 0,
+          paddingHorizontal: 5,
           marginHorizontal: 16,
           borderRadius: 1,
           backgroundColor: "rgba(0, 0, 0, 0)",
         }}
       >
         {item.primary ? (
-          <BadgedIcon name="face" type="material" color={Constants.mainTextColor} size={45} />
+          <BadgedAvatar
+            size="medium"
+            overlayContainerStyle={{ backgroundColor: Constants.accentColorOne }}
+            rounded
+            icon={{ name: "person", type: "material", size: 30 }}
+          />
         ) : (
-          <BadgedAssistantIcon
-            xml={Constants.agent}
-            width={45}
-            height={45}
-            fill={Constants.mainTextColor}
-            color={Constants.mainTextColor}
+          <BadgedAvatar
+            size="medium"
+            overlayContainerStyle={{ backgroundColor: Constants.accentColorTwo }}
+            rounded
+            icon={{ name: "record-voice-over", type: "material" }}
           />
         )}
         <Text
@@ -188,6 +189,7 @@ class MessageList extends React.Component {
             fontSize: 16,
             width: "80%",
           }}
+          numberOfLines={1}
         >
           {item.name}
         </Text>
@@ -238,9 +240,9 @@ class MessageList extends React.Component {
             zIndex: 5,
             marginLeft: 5,
             marginRight: 10,
-            marginBottom: 10,
+            marginBottom: 0,
             borderRadius: 25,
-            paddingBottom: 20,
+            paddingBottom: 0,
           }}
         >
           <FlatList
@@ -315,15 +317,6 @@ class MessageList extends React.Component {
               paddingVertical: 20,
             }}
           >
-            <SvgXml
-              style={{
-                zIndex: -1,
-                position: "absolute",
-                top: "-300%",
-              }}
-              width="100%"
-              xml={Constants.messageListBg}
-            />
             <Text style={{ color: "white", fontSize: 30, marginLeft: 27, fontWeight: "bold" }}>Chats</Text>
             <TouchableOpacity onPress={() => this.updateMenuState(true)}>
               <Icon style={{ marginRight: 27, marginTop: 4 }} name="menu" type="material" color="white" size={35} />

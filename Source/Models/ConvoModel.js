@@ -49,7 +49,9 @@ class ConvoModel {
           );
         }
       },
-      (error) => {}
+      (err) => {
+        console.log(err.toString());
+      }
     );
   };
 
@@ -67,14 +69,13 @@ class ConvoModel {
             callback(this.parseMessages(querySnapshot.docChanges()));
           }
         },
-        () => {
-          alert();
+        (err) => {
+          console.log(err.toString());
         }
       );
   };
 
   getMessages = async (startTimestamp, convo_id) => {
-    const date = new Date(startTimestamp);
     const documentSnapshots = await this.ref
       .doc(convo_id)
       .collection("messages")
@@ -105,7 +106,7 @@ class ConvoModel {
 
     const createMessage = firebase.functions().httpsCallable("createMessage");
 
-    return createMessage(data);
+    return createMessage(data).catch((error) => console.log(error));
   };
 
   appendPendingMessage = async (text, convo_id, message_id) => {
@@ -122,13 +123,13 @@ class ConvoModel {
     // console.log("adding user to convo");
     const token = await firebase.auth().currentUser.getIdToken(true);
     const addUserToConvo = firebase.functions().httpsCallable("addUserToConvo");
-    return addUserToConvo({ convo_id, token });
+    return addUserToConvo({ convo_id, token }).catch((error) => console.log(error));
   };
 
   removeUserFromConvo = async (convo_id) => {
     const token = await firebase.auth().currentUser.getIdToken(true);
     const removeUserFromConvo = firebase.functions().httpsCallable("removeUserFromConvo");
-    return removeUserFromConvo({ convo_id, token });
+    return removeUserFromConvo({ convo_id, token }).catch((error) => console.log(error));
   };
 
   create = async (question) => {
@@ -181,7 +182,7 @@ class ConvoModel {
     const data = { convo_id, token };
 
     const deleteConvo = firebase.functions().httpsCallable("deleteConvo");
-    return deleteConvo(data);
+    return deleteConvo(data).catch((error) => console.log(error));
   };
 
   isPending = async (convo_id) => {

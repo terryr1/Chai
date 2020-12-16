@@ -1,13 +1,19 @@
 import firebase from "firebase";
 import { Alert } from "react-native";
+import FirebaseConstants from "./../FirebaseConstants";
 
 class AuthModel {
   checkForAuthentication = (callback) => {
     // console.log("start check for authentication");
-    firebase.auth().onAuthStateChanged((user) => {
-      // console.log("check for authentication listener called");
-      callback(user);
-    });
+    firebase.auth().onAuthStateChanged(
+      (user) => {
+        // console.log("check for authentication listener called");
+        callback(user);
+      },
+      (error) => {
+        Alert.alert("Uh oh", error.toString());
+      }
+    );
   };
 
   stopCheckForAuthentication = () => {
@@ -16,10 +22,10 @@ class AuthModel {
   };
 
   sendVerification = async (email) => {
-    console.log("sending verification");
+    // console.log("sending verification");
     const actionCodeSettings = {
-      url: "https://chailogin.page.link/verify",
-      dynamicLinkDomain: "chailogin.page.link",
+      url: FirebaseConstants.verificationUrl,
+      dynamicLinkDomain: FirebaseConstants.verificationDomain,
       handleCodeInApp: true,
       iOS: {
         bundleId: "com.chaitheapp",
@@ -33,7 +39,7 @@ class AuthModel {
   };
 
   checkIfValidLink = (link) => {
-    // console.log("check if valid link called");
+    console.log("check if valid link called");
     return firebase.auth().isSignInWithEmailLink(link);
   };
 
@@ -43,17 +49,28 @@ class AuthModel {
   };
 
   signIn = async (email, link) => {
-    // console.log("signing in with email link");
-    try {
-      firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-      firebase.auth().signInWithEmailLink(email, link);
-    } catch (err) {
-      Alert.alert("Uh oh", err.toString());
-    }
+    console.log("signing in with email link");
+    firebase
+      .auth()
+      .setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+      .catch(function (err) {
+        Alert.alert("Uh oh", err.toString());
+      });
+    firebase
+      .auth()
+      .signInWithEmailLink(email, link)
+      .catch(function (err) {
+        Alert.alert("Uh oh", err.toString());
+      });
   };
 
   signOut = async () => {
-    firebase.auth().signOut();
+    firebase
+      .auth()
+      .signOut()
+      .catch(function (err) {
+        Alert.alert("Uh oh", err.toString());
+      });
   };
 }
 

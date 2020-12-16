@@ -10,7 +10,9 @@ import {
   PixelRatio,
   Platform,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import ConvoController from "../Controllers/ConvoController";
+import { Icon } from "react-native-elements";
 import Constants from "./../Constants";
 import { unionWith } from "lodash";
 import LottieView from "lottie-react-native";
@@ -146,16 +148,17 @@ class ConvoCards extends React.Component {
 
   renderCards = () => {
     const style = {
-      backgroundColor: Constants.mainTextColor,
+      backgroundColor: Constants.accentColorTwo,
       borderWidth: 0,
-      borderColor: Constants.backgroundColor,
+      borderColor: Constants.mainTextColor,
       height: Platform.OS === "android" ? "100%" : "95%",
-      width: Constants.SCREEN_WIDTH - 40,
-      marginLeft: 20,
+      width: Constants.SCREEN_WIDTH - 54,
+      marginLeft: 27,
       position: "absolute",
       borderRadius: 20,
       alignItems: "center",
       justifyContent: "center",
+      flexDirection: "row",
     };
 
     const first_card =
@@ -168,8 +171,8 @@ class ConvoCards extends React.Component {
           <Text
             style={{
               fontSize: 24 / PixelRatio.getFontScale(),
-              fontWeight: "normal",
-              color: Constants.backgroundColor,
+              fontWeight: "bold",
+              color: Constants.mainTextColor,
               paddingHorizontal: 40,
             }}
           >
@@ -187,8 +190,8 @@ class ConvoCards extends React.Component {
           <Text
             style={{
               fontSize: 24 / PixelRatio.getFontScale(),
-              fontWeight: "normal",
-              color: Constants.backgroundColor,
+              fontWeight: "bold",
+              color: Constants.mainTextColor,
               paddingHorizontal: 40,
             }}
           >
@@ -202,8 +205,7 @@ class ConvoCards extends React.Component {
         <Animated.View
           key={2}
           style={{ ...style, backgroundColor: "black", transform: [{ scale: this.nextCardScale }] }}
-        >
-        </Animated.View>
+        ></Animated.View>
       ) : null;
 
     return [third_card, second_card, first_card];
@@ -213,16 +215,33 @@ class ConvoCards extends React.Component {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: Constants.backgroundColor }}>
         <StatusBar backgroundColor={Constants.backgroundColor} barStyle="light-content" />
-        <LottieView
+
+        <View
           style={{
-            zIndex: -1,
-            position: "absolute",
+            height: "17%",
             width: "100%",
-            bottom: Platform.OS === "android" ? 30 : Constants.SCREEN_HEIGHT / 10,
+            flexDirection: "row",
+            justifyContent: "space-between",
+            backgroundColor: "rgba(0,0,0,0)",
+            paddingVertical: 20,
           }}
-          source={require("./../../resources/cardsbg.json")}
-        ></LottieView>
-        <View style={{ height: "5%" }}></View>
+        >
+          <Text
+            style={{ color: "white", fontSize: 30, marginLeft: 27, fontWeight: "bold", width: "60%" }}
+            numberOfLines={1}
+          >
+            Self improvement
+          </Text>
+          <TouchableOpacity onPress={() => {}}>
+            <Icon
+              style={{ marginRight: 27, marginTop: 4 }}
+              name="filter-list"
+              type="material"
+              color="white"
+              size={35}
+            />
+          </TouchableOpacity>
+        </View>
         {this.state.numDocs > 0 ? (
           <View style={{ flex: 1, justifyContent: "center", alignContent: "center" }}>{this.renderCards()}</View>
         ) : (

@@ -6,7 +6,6 @@ import { Notifications } from "expo";
 import * as Permissions from "expo-permissions";
 import AsyncStorage from "@react-native-community/async-storage";
 import Constants from "../Constants";
-import { Link } from "@react-navigation/native";
 
 class Setup extends React.Component {
   constructor(props) {
@@ -34,7 +33,9 @@ class Setup extends React.Component {
     }
 
     let token = await Notifications.getExpoPushTokenAsync();
+    console.log("adding token?");
     AuthController.shared.addNotificationToken(token);
+    AsyncStorage.setItem("notification_permission", "granted");
   };
 
   componentDidUpdate = async () => {
@@ -77,7 +78,7 @@ class Setup extends React.Component {
   verifyEmail = async () => {
     Alert.alert(
       "Note",
-      `For the sake of anonymity, we STRONGLY reccommend against using an email with your name in it. Developers can connect your email to your conversations, we may look at these for development reasons. Are you sure you want to continue with '${this.state.email}'?`,
+      `For the sake of anonymity, we STRONGLY reccommend AGAINST using an email with your name in it. Developers can connect your email to your conversations, we may look at these for development reasons. Are you sure you want to continue with '${this.state.email}'?`,
 
       [
         { text: "Cancel", onPress: () => {} },
@@ -94,7 +95,7 @@ class Setup extends React.Component {
     AuthController.shared
       .sendVerification(this.enteredEmail)
       .then(() => this.setState({ currentStep: this.stepTwo }))
-      .catch((err) => Alert.alert(err.message));
+      .catch((err) => Alert.alert("Uh oh", err.message));
   };
 
   stepThree = () => {
@@ -126,7 +127,10 @@ class Setup extends React.Component {
   stepTwo = () => {
     return (
       <>
-        <Text style={style.mainText}>Click the link we sent to your email to continue</Text>
+        <Text style={style.mainText}>
+          Click the link we sent to your email to continue. Check your spam if you don't see the email after a few
+          minutes.
+        </Text>
         <TouchableOpacity
           style={{ ...style.button, marginBottom: 10 }}
           onPress={() => this.setState({ currentStep: this.stepThree })}
@@ -143,7 +147,7 @@ class Setup extends React.Component {
   stepOneHalf = () => {
     return (
       <>
-        <Text style={{ ...style.mainText, paddingVertical: 0, fontSize: 20, adjustsFontSizeToFit: true }}>
+        <Text style={{ ...style.mainText, paddingVertical: 0, fontSize: 20 }}>
           By pressing accept, you accept the terms and conditions and privacy policy found in the links below:
         </Text>
         <TouchableOpacity
