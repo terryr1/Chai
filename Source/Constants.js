@@ -6,6 +6,19 @@ const backgroundColor = "black";
 const accentColorOne = "#4285F4";
 const accentColorTwo = "#E65858";
 const mainTextColor = "white";
+const categories = [
+  "Celebration",
+  "Relationships",
+  "Motivation",
+  "Philosophy",
+  "Self Improvement",
+  "Venting",
+  "Humor",
+  "Career Advice",
+  "Life Advice",
+  "Anything",
+];
+const languages = ["English", "Other"];
 
 export default {
   SCREEN_HEIGHT,
@@ -14,4 +27,6 @@ export default {
   accentColorOne,
   accentColorTwo,
   mainTextColor,
+  categories,
+  languages
 };

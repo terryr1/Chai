@@ -114,11 +114,8 @@ class MessageList extends React.Component {
   startController = async () => {
     this.stopController = await MessageListController.start((unsorted_data) => {
       //should sort by unread first, then have all thos at top, then alphebatically?
-      const compareLoc = (a, b) => a.name.localeCompare(b.name);
-      const data = [
-        ...unsorted_data.filter((convo) => convo.unread).sort(compareLoc),
-        ...unsorted_data.filter((convo) => !convo.unread).sort(compareLoc),
-      ];
+      const compareTimeStamp = (a, b) => b.last_updated - a.last_updated;
+      const data = unsorted_data.sort(compareTimeStamp);
       const diff = difference(this.state.data, data);
       diff.forEach((item) => {
         AsyncStorage.removeItem(item.convo_id);
@@ -148,12 +145,15 @@ class MessageList extends React.Component {
       id: item.convo_id,
       user: { ...this.props.route.params.user, primary: item.primary },
       unread: item.unread,
+      clearNotifications: this.props.route.params.clearNotifications,
     });
   };
 
   renderItem = ({ item }) => {
     const BadgedAvatar = item.unread
-      ? withBadge("", { badgeStyle: { backgroundColor: "#946FA6", borderColor: "#946FA6", borderWidth: 7, borderRadius: 7 } })(Avatar)
+      ? withBadge("", {
+          badgeStyle: { backgroundColor: "#946FA6", borderColor: "#946FA6", borderWidth: 7, borderRadius: 7 },
+        })(Avatar)
       : Avatar;
 
     return (
@@ -319,7 +319,7 @@ class MessageList extends React.Component {
           >
             <Text style={{ color: "white", fontSize: 30, marginLeft: 27, fontWeight: "bold" }}>Chats</Text>
             <TouchableOpacity onPress={() => this.updateMenuState(true)}>
-              <Icon style={{ marginRight: 27, marginTop: 4 }} name="menu" type="material" color="white" size={35} />
+              <Icon style={{ marginRight: 27, marginTop: 0 }} name="menu" type="material" color="white" size={35} />
             </TouchableOpacity>
           </View>
           {this.displayList()}

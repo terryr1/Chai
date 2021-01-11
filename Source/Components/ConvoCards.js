@@ -7,15 +7,91 @@ import {
   StatusBar,
   TouchableOpacity,
   SafeAreaView,
+  StyleSheet,
   PixelRatio,
   Platform,
+  ScrollView,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
+import SideMenu from "react-native-side-menu";
 import ConvoController from "../Controllers/ConvoController";
 import { Icon } from "react-native-elements";
 import Constants from "./../Constants";
-import { unionWith } from "lodash";
+import { unionWith, isEqual } from "lodash";
 import LottieView from "lottie-react-native";
+
+function DrawerContent(props) {
+  const style = StyleSheet.create({
+    container: {
+      flex: 1,
+      flexDirection: "column",
+      backgroundColor: Constants.backgroundColor,
+    },
+    buttonSectionText: {
+      color: Constants.mainTextColor,
+      fontSize: 22,
+      lineHeight: 50,
+    },
+    buttonText: {
+      color: "gray",
+      fontSize: 20,
+      lineHeight: 50,
+    },
+    button: {
+      marginHorizontal: 40,
+      marginVertical: 5,
+      width: "80%",
+      borderRadius: 15,
+      height: 50,
+      alignItems: "flex-end",
+    },
+  });
+
+  const button = (label, updateFunction) => {
+    return (
+      <TouchableOpacity
+        style={style.button}
+        onPress={async () => {
+          updateFunction(label);
+        }}
+        key={label}
+      >
+        <Text
+          style={{
+            ...style.buttonText,
+            color: props.setFilters.includes(label) || props.setLanguages == label ? Constants.accentColorTwo : "gray",
+          }}
+        >
+          {label}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
+
+  return (
+    <ScrollView
+      contentContainerStyle={{ paddingBottom: 50 }}
+      scrollsToTop={false}
+      style={{
+        width: window.width,
+        height: "5%",
+        backgroundColor: Constants.backgroundColor,
+        paddingHorizontal: 20,
+        paddingTop: Platform.OS === "android" ? "5%" : "15%",
+      }}
+    >
+      <SafeAreaView style={style.container}>
+        <View style={style.button}>
+          <Text style={style.buttonSectionText}>LANGUAGES</Text>
+        </View>
+        {Constants.languages.map((language) => button(language, props.updateLanguage))}
+        <View style={style.button}>
+          <Text style={style.buttonSectionText}>CATEGORIES</Text>
+        </View>
+        {Constants.categories.map((category) => button(category, props.updateFilterState))}
+      </SafeAreaView>
+    </ScrollView>
+  );
+}
 
 class ConvoCards extends React.Component {
   constructor(props) {
@@ -39,6 +115,8 @@ class ConvoCards extends React.Component {
       currentIndex: 0,
       data: [],
       numDocs: 0,
+      setFilters: [],
+      setLanguages: null,
     };
 
     this.nextCardOpacity = this.position.x.interpolate({
@@ -89,6 +167,7 @@ class ConvoCards extends React.Component {
               id: go_to.id,
               pending: true,
               user: { ...this.props.route.params.user, primary: false },
+              clearNotifications: this.props.route.params.clearNotifications,
             });
           });
         } else {
@@ -102,13 +181,16 @@ class ConvoCards extends React.Component {
     });
   }
 
-  componentDidUpdate = async () => {
+  componentDidUpdate = async (prevProps, prevState) => {
     if (this.state.data.length == 0 && this.state.numDocs > 0 && !this.startedConvoGet) {
       this.startedConvoGet = true;
-      this.getConvos.call(this);
+      this.getConvos();
     }
     if (this.animation && this.state.numDocs == 0) {
       this.animation.play(120, 120);
+    }
+    if (!isEqual(prevState.setFilters, this.state.setFilters) || prevState.setLanguages !== this.state.setLanguages) {
+      this.setState({ data: [] });
     }
   };
 
@@ -138,7 +220,10 @@ class ConvoCards extends React.Component {
   };
 
   getConvos = async () => {
-    const request = await ConvoController.getPendingConvos(this.props.route.params.user.id, this.prevDoc);
+    const request = await ConvoController.getPendingConvos(this.props.route.params.user.id, this.prevDoc, {
+      categories: this.state.setFilters,
+      languages: this.state.setLanguages,
+    });
     this.prevDoc = request.prevDoc;
     const unioned_data = unionWith(this.state.data, request.convos, (a, b) => a.id == b.id);
     this.setState({ data: unioned_data, numDocs: request.convos.length }, () => {
@@ -151,8 +236,9 @@ class ConvoCards extends React.Component {
       backgroundColor: Constants.accentColorTwo,
       borderWidth: 0,
       borderColor: Constants.mainTextColor,
-      height: Platform.OS === "android" ? "100%" : "95%",
+      height: "100%",
       width: Constants.SCREEN_WIDTH - 54,
+      bottom: 0,
       marginLeft: 27,
       position: "absolute",
       borderRadius: 20,
@@ -171,7 +257,7 @@ class ConvoCards extends React.Component {
           <Text
             style={{
               fontSize: 24 / PixelRatio.getFontScale(),
-              fontWeight: "bold",
+              fontWeight: "normal",
               color: Constants.mainTextColor,
               paddingHorizontal: 40,
             }}
@@ -190,7 +276,7 @@ class ConvoCards extends React.Component {
           <Text
             style={{
               fontSize: 24 / PixelRatio.getFontScale(),
-              fontWeight: "bold",
+              fontWeight: "normal",
               color: Constants.mainTextColor,
               paddingHorizontal: 40,
             }}
@@ -211,66 +297,106 @@ class ConvoCards extends React.Component {
     return [third_card, second_card, first_card];
   };
 
-  render() {
-    return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: Constants.backgroundColor }}>
-        <StatusBar backgroundColor={Constants.backgroundColor} barStyle="light-content" />
+  updateMenuState = (isOpen) => {
+    this.setState({ isOpen });
+  };
 
-        <View
-          style={{
-            height: "17%",
-            width: "100%",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            backgroundColor: "rgba(0,0,0,0)",
-            paddingVertical: 20,
-          }}
-        >
-          <Text
-            style={{ color: "white", fontSize: 30, marginLeft: 27, fontWeight: "bold", width: "60%" }}
-            numberOfLines={1}
-          >
-            Self improvement
-          </Text>
-          <TouchableOpacity onPress={() => {}}>
-            <Icon
-              style={{ marginRight: 27, marginTop: 4 }}
-              name="filter-list"
-              type="material"
-              color="white"
-              size={35}
-            />
-          </TouchableOpacity>
-        </View>
-        {this.state.numDocs > 0 ? (
-          <View style={{ flex: 1, justifyContent: "center", alignContent: "center" }}>{this.renderCards()}</View>
-        ) : (
+  updateFilterState = (filter) => {
+    this.state.setFilters.includes(filter)
+      ? this.setState({ setFilters: this.state.setFilters.filter((ogFilter) => ogFilter !== filter) })
+      : this.setState({ setFilters: [...this.state.setFilters, filter] });
+  };
+
+  updateLanguage = (language) => {
+    this.state.setLanguages == language
+      ? this.setState({ setLanguages: null })
+      : this.setState({ setLanguages: language });
+  };
+
+  render() {
+    const menu = (
+      <DrawerContent
+        updateFilterState={this.updateFilterState}
+        updateLanguage={this.updateLanguage}
+        setFilters={this.state.setFilters}
+        setLanguages={this.state.setLanguages}
+      />
+    );
+
+    return (
+      <SideMenu
+        animationFunction={(prop, value) =>
+          Animated.spring(prop, {
+            toValue: value,
+            friction: 8,
+            useNativeDriver: true,
+          })
+        }
+        menu={menu}
+        menuPosition="right"
+        openMenuOffset={Constants.SCREEN_WIDTH - 50}
+        edgeHitWidth={0}
+        isOpen={this.state.isOpen}
+        onChange={(isOpen) => this.updateMenuState(isOpen)}
+      >
+        <SafeAreaView style={{ flex: 1, backgroundColor: Constants.backgroundColor }}>
+          <StatusBar backgroundColor={Constants.backgroundColor} barStyle="light-content" />
           <View
             style={{
-              flex: 1,
-              justifyContent: "center",
-              alignContent: "center",
-              margin: Constants.SCREEN_WIDTH / 4,
+              height: "17%",
+              width: "100%",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              backgroundColor: Constants.backgroundColor,
+              paddingVertical: 20,
             }}
           >
-            <LottieView
-              ref={(animation) => {
-                this.animation = animation;
-              }}
-              source={require("./../../resources/refresh.json")}
-              loop={false}
-            ></LottieView>
-            <TouchableOpacity
-              style={{ height: Constants.SCREEN_HEIGHT, width: Constants.SCREEN_WIDTH }}
-              onPress={() => {
-                this.animation.play(0, 100);
-                this.getConvos();
-              }}
-            />
+            <Text
+              style={{ color: "white", fontSize: 30, marginLeft: 27, fontWeight: "bold", width: "60%" }}
+              numberOfLines={1}
+            >
+              {this.state.data.length > 0 ? this.state.data[0].category : "Tap to refresh"}
+            </Text>
+            <TouchableOpacity onPress={() => this.updateMenuState(true)}>
+              <Icon
+                style={{ marginRight: 27, marginTop: 0 }}
+                name="filter-list"
+                type="material"
+                color={this.state.setFilters.length > 0 || this.state.setLanguages !== null ? Constants.accentColorTwo : Constants.mainTextColor}
+                size={35}
+              />
+            </TouchableOpacity>
           </View>
-        )}
-        <View style={{ height: Platform.OS === "android" ? "5%" : "7%" }}></View>
-      </SafeAreaView>
+          {this.state.numDocs > 0 ? (
+            <View style={{ flex: 1, justifyContent: "center", alignContent: "center" }}>{this.renderCards()}</View>
+          ) : (
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignContent: "center",
+                margin: Constants.SCREEN_WIDTH / 4,
+              }}
+            >
+              <LottieView
+                ref={(animation) => {
+                  this.animation = animation;
+                }}
+                source={require("./../../resources/refresh.json")}
+                loop={false}
+              ></LottieView>
+              <TouchableOpacity
+                style={{ height: "100%", width: "100%" }}
+                onPress={() => {
+                  this.animation.play(0, 100);
+                  this.getConvos();
+                }}
+              />
+            </View>
+          )}
+          <View style={{ height: Platform.OS === "android" ? "5%" : "7%" }}></View>
+        </SafeAreaView>
+      </SideMenu>
     );
   }
 }

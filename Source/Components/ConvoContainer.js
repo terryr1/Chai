@@ -10,6 +10,7 @@ import {
   ScrollView,
   ActivityIndicator,
   SafeAreaView,
+  Alert,
 } from "react-native";
 import SideMenu from "react-native-side-menu";
 import Constants from "../Constants";
@@ -58,16 +59,45 @@ function DrawerContent(props) {
           </TouchableOpacity>
         )}
         {props.primary ? (
-          <TouchableOpacity style={style.button} onPress={() => props.getNewOpinion()}>
+          <TouchableOpacity
+            style={style.button}
+            onPress={() =>
+              Alert.alert(
+                "Get new opinion?",
+                `Getting a new opinion will remove any people you are currently talking to, click OK to continue`,
+
+                [
+                  { text: "Cancel", onPress: () => {} },
+                  {
+                    text: "OK",
+                    onPress: () => props.getNewOpinion(),
+                  },
+                ]
+              )
+            }
+          >
             <Text style={style.buttonText}>GET NEW OPINION</Text>
           </TouchableOpacity>
         ) : null}
         {props.primary && props.pending ? null : (
           <TouchableOpacity
             style={style.button}
-            onPress={() => {
-              props.report();
-            }}
+            onPress={() =>
+              Alert.alert(
+                "Report?",
+                `Are you sure you want to report this person? This will also remove ${
+                  props.primary ? "them" : "you"
+                } from this conversation`,
+
+                [
+                  { text: "Cancel", onPress: () => {} },
+                  {
+                    text: "OK",
+                    onPress: () => props.report(),
+                  },
+                ]
+              )
+            }
           >
             <Text style={style.buttonText}>REPORT</Text>
           </TouchableOpacity>
@@ -185,24 +215,26 @@ class ConvoContainer extends React.Component {
           onChange={(isOpen) => this.updateMenuState(isOpen)}
         >
           <SafeAreaView style={{ flex: 1, marginBottom: 15, backgroundColor: Constants.backgroundColor }}>
-            <View style={{ width: "100%", height: 60, flexDirection: "row", justifyContent: "space-between" }}>
+            <View
+              style={{
+                width: "100%",
+                height: 60,
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginBottom: 20,
+              }}
+            >
               <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
                 <Icon
                   style={{ marginLeft: 20, marginTop: 24 }}
                   name="arrow-back"
                   type="material"
-                  color="gray"
+                  color="white"
                   size={35}
                 />
               </TouchableOpacity>
               <TouchableOpacity onPress={() => this.updateMenuState(true)}>
-                <Icon
-                  style={{ marginRight: 27, marginTop: 24 }}
-                  name="menu"
-                  type="material"
-                  color="gray"
-                  size={35}
-                />
+                <Icon style={{ marginRight: 27, marginTop: 24 }} name="menu" type="material" color="white" size={35} />
               </TouchableOpacity>
             </View>
             <Convo {...{ ...this.props, updateContainer: this.updateContainer.bind(this) }} />

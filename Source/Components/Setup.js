@@ -1,5 +1,16 @@
 import React from "react";
-import { View, TextInput, StatusBar, Linking, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import {
+  View,
+  TextInput,
+  StatusBar,
+  Linking,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from "react-native";
 import { SafeAreaView } from "react-navigation";
 import AuthController from "../Controllers/AuthController";
 import { Notifications } from "expo";
@@ -117,7 +128,10 @@ class Setup extends React.Component {
         >
           <Text style={style.buttonText}>VERIFY</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={{ ...style.button }} onPress={() => this.setState({ currentStep: this.stepTwo })}>
+        <TouchableOpacity
+          style={{ ...style.button }}
+          onPress={() => this.setState({ currentStep: this.stepTwo, url: "" })}
+        >
           <Text style={style.buttonText}>GO BACK</Text>
         </TouchableOpacity>
       </>
@@ -208,10 +222,12 @@ class Setup extends React.Component {
 
   render() {
     return (
-      <SafeAreaView style={style.container}>
-        <StatusBar backgroundColor={Constants.backgroundColor} barStyle="light-content" />
-        {this.state.currentStep()}
-      </SafeAreaView>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <SafeAreaView style={style.container}>
+          <StatusBar backgroundColor={Constants.backgroundColor} barStyle="light-content" />
+          {this.state.currentStep()}
+        </SafeAreaView>
+      </TouchableWithoutFeedback>
     );
   }
 }

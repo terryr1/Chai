@@ -8,13 +8,14 @@ class UserModel {
   }
 
   parse = (conversations) => {
-    const ids = Object.keys(conversations);
+    const ids = conversations ? Object.keys(conversations) : [];
     return ids.map((id) => {
       return {
         name: conversations[id].question,
         convo_id: id,
         primary: conversations[id].primary,
         unread: conversations[id].unread,
+        last_updated: conversations[id].last_updated ? conversations[id].last_updated.seconds : 0,
       };
     });
   };

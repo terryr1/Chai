@@ -3,6 +3,7 @@ import "firebase/firestore";
 import Fire from "../Fire";
 import "firebase/functions";
 import { Alert } from "react-native";
+import Constants from "../Constants";
 
 class ConvoModel {
   get ref() {
@@ -119,11 +120,11 @@ class ConvoModel {
     createPendingMessage(data).catch((error) => console.log(error));
   };
 
-  addUserToConvo = async (convo_id) => {
+  addUserToConvo = async (convo_id, firstMessage) => {
     // console.log("adding user to convo");
     const token = await firebase.auth().currentUser.getIdToken(true);
     const addUserToConvo = firebase.functions().httpsCallable("addUserToConvo");
-    return addUserToConvo({ convo_id, token }).catch((error) => console.log(error));
+    return addUserToConvo({ convo_id, token, firstMessage }).catch((error) => console.log(error));
   };
 
   removeUserFromConvo = async (convo_id) => {
@@ -132,32 +133,38 @@ class ConvoModel {
     return removeUserFromConvo({ convo_id, token }).catch((error) => console.log(error));
   };
 
-  create = async (question) => {
-    // console.log("create pending convo");
+  create = async (question, category) => {
+    console.log("create pending convo");
 
     const token = await firebase.auth().currentUser.getIdToken(true);
-    const data = { question, token };
+    const data = { question, category, token };
+    console.log(data);
 
     const createConvo = firebase.functions().httpsCallable("createConvo");
 
-    try {
-      const result = await createConvo(data);
-      return result.data;
-    } catch (err) {
-      Alert.alert("Uh oh", err.toString()); // TypeError: failed to fetch
-      return null;
-    }
+    return createConvo(data);
   };
 
-  getConvos = async (uid, prevDoc) => {
-    // console.log("getting pending convos (first 20)");
+  getConvos = async (uid, prevDoc, filters) => {
+    console.log("getting pending convos (first 20)");
     const convos = [];
     let documentSnapshots;
 
+    let addFiltersToQuery = this.ref;
+    if (filters.languages && filters.categories.length > 0) {
+      addFiltersToQuery = this.ref
+        .where("category", "in", filters.categories)
+        .where("language", "==", filters.languages);
+    } else if (filters.languages) {
+      addFiltersToQuery = this.ref.where("language", "==", filters.languages);
+    } else if (filters.categories.length > 0) {
+      addFiltersToQuery = this.ref.where("category", "in", filters.categories);
+    }
+
     if (prevDoc) {
-      documentSnapshots = await this.ref.startAfter(prevDoc).where("pending", "==", true).limit(20).get();
+      documentSnapshots = await addFiltersToQuery.startAfter(prevDoc).where("pending", "==", true).limit(20).get();
     } else {
-      documentSnapshots = await this.ref.where("pending", "==", true).limit(20).get();
+      documentSnapshots = await addFiltersToQuery.where("pending", "==", true).limit(20).get();
     }
 
     prevDoc = null;
@@ -167,6 +174,7 @@ class ConvoModel {
         const convo = {
           id: doc.id,
           question: doc.data().question,
+          category: doc.data().category,
         };
         convos.push(convo);
       }

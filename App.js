@@ -15,6 +15,17 @@ import * as Notifications from "expo-notifications";
 import * as Permissions from "expo-permissions";
 import AsyncStorage from "@react-native-community/async-storage";
 
+import { YellowBox } from "react-native";
+import _ from "lodash";
+
+YellowBox.ignoreWarnings(["Setting a timer"]);
+const _console = _.clone(console);
+console.warn = (message) => {
+  if (message.indexOf("Setting a timer") <= -1) {
+    _console.warn(message);
+  }
+};
+
 //fixed a random error------
 if (!global.btoa) {
   global.btoa = encode;
@@ -36,6 +47,10 @@ Notifications.setNotificationHandler({
     shouldPlaySound: true,
     shouldSetBadge: true,
   }),
+  handleSuccess: (identifier) => {
+    console.log(`HANDLE SUCCESS FOR ${identifier}`);
+    Notifications.dismissNotificationAsync(identifier);
+  },
 });
 
 const linking = {
@@ -64,6 +79,7 @@ class App extends React.Component {
   componentDidMount = async () => {
     this.onNotificationListener = Notifications.addNotificationReceivedListener(this.handleNotification);
     this.onResponseListener = Notifications.addNotificationResponseReceivedListener(this.handleResponse);
+    Notifications.dismissAllNotificationsAsync();
     AuthController.shared.checkForAuthentication(async (user) => {
       if (user) {
         this.setState({ user, isLoadingComplete: true });
@@ -83,10 +99,10 @@ class App extends React.Component {
   handleNotification = async (notification) => {
     if (notification.request.content.data.convo_id || notification.request.content.data.body.convo_id) {
       this.queuedNotification = notification.request.content.data.convo_id
-        ? response.notification.request.content.data
+        ? notification.request.content.data
         : notification.request.content.data.body;
       if (this.state.user) {
-        NavigationService.navigate({ ...this.queuedNotification, uid: this.state.user.uid });
+        Notifications.dismissAllNotificationsAsync();
       }
     }
   };

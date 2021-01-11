@@ -19,7 +19,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.chaitheapp",
-      "buildNumber": "1.11",
+      "buildNumber": "1.2",
       "icon": "./assets/ios_icon.png",
       "userInterfaceStyle": "dark",
       "associatedDomains": ["applinks:chailogin.page.link"]
@@ -45,7 +45,7 @@
         }
       ],
       "package": "com.chaitheapp",
-      "versionCode": 3,
+      "versionCode": 4,
       "softwareKeyboardLayoutMode": "pan",
       "useNextNotificationsApi": true,
       "permissions": [],

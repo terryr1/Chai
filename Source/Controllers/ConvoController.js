@@ -28,8 +28,8 @@ async function deleteConvo(uid, id) {
   return ConvoModel.shared.delete(id);
 }
 
-async function getPendingConvos(uid, prevDoc) {
-  const request = await ConvoModel.shared.getConvos(uid, prevDoc);
+async function getPendingConvos(uid, prevDoc, filters) {
+  const request = await ConvoModel.shared.getConvos(uid, prevDoc, filters);
   return request;
 }
 
@@ -37,8 +37,8 @@ async function getNumConvos(uid, update) {
   ConvoModel.shared.getNumConvos(uid, update);
 }
 
-async function addUserToConvo(id) {
-  return ConvoModel.shared.addUserToConvo(id);
+async function addUserToConvo(id, firstMessage) {
+  return ConvoModel.shared.addUserToConvo(id, firstMessage);
 }
 
 async function resetConvo(id) {

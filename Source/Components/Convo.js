@@ -1,6 +1,14 @@
 import React from "react";
-import { View, Alert, ActivityIndicator, TouchableOpacity } from "react-native";
-import { GiftedChat, Bubble, InputToolbar, Send, LoadEarlier } from "react-native-gifted-chat";
+import {
+  View,
+  Alert,
+  ActivityIndicator,
+  TouchableOpacity,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from "react-native";
+import { GiftedChat, Bubble, InputToolbar, Send, Time } from "react-native-gifted-chat";
 import { unionWith, reverse } from "lodash";
 import { Icon } from "react-native-elements";
 import ConvoController from "./../Controllers/ConvoController";
@@ -100,6 +108,9 @@ class Convo extends React.Component {
         AsyncStorage.setItem(this.props.route.params.id, JSON.stringify(sorted_msgs));
       }
 
+      if (new_messages.length != this.state.messages.length) {
+        ConvoController.markRead(this.props.route.params.id);
+      }
       this.setState({ messages: sorted_msgs, pending });
     }
   };
@@ -141,7 +152,7 @@ class Convo extends React.Component {
 
     this.setState({ messages: [...mapped_messages, ...this.state.messages] });
     if (this.state.pending && !this.props.route.params.user.primary) {
-      await ConvoController.addUserToConvo(this.props.route.params.id);
+      await ConvoController.addUserToConvo(this.props.route.params.id, mapped_messages[0]);
 
       this.setState({ pending: false });
     }
@@ -169,6 +180,26 @@ class Convo extends React.Component {
           left: {
             backgroundColor: this.props.route.params.user.primary ? Constants.accentColorOne : Constants.accentColorTwo,
             borderRadius: 15,
+          },
+        }}
+      />
+    );
+  };
+
+  renderTime = (props) => {
+    return (
+      <Time
+        {...props}
+        timeTextStyle={{
+          right: { color: "gray" },
+          left: {
+            height: 0,
+            width: 0,
+          },
+        }}
+        containerStyle={{
+          left: {
+            display: "none",
           },
         }}
       />
@@ -234,32 +265,36 @@ class Convo extends React.Component {
 
   render() {
     return (
-      <View style={{ flex: 1, backgroundColor: Constants.backgroundColor }}>
-        <GiftedChat
-          renderBubble={this.renderBubble}
-          renderInputToolbar={this.renderInputToolbar}
-          renderSend={this.renderSend}
-          alwaysShowSend
-          renderAvatar={null}
-          textInputStyle={{
-            color: Constants.mainTextColor,
-            padding: 10,
-            backgroundColor: "#1c1c1c",
-            borderRadius: 15,
-            lineHeight: 24,
-          }}
-          minInputToolbarHeight={53}
-          messages={this.state.messages}
-          onSend={this.send}
-          user={{ _id: this.props.route.params.user.id, name: "Anonymous" }}
-          renderLoading={this.renderLoading}
-          loadEarlier={true}
-          renderLoadEarlier={this.renderLoadEarlier}
-          onLoadEarlier={this.onLoadEarlier}
-          placeholder="Text here..."
-          timeTextStyle={{ left: { color: Constants.mainTextColor },right: { color:'gray'} }}
-        />
-      </View>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <View style={{ flex: 1, backgroundColor: Constants.backgroundColor }}>
+          <GiftedChat
+            renderBubble={this.renderBubble}
+            renderInputToolbar={this.renderInputToolbar}
+            renderSend={this.renderSend}
+            renderTime={this.renderTime}
+            alwaysShowSend
+            renderAvatar={null}
+            textInputStyle={{
+              color: Constants.mainTextColor,
+              paddingHorizontal: 10,
+              paddingVertical: Platform.OS === "ios" ? 0 : 10,
+              backgroundColor: "#1c1c1c",
+              borderRadius: 15,
+              lineHeight: 24,
+            }}
+            minInputToolbarHeight={53}
+            messages={this.state.messages}
+            onSend={this.send}
+            user={{ _id: this.props.route.params.user.id, name: "Anonymous" }}
+            renderLoading={this.renderLoading}
+            loadEarlier={true}
+            renderLoadEarlier={this.renderLoadEarlier}
+            onLoadEarlier={this.onLoadEarlier}
+            placeholder="Text here..."
+            bottomOffset={Platform.OS === "ios" ? Constants.SCREEN_HEIGHT/8.0 : 0}
+          />
+        </View>
+      </TouchableWithoutFeedback>
     );
   }
 }

@@ -28,7 +28,7 @@ class Main extends React.Component {
           showLabel: false,
           style: {
             backgroundColor: Constants.backgroundColor,
-            height: 70,
+            height: "12%",
           },
         }}
       >
